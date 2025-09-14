@@ -17,10 +17,12 @@ module.exports = async function handler(req, res) {
   res.set(corsHeaders);
 
   if (req.method === 'GET') {
+    console.log('Health API: Request received');
     res.json({ 
       status: 'ok', 
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
     });
   } else {
     res.status(405).json({ error: 'Method not allowed' });

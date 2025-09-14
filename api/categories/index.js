@@ -28,8 +28,12 @@ module.exports = async function handler(req, res) {
   res.set(corsHeaders);
 
   try {
+    console.log('Categories API: Starting request');
+    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+    
     // Connect to database
     await connectDB();
+    console.log('Categories API: Database connected');
 
     if (req.method === 'GET') {
       // GET /api/categories
@@ -42,6 +46,11 @@ module.exports = async function handler(req, res) {
     }
   } catch (error) {
     console.error('Categories API Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }

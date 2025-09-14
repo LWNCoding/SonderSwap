@@ -56,19 +56,19 @@ app.get('/api/categories/:title/events', (req, res) => {
   // Mock events data based on category
   const mockEvents = {
     'Technology': [
-      { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1' },
-      { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2' },
-      { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3' }
+      { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', address: 'San Francisco, CA' },
+      { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', address: 'New York, NY' },
+      { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', address: 'Los Angeles, CA' }
     ],
     'Design': [
-      { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4' },
-      { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5' }
+      { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', address: 'Chicago, IL' },
+      { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', address: 'Boston, MA' }
     ],
     'Business': [
-      { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6' },
-      { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7' },
-      { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8' },
-      { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9' }
+      { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', address: 'Seattle, WA' },
+      { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', address: 'Austin, TX' },
+      { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', address: 'Denver, CO' },
+      { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', address: 'Portland, OR' }
     ]
   };
   
@@ -82,15 +82,15 @@ app.get('/api/events', (req, res) => {
   console.log('Events API: Fetching all events');
   
   const mockEvents = [
-    { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', eventType: 'Technology' },
-    { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', eventType: 'Technology' },
-    { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', eventType: 'Technology' },
-    { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', eventType: 'Design' },
-    { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', eventType: 'Design' },
-    { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', eventType: 'Business' },
-    { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', eventType: 'Business' },
-    { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', eventType: 'Business' },
-    { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', eventType: 'Business' }
+    { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', eventType: 'Technology', address: 'San Francisco, CA' },
+    { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', eventType: 'Technology', address: 'New York, NY' },
+    { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', eventType: 'Technology', address: 'Los Angeles, CA' },
+    { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', eventType: 'Design', address: 'Chicago, IL' },
+    { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', eventType: 'Design', address: 'Boston, MA' },
+    { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', eventType: 'Business', address: 'Seattle, WA' },
+    { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', eventType: 'Business', address: 'Austin, TX' },
+    { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', eventType: 'Business', address: 'Denver, CO' },
+    { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', eventType: 'Business', address: 'Portland, OR' }
   ];
   
   console.log(`Returning ${mockEvents.length} mock events`);

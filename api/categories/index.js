@@ -1,14 +1,3 @@
-const connectDB = require('../lib/db.js');
-const mongoose = require('mongoose');
-
-// Event Category Schema
-const eventCategorySchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  events: [{ type: Number }]
-}, { timestamps: true });
-
-const EventCategory = mongoose.models.EventCategory || mongoose.model('EventCategory', eventCategorySchema);
-
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -30,27 +19,28 @@ module.exports = async function handler(req, res) {
   try {
     console.log('Categories API: Starting request');
     console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
     
-    // Connect to database
-    await connectDB();
-    console.log('Categories API: Database connected');
-
+    // For now, return mock data to test if the basic structure works
     if (req.method === 'GET') {
-      // GET /api/categories
-      console.log('Fetching categories...');
-      const categories = await EventCategory.find({});
-      console.log('Categories found:', categories.length);
-      res.json(categories);
+      console.log('Returning mock categories...');
+      const mockCategories = [
+        { _id: '1', title: 'Technology', events: [1, 2, 3] },
+        { _id: '2', title: 'Design', events: [4, 5] },
+        { _id: '3', title: 'Business', events: [6, 7, 8, 9] }
+      ];
+      res.json(mockCategories);
     } else {
       res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
     console.error('Categories API Error:', error);
     console.error('Error stack:', error.stack);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Internal server error',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
-}
+};

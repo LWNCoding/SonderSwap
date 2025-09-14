@@ -121,18 +121,52 @@ app.get('/api/categories/:title/events', async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
+    // Get organizer data for all events
+    const eventIds = events.map(event => event.organizer).filter(Boolean);
+    let organizersData = [];
+    if (eventIds.length > 0) {
+      try {
+        organizersData = await db.collection('users').find({
+          $or: [
+            { _id: { $in: eventIds } },
+            { id: { $in: eventIds } }
+          ]
+        }).toArray();
+      } catch (error) {
+        console.log('Could not fetch organizers data:', error.message);
+      }
+    }
+    
+    // Create a map for quick organizer lookup
+    const organizerMap = new Map();
+    organizersData.forEach(organizer => {
+      organizerMap.set(organizer._id.toString(), organizer);
+      if (organizer.id) {
+        organizerMap.set(organizer.id.toString(), organizer);
+      }
+    });
+    
     // Format events for frontend
-    const formattedEvents = events.map(event => ({
-      id: event.id || event._id.toString(),
-      name: event.name,
-      date: event.date || '',
-      time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
-      address: event.address || '',
-      eventType: event.eventType || '',
-      organizer: event.organizer,
-      speakers: event.speakers || []
-    }));
+    const formattedEvents = events.map(event => {
+      const organizerData = event.organizer ? organizerMap.get(event.organizer.toString()) : null;
+      
+      return {
+        id: event.id || event._id.toString(),
+        name: event.name,
+        date: event.date || '',
+        time: event.time || '',
+        thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
+        address: event.address || '',
+        eventType: event.eventType || '',
+        organizer: organizerData ? {
+          _id: organizerData._id,
+          firstName: organizerData.firstName || 'Unknown',
+          lastName: organizerData.lastName || 'User',
+          email: organizerData.email || ''
+        } : null,
+        speakers: event.speakers || []
+      };
+    });
     
     console.log(`Returning ${formattedEvents.length} events for category: ${title}`);
     res.json(formattedEvents);
@@ -150,18 +184,52 @@ app.get('/api/events', async (req, res) => {
     
     const events = await db.collection('events').find({}).toArray();
     
+    // Get organizer data for all events
+    const eventIds = events.map(event => event.organizer).filter(Boolean);
+    let organizersData = [];
+    if (eventIds.length > 0) {
+      try {
+        organizersData = await db.collection('users').find({
+          $or: [
+            { _id: { $in: eventIds } },
+            { id: { $in: eventIds } }
+          ]
+        }).toArray();
+      } catch (error) {
+        console.log('Could not fetch organizers data:', error.message);
+      }
+    }
+    
+    // Create a map for quick organizer lookup
+    const organizerMap = new Map();
+    organizersData.forEach(organizer => {
+      organizerMap.set(organizer._id.toString(), organizer);
+      if (organizer.id) {
+        organizerMap.set(organizer.id.toString(), organizer);
+      }
+    });
+    
     // Format events for frontend
-    const formattedEvents = events.map(event => ({
-      id: event.id || event._id.toString(),
-      name: event.name,
-      date: event.date || '',
-      time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
-      address: event.address || '',
-      eventType: event.eventType || '',
-      organizer: event.organizer,
-      speakers: event.speakers || []
-    }));
+    const formattedEvents = events.map(event => {
+      const organizerData = event.organizer ? organizerMap.get(event.organizer.toString()) : null;
+      
+      return {
+        id: event.id || event._id.toString(),
+        name: event.name,
+        date: event.date || '',
+        time: event.time || '',
+        thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
+        address: event.address || '',
+        eventType: event.eventType || '',
+        organizer: organizerData ? {
+          _id: organizerData._id,
+          firstName: organizerData.firstName || 'Unknown',
+          lastName: organizerData.lastName || 'User',
+          email: organizerData.email || ''
+        } : null,
+        speakers: event.speakers || []
+      };
+    });
     
     console.log(`Returning ${formattedEvents.length} events from database`);
     res.json(formattedEvents);
@@ -192,6 +260,36 @@ app.get('/api/events/:id', async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
     
+    // Get organizer details if organizer ID exists
+    let organizerData = null;
+    if (event.organizer) {
+      try {
+        organizerData = await db.collection('users').findOne({
+          $or: [
+            { _id: event.organizer },
+            { id: event.organizer }
+          ]
+        });
+      } catch (error) {
+        console.log('Could not fetch organizer data:', error.message);
+      }
+    }
+    
+    // Get speaker details if speakers exist
+    let speakersData = [];
+    if (event.speakers && event.speakers.length > 0) {
+      try {
+        speakersData = await db.collection('users').find({
+          $or: [
+            { _id: { $in: event.speakers } },
+            { id: { $in: event.speakers } }
+          ]
+        }).toArray();
+      } catch (error) {
+        console.log('Could not fetch speakers data:', error.message);
+      }
+    }
+    
     // Format event for frontend
     const formattedEvent = {
       id: event.id || event._id.toString(),
@@ -209,8 +307,18 @@ app.get('/api/events/:id', async (req, res) => {
       ageRestriction: event.ageRestriction || '',
       venue: event.venue || '',
       howItWorks: event.howItWorks || '',
-      organizer: event.organizer,
-      speakers: event.speakers || [],
+      organizer: organizerData ? {
+        _id: organizerData._id,
+        firstName: organizerData.firstName || 'Unknown',
+        lastName: organizerData.lastName || 'User',
+        email: organizerData.email || ''
+      } : null,
+      speakers: speakersData.map(speaker => ({
+        _id: speaker._id,
+        firstName: speaker.firstName || 'Unknown',
+        lastName: speaker.lastName || 'User',
+        email: speaker.email || ''
+      })),
       agenda: event.agenda || [],
       skillStations: event.skillStations || []
     };
@@ -220,6 +328,25 @@ app.get('/api/events/:id', async (req, res) => {
   } catch (error) {
     console.error('Event detail API error:', error);
     res.status(500).json({ error: 'Failed to fetch event from database' });
+  }
+});
+
+// Event participants endpoint
+app.get('/api/events/:id/participants', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Event participants API: Fetching participants for event ID: ${id}`);
+    const { db } = await connectToDatabase();
+    
+    // For now, return empty array since we don't have participants collection
+    // This endpoint exists to prevent 404 errors
+    const participants = [];
+    
+    console.log(`Returning ${participants.length} participants for event: ${id}`);
+    res.json(participants);
+  } catch (error) {
+    console.error('Event participants API error:', error);
+    res.status(500).json({ error: 'Failed to fetch participants from database' });
   }
 });
 

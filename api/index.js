@@ -7,8 +7,16 @@ import { SkillStation } from '../src/models/SkillStation.js';
 import { Participant } from '../src/models/Participant.js';
 import mongoose from 'mongoose';
 
-// Connect to database
-await connectDB();
+// Initialize database connection
+let dbConnected = false;
+
+// Ensure database is connected
+async function ensureDBConnection() {
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+}
 
 // Event Schema
 const eventSchema = new mongoose.Schema({
@@ -59,9 +67,21 @@ export default async function handler(req, res) {
   // Set CORS headers for all responses
   res.set(corsHeaders);
 
+  // Ensure database is connected
+  await ensureDBConnection();
+
   try {
     const { query } = req;
     const path = query.path || [];
+    
+    // Debug logging
+    console.log('API Request:', req.method, req.url, 'Path:', path);
+
+    // Health check endpoint
+    if (path[0] === 'health') {
+      res.json({ status: 'ok', timestamp: new Date().toISOString() });
+      return;
+    }
 
     // Route handling
     if (path[0] === 'events') {
@@ -225,7 +245,9 @@ export default async function handler(req, res) {
     } else if (path[0] === 'categories') {
       if (req.method === 'GET' && path.length === 1) {
         // GET /api/categories
+        console.log('Fetching categories...');
         const categories = await EventCategory.find({});
+        console.log('Categories found:', categories.length);
         res.json(categories);
         return;
       } else if (req.method === 'GET' && path.length === 3 && path[2] === 'events') {

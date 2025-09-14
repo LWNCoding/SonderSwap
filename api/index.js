@@ -71,21 +71,22 @@ export default async function handler(req, res) {
   await ensureDBConnection();
 
   try {
-    const { query } = req;
-    const path = query.path || [];
+    // Extract path from URL
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const pathSegments = url.pathname.split('/').filter(segment => segment);
     
     // Debug logging
-    console.log('API Request:', req.method, req.url, 'Path:', path);
+    console.log('API Request:', req.method, req.url, 'Path segments:', pathSegments);
 
     // Health check endpoint
-    if (path[0] === 'health') {
+    if (pathSegments[1] === 'health') {
       res.json({ status: 'ok', timestamp: new Date().toISOString() });
       return;
     }
 
     // Route handling
-    if (path[0] === 'events') {
-      if (req.method === 'GET' && path.length === 1) {
+    if (pathSegments[1] === 'events') {
+      if (req.method === 'GET' && pathSegments.length === 2) {
         // GET /api/events
         const events = await Event.find({})
           .populate('speakers', 'firstName lastName profile')
@@ -102,9 +103,9 @@ export default async function handler(req, res) {
         
         res.json(eventsWithCounts);
         return;
-      } else if (req.method === 'GET' && path.length === 2) {
+      } else if (req.method === 'GET' && pathSegments.length === 3) {
         // GET /api/events/:id
-        const event = await Event.findOne({ id: path[1] })
+        const event = await Event.findOne({ id: pathSegments[2] })
           .populate('speakers', 'firstName lastName profile')
           .populate('skillStations', 'name description skills location capacity equipment requirements difficulty duration')
           .populate('organizer', 'firstName lastName email');
@@ -242,17 +243,17 @@ export default async function handler(req, res) {
         });
         return;
       }
-    } else if (path[0] === 'categories') {
-      if (req.method === 'GET' && path.length === 1) {
+    } else if (pathSegments[1] === 'categories') {
+      if (req.method === 'GET' && pathSegments.length === 2) {
         // GET /api/categories
         console.log('Fetching categories...');
         const categories = await EventCategory.find({});
         console.log('Categories found:', categories.length);
         res.json(categories);
         return;
-      } else if (req.method === 'GET' && path.length === 3 && path[2] === 'events') {
+      } else if (req.method === 'GET' && pathSegments.length === 4 && pathSegments[3] === 'events') {
         // GET /api/categories/:title/events
-        const category = await EventCategory.findOne({ title: path[1] });
+        const category = await EventCategory.findOne({ title: pathSegments[2] });
         if (!category) {
           return res.status(404).json({ error: 'Category not found' });
         }

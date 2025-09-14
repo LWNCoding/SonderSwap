@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -14,16 +15,70 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Database connection
+let dbConnected = false;
+
+async function connectDB() {
+  if (dbConnected) return;
+  
+  try {
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    dbConnected = true;
+    console.log('MongoDB Connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+}
+
+// Mongoose Schemas
+const eventSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: String,
+  date: { type: Date, required: true },
+  time: String,
+  address: String,
+  thumbnail: String,
+  eventType: String,
+  organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  speakers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  maxAttendees: Number,
+  isActive: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const eventCategorySchema = new mongoose.Schema({
+  title: { type: String, required: true, unique: true },
+  description: String,
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Event = mongoose.model('Event', eventSchema);
+const EventCategory = mongoose.model('EventCategory', eventCategorySchema);
+
+// Category mapping for frontend compatibility
+const categoryMapping = {
+  'Technology': 'Technology & Innovation',
+  'Design': 'Design & Creativity',
+  'Business': 'Business & Entrepreneurship'
+};
+
 // Simple test endpoint
 app.get('/api/simple', (req, res) => {
   res.json({ message: 'Simple API is working!' });
 });
 
-// Test endpoint with environment info
+// Test API
 app.get('/api/test', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'Test API is working',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
@@ -31,70 +86,121 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Categories endpoint with mock data
-app.get('/api/categories', (req, res) => {
-  console.log('Categories API: Starting request');
-  console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
-  console.log('NODE_ENV:', process.env.NODE_ENV);
-  console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
-  
-  const mockCategories = [
-    { _id: '1', title: 'Technology', events: [1, 2, 3] },
-    { _id: '2', title: 'Design', events: [4, 5] },
-    { _id: '3', title: 'Business', events: [6, 7, 8, 9] }
-  ];
-  
-  console.log('Returning mock categories...');
-  res.json(mockCategories);
+// Categories endpoint - fetch from database
+app.get('/api/categories', async (req, res) => {
+  try {
+    console.log('Categories API: Starting request');
+    await connectDB();
+    
+    // Get all events to count by category
+    const events = await Event.find({ isActive: true }).populate('organizer', 'firstName lastName email');
+    
+    // Group events by category
+    const categoryCounts = {};
+    events.forEach(event => {
+      const category = event.eventType || 'Other';
+      categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+    });
+    
+    // Create categories array with counts
+    const categories = Object.keys(categoryMapping).map((frontendCategory, index) => ({
+      _id: (index + 1).toString(),
+      title: frontendCategory,
+      events: Array.from({ length: categoryCounts[categoryMapping[frontendCategory]] || 0 }, (_, i) => i + 1)
+    }));
+    
+    console.log('Returning categories from database...');
+    res.json(categories);
+  } catch (error) {
+    console.error('Categories API error:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
 });
 
-// Category events endpoint
-app.get('/api/categories/:title/events', (req, res) => {
-  const { title } = req.params;
-  console.log(`Category events API: Fetching events for category: ${title}`);
-  
-  // Mock events data based on category
-  const mockEvents = {
-    'Technology': [
-      { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', address: 'San Francisco, CA' },
-      { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', address: 'New York, NY' },
-      { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', address: 'Los Angeles, CA' }
-    ],
-    'Design': [
-      { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', address: 'Chicago, IL' },
-      { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', address: 'Boston, MA' }
-    ],
-    'Business': [
-      { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', address: 'Seattle, WA' },
-      { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', address: 'Austin, TX' },
-      { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', address: 'Denver, CO' },
-      { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', address: 'Portland, OR' }
-    ]
-  };
-  
-  const events = mockEvents[title] || [];
-  console.log(`Returning ${events.length} events for category: ${title}`);
-  res.json(events);
+// Category events endpoint - fetch from database
+app.get('/api/categories/:title/events', async (req, res) => {
+  try {
+    const { title } = req.params;
+    console.log(`Category events API: Fetching events for category: ${title}`);
+    
+    await connectDB();
+    
+    // Map frontend category to database category
+    const dbCategory = categoryMapping[title] || title;
+    
+    // Find events by category
+    let events = await Event.find({ 
+      eventType: dbCategory,
+      isActive: true 
+    })
+    .populate('organizer', 'firstName lastName email')
+    .populate('speakers', 'firstName lastName email')
+    .sort({ date: 1 })
+    .limit(25);
+    
+    // If no events found for specific category, return all events
+    if (events.length === 0) {
+      console.log(`No events found for category: ${dbCategory}, returning all events`);
+      events = await Event.find({ isActive: true })
+        .populate('organizer', 'firstName lastName email')
+        .populate('speakers', 'firstName lastName email')
+        .sort({ date: 1 })
+        .limit(25);
+    }
+    
+    // Format events for frontend
+    const formattedEvents = events.map(event => ({
+      id: event._id.toString(),
+      name: event.name,
+      date: event.date ? event.date.toISOString().split('T')[0] : '',
+      time: event.time || '',
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event._id}`,
+      address: event.address || '',
+      eventType: event.eventType || '',
+      organizer: event.organizer,
+      speakers: event.speakers || []
+    }));
+    
+    console.log(`Returning ${formattedEvents.length} events for category: ${title}`);
+    res.json(formattedEvents);
+  } catch (error) {
+    console.error('Category events API error:', error);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
 });
 
-// All events endpoint (mock data)
-app.get('/api/events', (req, res) => {
-  console.log('Events API: Fetching all events');
-  
-  const mockEvents = [
-    { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', eventType: 'Technology', address: 'San Francisco, CA' },
-    { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', eventType: 'Technology', address: 'New York, NY' },
-    { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', eventType: 'Technology', address: 'Los Angeles, CA' },
-    { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', eventType: 'Design', address: 'Chicago, IL' },
-    { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', eventType: 'Design', address: 'Boston, MA' },
-    { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', eventType: 'Business', address: 'Seattle, WA' },
-    { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', eventType: 'Business', address: 'Austin, TX' },
-    { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', eventType: 'Business', address: 'Denver, CO' },
-    { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', eventType: 'Business', address: 'Portland, OR' }
-  ];
-  
-  console.log(`Returning ${mockEvents.length} mock events`);
-  res.json(mockEvents);
+// All events endpoint - fetch from database
+app.get('/api/events', async (req, res) => {
+  try {
+    console.log('Events API: Fetching all events');
+    
+    await connectDB();
+    
+    const events = await Event.find({ isActive: true })
+      .populate('organizer', 'firstName lastName email')
+      .populate('speakers', 'firstName lastName email')
+      .sort({ date: 1 })
+      .limit(25);
+    
+    // Format events for frontend
+    const formattedEvents = events.map(event => ({
+      id: event._id.toString(),
+      name: event.name,
+      date: event.date ? event.date.toISOString().split('T')[0] : '',
+      time: event.time || '',
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event._id}`,
+      address: event.address || '',
+      eventType: event.eventType || '',
+      organizer: event.organizer,
+      speakers: event.speakers || []
+    }));
+    
+    console.log(`Returning ${formattedEvents.length} events from database`);
+    res.json(formattedEvents);
+  } catch (error) {
+    console.error('Events API error:', error);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
 });
 
 // Health endpoint
@@ -104,7 +210,8 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
+    mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
+    dbConnected: dbConnected
   });
 });
 

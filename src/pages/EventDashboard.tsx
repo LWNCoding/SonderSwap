@@ -15,7 +15,7 @@ const EventDashboard: React.FC = () => {
 
   // Check if current user is the organizer after event is loaded
   useEffect(() => {
-    if (event && user) {
+    if (event && user && event.organizer) {
       const organizerId = typeof event.organizer === 'string' 
         ? event.organizer 
         : event.organizer._id;
@@ -27,6 +27,10 @@ const EventDashboard: React.FC = () => {
         navigate(`/event/${eventId}`, { replace: true });
         return;
       }
+    } else if (event && !event.organizer) {
+      // If event has no organizer, redirect to event detail page
+      navigate(`/event/${eventId}`, { replace: true });
+      return;
     }
   }, [event, user, eventId, navigate]);
 

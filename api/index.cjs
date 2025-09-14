@@ -23,14 +23,28 @@ async function connectDB() {
   
   try {
     console.log('Connecting to MongoDB...');
+    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+    
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      connectTimeoutMS: 10000, // 10 seconds timeout
     });
     dbConnected = true;
-    console.log('MongoDB Connected');
+    console.log('MongoDB Connected successfully');
   } catch (error) {
     console.error('MongoDB connection error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code
+    });
     throw error;
   }
 }
@@ -86,11 +100,18 @@ app.get('/api/test', (req, res) => {
 app.get('/api/categories', async (req, res) => {
   try {
     console.log('Categories API: Starting request');
+    console.log('Environment check:', {
+      NODE_ENV: process.env.NODE_ENV,
+      MONGODB_URI: process.env.MONGODB_URI ? 'Set' : 'Not set',
+      CORS_ORIGIN: process.env.CORS_ORIGIN
+    });
+    
     await connectDB();
     
     // Get categories from eventcategories collection
     const categories = await EventCategory.find({});
     console.log(`Found ${categories.length} categories in database`);
+    console.log('Categories data:', categories);
     
     // Format categories for frontend
     const formattedCategories = categories.map((category) => ({
@@ -103,7 +124,12 @@ app.get('/api/categories', async (req, res) => {
     res.json(formattedCategories);
   } catch (error) {
     console.error('Categories API error:', error);
-    res.status(500).json({ error: 'Failed to fetch categories from database' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      error: 'Failed to fetch categories from database',
+      details: error.message,
+      type: error.name
+    });
   }
 });
 

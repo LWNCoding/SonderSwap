@@ -35,7 +35,7 @@ const EventDetail: React.FC = () => {
 
   // Check if current user is the organizer
   const isOrganizer = () => {
-    if (!user || !event) return false;
+    if (!user || !event || !event.organizer) return false;
     
     // Handle both string ID and populated User object
     const organizerId = typeof event.organizer === 'string' 
@@ -276,7 +276,14 @@ const EventDetail: React.FC = () => {
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Organizer</h2>
         <div className="space-y-3">
-          {typeof event.organizer === 'string' ? (
+          {!event.organizer ? (
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                ?
+              </div>
+              <span className={`${typography.bodySmall} text-gray-500`}>Organizer information not available</span>
+            </div>
+          ) : typeof event.organizer === 'string' ? (
             <div className="flex items-center">
               <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                 {event.organizer.charAt(0).toUpperCase()}
@@ -286,13 +293,13 @@ const EventDetail: React.FC = () => {
           ) : (
             <div className="flex items-center">
               <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                {(event.organizer as User).firstName.charAt(0)}{(event.organizer as User).lastName.charAt(0)}
+                {(event.organizer as User).firstName?.charAt(0) || 'U'}{(event.organizer as User).lastName?.charAt(0) || 'U'}
               </div>
               <button
                 onClick={() => navigate(`/user/${(event.organizer as User)._id}`)}
                 className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
               >
-                {(event.organizer as User).firstName} {(event.organizer as User).lastName}
+                {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
               </button>
             </div>
           )}

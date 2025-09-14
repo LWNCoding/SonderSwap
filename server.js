@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import config from './config/database.js';
 import { registerUser, loginUser, getUserById } from './src/lib/auth.js';
 import { authenticateToken, optionalAuth } from './src/lib/middleware.js';
@@ -9,15 +10,25 @@ import { User } from './src/models/User.js';
 import { SkillStation } from './src/models/SkillStation.js';
 import { Participant } from './src/models/Participant.js';
 
+// Load environment variables
+dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect(config.mongodb.connectionString)
+const mongoUri = process.env.MONGODB_URI || config.mongodb.connectionString;
+mongoose.connect(mongoUri)
 .then(() => {
   console.log('MongoDB Connected');
 })

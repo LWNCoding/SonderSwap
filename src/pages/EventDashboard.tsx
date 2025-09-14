@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
 import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Icon from '../components/Icon';
-import { LAYOUT, GRADIENTS, ANIMATION, LOADING_STATES } from '../lib/constants';
-import { User } from '../types';
+import { LAYOUT, GRADIENTS, LOADING_STATES } from '../lib/constants';
 
 const EventDashboard: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { event, loading, error } = useEvent(eventId);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   // Check if current user is the organizer after event is loaded
   useEffect(() => {
@@ -23,7 +21,6 @@ const EventDashboard: React.FC = () => {
         : event.organizer._id;
       
       const userIsOrganizer = user._id === organizerId;
-      setIsAuthorized(userIsOrganizer);
       
       if (!userIsOrganizer) {
         // Redirect to event detail page if not authorized

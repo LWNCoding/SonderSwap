@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 
@@ -14,44 +15,40 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// MongoDB Atlas Data API configuration
-const ATLAS_API_BASE = process.env.ATLAS_API_BASE || 'https://data.mongodb-api.com/app/data-xxxxx/endpoint/data/v1';
-const ATLAS_API_KEY = process.env.ATLAS_API_KEY;
-const ATLAS_CLUSTER_NAME = process.env.ATLAS_CLUSTER_NAME || 'Cluster0';
-const ATLAS_DATABASE = process.env.ATLAS_DATABASE || 'sonderswap';
+// MongoDB connection
+let cachedClient = null;
+let cachedDb = null;
 
-// Helper function to make Atlas Data API requests
-async function atlasRequest(endpoint, method = 'GET', body = null) {
-  if (!ATLAS_API_KEY) {
-    throw new Error('ATLAS_API_KEY environment variable is not set');
+async function connectToDatabase() {
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb };
   }
 
-  const url = `${ATLAS_API_BASE}${endpoint}`;
-  const options = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': ATLAS_API_KEY
-    }
-  };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  console.log(`Atlas API ${method} request to: ${url}`);
-  
   try {
-    const response = await fetch(url, options);
-    const data = await response.json();
+    console.log('Connecting to MongoDB...');
+    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
     
-    if (!response.ok) {
-      throw new Error(`Atlas API error: ${response.status} - ${data.message || 'Unknown error'}`);
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
     }
+
+    const client = new MongoClient(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    });
+
+    await client.connect();
+    const db = client.db(process.env.MONGODB_DATABASE || 'sonderswap');
     
-    return data;
+    cachedClient = client;
+    cachedDb = db;
+    
+    console.log('MongoDB Connected successfully');
+    return { client, db };
   } catch (error) {
-    console.error('Atlas API request failed:', error);
+    console.error('MongoDB connection error:', error);
     throw error;
   }
 }
@@ -62,37 +59,24 @@ app.get('/api/test', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    atlasApiKey: process.env.ATLAS_API_KEY ? 'Set' : 'Not set',
-    atlasApiBase: process.env.ATLAS_API_BASE || 'Not set',
+    mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
     corsOrigin: process.env.CORS_ORIGIN || 'Not set'
   });
 });
 
-// Categories endpoint - fetch from eventcategories collection using Atlas Data API
+// Categories endpoint - fetch from eventcategories collection
 app.get('/api/categories', async (req, res) => {
   try {
     console.log('Categories API: Starting request');
-    console.log('Environment check:', {
-      NODE_ENV: process.env.NODE_ENV,
-      ATLAS_API_KEY: process.env.ATLAS_API_KEY ? 'Set' : 'Not set',
-      ATLAS_API_BASE: process.env.ATLAS_API_BASE || 'Not set',
-      CORS_ORIGIN: process.env.CORS_ORIGIN
-    });
+    const { db } = await connectToDatabase();
     
-    // Use Atlas Data API to find all categories
-    const response = await atlasRequest('/action/find', 'POST', {
-      dataSource: ATLAS_CLUSTER_NAME,
-      database: ATLAS_DATABASE,
-      collection: 'eventcategories',
-      filter: {}
-    });
-    
-    console.log(`Found ${response.documents.length} categories in database`);
-    console.log('Categories data:', response.documents);
+    // Get categories from eventcategories collection
+    const categories = await db.collection('eventcategories').find({}).toArray();
+    console.log(`Found ${categories.length} categories in database`);
     
     // Format categories for frontend
-    const formattedCategories = response.documents.map((category) => ({
-      _id: category._id.$oid,
+    const formattedCategories = categories.map((category) => ({
+      _id: category._id.toString(),
       title: category.title,
       events: category.events || []
     }));
@@ -101,7 +85,6 @@ app.get('/api/categories', async (req, res) => {
     res.json(formattedCategories);
   } catch (error) {
     console.error('Categories API error:', error);
-    console.error('Error stack:', error.stack);
     res.status(500).json({ 
       error: 'Failed to fetch categories from database',
       details: error.message,
@@ -110,39 +93,29 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// Category events endpoint - fetch from database using Atlas Data API
+// Category events endpoint - fetch from database
 app.get('/api/categories/:title/events', async (req, res) => {
   try {
     const { title } = req.params;
     console.log(`Category events API: Fetching events for category: ${title}`);
+    const { db } = await connectToDatabase();
     
     // First, find the category to get the event IDs
-    const categoryResponse = await atlasRequest('/action/findOne', 'POST', {
-      dataSource: ATLAS_CLUSTER_NAME,
-      database: ATLAS_DATABASE,
-      collection: 'eventcategories',
-      filter: { title: title }
-    });
-    
-    console.log(`Found category:`, categoryResponse.document);
+    const category = await db.collection('eventcategories').findOne({ title: title });
+    console.log(`Found category:`, category);
 
     let events = [];
-    if (categoryResponse.document && categoryResponse.document.events && categoryResponse.document.events.length > 0) {
-      const eventIds = categoryResponse.document.events;
+    if (category && category.events && category.events.length > 0) {
+      const eventIds = category.events;
       console.log(`Fetching events with IDs:`, eventIds);
       
       // Convert numbers to strings for the query
       const eventIdStrings = eventIds.map(id => id.toString());
       
       // Find events with matching IDs
-      const eventsResponse = await atlasRequest('/action/find', 'POST', {
-        dataSource: ATLAS_CLUSTER_NAME,
-        database: ATLAS_DATABASE,
-        collection: 'events',
-        filter: { id: { $in: eventIdStrings } }
-      });
-      
-      events = eventsResponse.documents;
+      events = await db.collection('events').find({
+        id: { $in: eventIdStrings }
+      }).toArray();
     } else {
       console.log(`No category found or no events in category: ${title}`);
       return res.status(404).json({ error: 'Category not found' });
@@ -150,11 +123,11 @@ app.get('/api/categories/:title/events', async (req, res) => {
 
     // Format events for frontend
     const formattedEvents = events.map(event => ({
-      id: event.id || event._id.$oid,
+      id: event.id || event._id.toString(),
       name: event.name,
       date: event.date || '',
       time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id.$oid}`,
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
       address: event.address || '',
       eventType: event.eventType || '',
       organizer: event.organizer,
@@ -169,27 +142,21 @@ app.get('/api/categories/:title/events', async (req, res) => {
   }
 });
 
-// All events endpoint - fetch from database using Atlas Data API
+// All events endpoint - fetch from database
 app.get('/api/events', async (req, res) => {
   try {
     console.log('Events API: Fetching all events');
+    const { db } = await connectToDatabase();
     
-    const response = await atlasRequest('/action/find', 'POST', {
-      dataSource: ATLAS_CLUSTER_NAME,
-      database: ATLAS_DATABASE,
-      collection: 'events',
-      filter: {}
-    });
-    
-    const events = response.documents;
+    const events = await db.collection('events').find({}).toArray();
     
     // Format events for frontend
     const formattedEvents = events.map(event => ({
-      id: event.id || event._id.$oid,
+      id: event.id || event._id.toString(),
       name: event.name,
       date: event.date || '',
       time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id.$oid}`,
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
       address: event.address || '',
       eventType: event.eventType || '',
       organizer: event.organizer,
@@ -211,8 +178,7 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    atlasApiKey: process.env.ATLAS_API_KEY ? 'Set' : 'Not set',
-    atlasApiBase: process.env.ATLAS_API_BASE || 'Not set'
+    mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
   });
 });
 

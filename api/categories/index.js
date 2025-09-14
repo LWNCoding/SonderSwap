@@ -1,5 +1,5 @@
-import connectDB from '../lib/db.js';
-import mongoose from 'mongoose';
+const connectDB = require('../lib/db.js');
+const mongoose = require('mongoose');
 
 // Event Category Schema
 const eventCategorySchema = new mongoose.Schema({
@@ -17,7 +17,7 @@ const corsHeaders = {
   'Access-Control-Allow-Credentials': 'true',
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.status(200).set(corsHeaders).end();

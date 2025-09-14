@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Credentials': 'true',
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.status(200).set(corsHeaders).end();

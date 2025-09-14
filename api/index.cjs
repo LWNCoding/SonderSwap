@@ -66,13 +66,6 @@ const eventCategorySchema = new mongoose.Schema({
 const Event = mongoose.model('Event', eventSchema);
 const EventCategory = mongoose.model('EventCategory', eventCategorySchema);
 
-// Category mapping for frontend compatibility
-const categoryMapping = {
-  'Technology': 'Technology & Innovation',
-  'Design': 'Design & Creativity',
-  'Business': 'Business & Entrepreneurship'
-};
-
 // Simple test endpoint
 app.get('/api/simple', (req, res) => {
   res.json({ message: 'Simple API is working!' });
@@ -100,7 +93,7 @@ app.get('/api/categories', async (req, res) => {
     console.log(`Found ${categories.length} categories in database`);
     
     // Format categories for frontend
-    const formattedCategories = categories.map((category, index) => ({
+    const formattedCategories = categories.map((category) => ({
       _id: category._id.toString(),
       title: category.title,
       events: category.events || []
@@ -110,14 +103,7 @@ app.get('/api/categories', async (req, res) => {
     res.json(formattedCategories);
   } catch (error) {
     console.error('Categories API error:', error);
-    // Fallback to mock data if database fails
-    console.log('Falling back to mock categories...');
-    const mockCategories = [
-      { _id: '1', title: 'Technology', events: [1, 2, 3] },
-      { _id: '2', title: 'Design', events: [4, 5] },
-      { _id: '3', title: 'Business', events: [6, 7, 8, 9] }
-    ];
-    res.json(mockCategories);
+    res.status(500).json({ error: 'Failed to fetch categories from database' });
   }
 });
 
@@ -148,25 +134,8 @@ app.get('/api/categories/:title/events', async (req, res) => {
       .sort({ date: 1 })
       .limit(25);
     } else {
-      // If no category found or no events in category, try to find by eventType
-      console.log(`No category found or no events in category, trying eventType: ${title}`);
-      events = await Event.find({ 
-        eventType: title
-      })
-      .populate('organizer', 'firstName lastName email')
-      .populate('speakers', 'firstName lastName email')
-      .sort({ date: 1 })
-      .limit(25);
-      
-      // If still no events, return all events
-      if (events.length === 0) {
-        console.log(`No events found for eventType: ${title}, returning all events`);
-        events = await Event.find({})
-          .populate('organizer', 'firstName lastName email')
-          .populate('speakers', 'firstName lastName email')
-          .sort({ date: 1 })
-          .limit(25);
-      }
+      console.log(`No category found or no events in category: ${title}`);
+      return res.status(404).json({ error: 'Category not found' });
     }
     
     // Format events for frontend
@@ -186,28 +155,7 @@ app.get('/api/categories/:title/events', async (req, res) => {
     res.json(formattedEvents);
   } catch (error) {
     console.error('Category events API error:', error);
-    // Fallback to mock data if database fails
-    console.log('Falling back to mock events...');
-    const mockEvents = {
-      'Technology': [
-        { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', address: 'San Francisco, CA' },
-        { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', address: 'New York, NY' },
-        { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', address: 'Los Angeles, CA' }
-      ],
-      'Design': [
-        { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', address: 'Chicago, IL' },
-        { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', address: 'Boston, MA' }
-      ],
-      'Business': [
-        { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', address: 'Seattle, WA' },
-        { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', address: 'Austin, TX' },
-        { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', address: 'Denver, CO' },
-        { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', address: 'Portland, OR' }
-      ]
-    };
-    
-    const events = mockEvents[title] || [];
-    res.json(events);
+    res.status(500).json({ error: 'Failed to fetch events from database' });
   }
 });
 
@@ -241,7 +189,7 @@ app.get('/api/events', async (req, res) => {
     res.json(formattedEvents);
   } catch (error) {
     console.error('Events API error:', error);
-    res.status(500).json({ error: 'Failed to fetch events' });
+    res.status(500).json({ error: 'Failed to fetch events from database' });
   }
 });
 

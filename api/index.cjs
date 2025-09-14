@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const connectDB = require('../lib/db.js');
 
 const app = express();
 
@@ -15,52 +13,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-
-// Database connection
-let dbConnected = false;
-
-async function ensureDBConnection() {
-  if (!dbConnected) {
-    try {
-      await connectDB();
-      dbConnected = true;
-      console.log('Database connected successfully');
-    } catch (error) {
-      console.error('Database connection failed:', error);
-      throw error;
-    }
-  }
-}
-
-// Define schemas
-const eventSchema = new mongoose.Schema({
-  id: String,
-  name: String,
-  address: String,
-  date: String,
-  time: String,
-  thumbnail: String,
-  description: String,
-  eventType: String,
-  price: String,
-  duration: String,
-  capacity: String,
-  expectedParticipants: String,
-  ageRestriction: String,
-  organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  venue: String,
-  speakers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  skillStations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SkillStation' }],
-  category: { type: mongoose.Schema.Types.ObjectId, ref: 'EventCategory' }
-});
-
-const eventCategorySchema = new mongoose.Schema({
-  title: String,
-  events: [String]
-});
-
-const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
-const EventCategory = mongoose.models.EventCategory || mongoose.model('EventCategory', eventCategorySchema);
 
 // Simple test endpoint
 app.get('/api/simple', (req, res) => {
@@ -79,102 +31,70 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Categories endpoint with real data
-app.get('/api/categories', async (req, res) => {
-  try {
-    console.log('Categories API: Starting request');
-    await ensureDBConnection();
-    
-    // Return the categories that the frontend expects
-    const frontendCategories = [
-      { _id: '1', title: 'Technology', events: [] },
-      { _id: '2', title: 'Design', events: [] },
-      { _id: '3', title: 'Business', events: [] },
-      { _id: '4', title: 'Arts', events: [] },
-      { _id: '5', title: 'Education', events: [] },
-      { _id: '6', title: 'Health', events: [] },
-      { _id: '7', title: 'Sports', events: [] },
-      { _id: '8', title: 'Food', events: [] }
-    ];
-    
-    console.log(`Returning ${frontendCategories.length} frontend categories`);
-    res.json(frontendCategories);
-  } catch (error) {
-    console.error('Categories API error:', error);
-    res.status(500).json({ error: 'Failed to fetch categories' });
-  }
+// Categories endpoint with mock data
+app.get('/api/categories', (req, res) => {
+  console.log('Categories API: Starting request');
+  console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
+  
+  const mockCategories = [
+    { _id: '1', title: 'Technology', events: [1, 2, 3] },
+    { _id: '2', title: 'Design', events: [4, 5] },
+    { _id: '3', title: 'Business', events: [6, 7, 8, 9] }
+  ];
+  
+  console.log('Returning mock categories...');
+  res.json(mockCategories);
 });
 
-// Category events endpoint with real data
-app.get('/api/categories/:title/events', async (req, res) => {
-  try {
-    const { title } = req.params;
-    console.log(`Category events API: Fetching events for category: ${title}`);
-    
-    await ensureDBConnection();
-    
-    // Map frontend category names to database category names
-    const categoryMapping = {
-      'Technology': 'Technology & Innovation',
-      'Design': 'Arts & Culture', 
-      'Business': 'Technology & Innovation',
-      'Arts': 'Arts & Culture',
-      'Education': 'Technology & Innovation',
-      'Health': 'Wellness & Nature',
-      'Sports': 'Adventure & Sports',
-      'Food': 'Food & Drink'
-    };
-    
-    const dbCategoryName = categoryMapping[title] || title;
-    
-    // First try to find by exact title
-    let category = await EventCategory.findOne({ title: dbCategoryName });
-    
-    // If not found, try to find by partial match
-    if (!category) {
-      category = await EventCategory.findOne({ 
-        title: { $regex: title, $options: 'i' } 
-      });
-    }
-    
-    // If still not found, return all events (fallback)
-    if (!category) {
-      console.log(`Category ${title} not found, returning all events`);
-      const allEvents = await Event.find({})
-        .populate('organizer', 'firstName lastName email')
-        .populate('speakers', 'firstName lastName email');
-      return res.json(allEvents);
-    }
-    
-    const eventIds = category.events.map(id => id.toString());
-    const events = await Event.find({ id: { $in: eventIds } })
-      .populate('organizer', 'firstName lastName email')
-      .populate('speakers', 'firstName lastName email');
-    
-    console.log(`Found ${events.length} events for category: ${title} (${dbCategoryName})`);
-    res.json(events);
-  } catch (error) {
-    console.error('Category events API error:', error);
-    res.status(500).json({ error: 'Failed to fetch category events' });
-  }
+// Category events endpoint
+app.get('/api/categories/:title/events', (req, res) => {
+  const { title } = req.params;
+  console.log(`Category events API: Fetching events for category: ${title}`);
+  
+  // Mock events data based on category
+  const mockEvents = {
+    'Technology': [
+      { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1' },
+      { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2' },
+      { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3' }
+    ],
+    'Design': [
+      { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4' },
+      { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5' }
+    ],
+    'Business': [
+      { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6' },
+      { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7' },
+      { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8' },
+      { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9' }
+    ]
+  };
+  
+  const events = mockEvents[title] || [];
+  console.log(`Returning ${events.length} events for category: ${title}`);
+  res.json(events);
 });
 
-// All events endpoint
-app.get('/api/events', async (req, res) => {
-  try {
-    console.log('Events API: Fetching all events');
-    await ensureDBConnection();
-    
-    const events = await Event.find({})
-      .populate('organizer', 'firstName lastName email')
-      .populate('speakers', 'firstName lastName email');
-    
-    console.log(`Found ${events.length} events in database`);
-    res.json(events);
-  } catch (error) {
-    console.error('Events API error:', error);
-    res.status(500).json({ error: 'Failed to fetch events' });
-  }
+// All events endpoint (mock data)
+app.get('/api/events', (req, res) => {
+  console.log('Events API: Fetching all events');
+  
+  const mockEvents = [
+    { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM', thumbnail: 'https://picsum.photos/800/600?random=1', eventType: 'Technology' },
+    { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM', thumbnail: 'https://picsum.photos/800/600?random=2', eventType: 'Technology' },
+    { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM', thumbnail: 'https://picsum.photos/800/600?random=3', eventType: 'Technology' },
+    { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM', thumbnail: 'https://picsum.photos/800/600?random=4', eventType: 'Design' },
+    { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM', thumbnail: 'https://picsum.photos/800/600?random=5', eventType: 'Design' },
+    { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM', thumbnail: 'https://picsum.photos/800/600?random=6', eventType: 'Business' },
+    { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM', thumbnail: 'https://picsum.photos/800/600?random=7', eventType: 'Business' },
+    { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM', thumbnail: 'https://picsum.photos/800/600?random=8', eventType: 'Business' },
+    { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM', thumbnail: 'https://picsum.photos/800/600?random=9', eventType: 'Business' }
+  ];
+  
+  console.log(`Returning ${mockEvents.length} mock events`);
+  res.json(mockEvents);
 });
 
 // Health endpoint

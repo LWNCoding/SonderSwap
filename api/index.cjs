@@ -231,6 +231,25 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// IP Check endpoint - shows the IP Vercel is using
+app.get('/api/ip', (req, res) => {
+  const clientIP = req.headers['x-forwarded-for'] || 
+                   req.headers['x-real-ip'] || 
+                   req.connection.remoteAddress || 
+                   req.socket.remoteAddress ||
+                   (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  
+  res.json({
+    clientIP: clientIP,
+    headers: {
+      'x-forwarded-for': req.headers['x-forwarded-for'],
+      'x-real-ip': req.headers['x-real-ip'],
+      'user-agent': req.headers['user-agent']
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Catch-all for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

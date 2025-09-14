@@ -1,4 +1,4 @@
-import connectDB from './lib/db.js';
+import connectDB from '../lib/db.js';
 import mongoose from 'mongoose';
 
 // Event Schema

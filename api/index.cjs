@@ -171,6 +171,58 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
+// Single event endpoint - fetch by ID
+app.get('/api/events/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Event detail API: Fetching event with ID: ${id}`);
+    const { db } = await connectToDatabase();
+    
+    // Find event by ID (both string and number)
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: id },
+        { id: parseInt(id) },
+        { _id: id }
+      ]
+    });
+    
+    if (!event) {
+      console.log(`Event not found with ID: ${id}`);
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Format event for frontend
+    const formattedEvent = {
+      id: event.id || event._id.toString(),
+      name: event.name,
+      date: event.date || '',
+      time: event.time || '',
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
+      address: event.address || '',
+      eventType: event.eventType || '',
+      description: event.description || '',
+      price: event.price || '',
+      duration: event.duration || '',
+      capacity: event.capacity || '',
+      expectedParticipants: event.expectedParticipants || '',
+      ageRestriction: event.ageRestriction || '',
+      venue: event.venue || '',
+      howItWorks: event.howItWorks || '',
+      organizer: event.organizer,
+      speakers: event.speakers || [],
+      agenda: event.agenda || [],
+      skillStations: event.skillStations || []
+    };
+    
+    console.log(`Returning event: ${formattedEvent.name}`);
+    res.json(formattedEvent);
+  } catch (error) {
+    console.error('Event detail API error:', error);
+    res.status(500).json({ error: 'Failed to fetch event from database' });
+  }
+});
+
 // Health endpoint
 app.get('/api/health', (req, res) => {
   console.log('Health API: Request received');

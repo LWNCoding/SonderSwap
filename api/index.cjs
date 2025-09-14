@@ -58,7 +58,13 @@ const eventSchema = new mongoose.Schema({
   howItWorks: { type: String, required: true }
 }, { timestamps: true });
 
+const eventCategorySchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  events: [{ type: Number }]
+}, { timestamps: true });
+
 const Event = mongoose.model('Event', eventSchema);
+const EventCategory = mongoose.model('EventCategory', eventCategorySchema);
 
 // Category mapping for frontend compatibility
 const categoryMapping = {
@@ -83,34 +89,25 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Categories endpoint - fetch from database
+// Categories endpoint - fetch from eventcategories collection
 app.get('/api/categories', async (req, res) => {
   try {
     console.log('Categories API: Starting request');
     await connectDB();
     
-    // Get all events to count by category
-    const events = await Event.find({}).populate('organizer', 'firstName lastName email');
-    console.log(`Found ${events.length} events in database`);
+    // Get categories from eventcategories collection
+    const categories = await EventCategory.find({});
+    console.log(`Found ${categories.length} categories in database`);
     
-    // Group events by category
-    const categoryCounts = {};
-    events.forEach(event => {
-      const category = event.eventType || 'Other';
-      categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-    });
-    
-    console.log('Category counts:', categoryCounts);
-    
-    // Create categories array with counts
-    const categories = Object.keys(categoryMapping).map((frontendCategory, index) => ({
-      _id: (index + 1).toString(),
-      title: frontendCategory,
-      events: Array.from({ length: categoryCounts[categoryMapping[frontendCategory]] || 0 }, (_, i) => i + 1)
+    // Format categories for frontend
+    const formattedCategories = categories.map((category, index) => ({
+      _id: category._id.toString(),
+      title: category.title,
+      events: category.events || []
     }));
     
-    console.log('Returning categories from database...');
-    res.json(categories);
+    console.log('Returning categories from eventcategories collection...');
+    res.json(formattedCategories);
   } catch (error) {
     console.error('Categories API error:', error);
     // Fallback to mock data if database fails
@@ -132,26 +129,44 @@ app.get('/api/categories/:title/events', async (req, res) => {
     
     await connectDB();
     
-    // Map frontend category to database category
-    const dbCategory = categoryMapping[title] || title;
+    // First, find the category in eventcategories collection
+    const category = await EventCategory.findOne({ title: title });
+    console.log(`Found category:`, category);
     
-    // Find events by category
-    let events = await Event.find({ 
-      eventType: dbCategory
-    })
-    .populate('organizer', 'firstName lastName email')
-    .populate('speakers', 'firstName lastName email')
-    .sort({ date: 1 })
-    .limit(25);
+    let events = [];
     
-    // If no events found for specific category, return all events
-    if (events.length === 0) {
-      console.log(`No events found for category: ${dbCategory}, returning all events`);
-      events = await Event.find({})
-        .populate('organizer', 'firstName lastName email')
-        .populate('speakers', 'firstName lastName email')
-        .sort({ date: 1 })
-        .limit(25);
+    if (category && category.events && category.events.length > 0) {
+      // Get events by their IDs from the category
+      const eventIds = category.events;
+      console.log(`Fetching events with IDs:`, eventIds);
+      
+      events = await Event.find({ 
+        id: { $in: eventIds }
+      })
+      .populate('organizer', 'firstName lastName email')
+      .populate('speakers', 'firstName lastName email')
+      .sort({ date: 1 })
+      .limit(25);
+    } else {
+      // If no category found or no events in category, try to find by eventType
+      console.log(`No category found or no events in category, trying eventType: ${title}`);
+      events = await Event.find({ 
+        eventType: title
+      })
+      .populate('organizer', 'firstName lastName email')
+      .populate('speakers', 'firstName lastName email')
+      .sort({ date: 1 })
+      .limit(25);
+      
+      // If still no events, return all events
+      if (events.length === 0) {
+        console.log(`No events found for eventType: ${title}, returning all events`);
+        events = await Event.find({})
+          .populate('organizer', 'firstName lastName email')
+          .populate('speakers', 'firstName lastName email')
+          .sort({ date: 1 })
+          .limit(25);
+      }
     }
     
     // Format events for frontend

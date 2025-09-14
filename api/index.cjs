@@ -48,6 +48,35 @@ app.get('/api/categories', (req, res) => {
   res.json(mockCategories);
 });
 
+// Category events endpoint
+app.get('/api/categories/:title/events', (req, res) => {
+  const { title } = req.params;
+  console.log(`Category events API: Fetching events for category: ${title}`);
+  
+  // Mock events data based on category
+  const mockEvents = {
+    'Technology': [
+      { id: '1', name: 'React Workshop', date: '2024-01-15', time: '10:00 AM' },
+      { id: '2', name: 'Node.js Masterclass', date: '2024-01-20', time: '2:00 PM' },
+      { id: '3', name: 'Python for Beginners', date: '2024-01-25', time: '9:00 AM' }
+    ],
+    'Design': [
+      { id: '4', name: 'UI/UX Design Principles', date: '2024-01-18', time: '11:00 AM' },
+      { id: '5', name: 'Figma Workshop', date: '2024-01-22', time: '3:00 PM' }
+    ],
+    'Business': [
+      { id: '6', name: 'Startup Pitch Workshop', date: '2024-01-16', time: '1:00 PM' },
+      { id: '7', name: 'Marketing Strategies', date: '2024-01-21', time: '10:30 AM' },
+      { id: '8', name: 'Financial Planning', date: '2024-01-26', time: '2:30 PM' },
+      { id: '9', name: 'Leadership Skills', date: '2024-01-28', time: '4:00 PM' }
+    ]
+  };
+  
+  const events = mockEvents[title] || [];
+  console.log(`Returning ${events.length} events for category: ${title}`);
+  res.json(events);
+});
+
 // Health endpoint
 app.get('/api/health', (req, res) => {
   console.log('Health API: Request received');

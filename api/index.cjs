@@ -35,33 +35,30 @@ async function connectDB() {
   }
 }
 
-// Mongoose Schemas
+// Mongoose Schemas - matching the actual database structure
 const eventSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  description: String,
-  date: { type: Date, required: true },
-  time: String,
-  address: String,
-  thumbnail: String,
-  eventType: String,
-  organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  address: { type: String, required: true },
+  date: { type: String, required: true },
+  time: { type: String, required: true },
+  thumbnail: { type: String, required: true },
+  description: { type: String, required: true },
+  eventType: { type: String, required: true },
+  price: { type: String, required: true },
+  duration: { type: String, required: true },
+  capacity: { type: String, required: true },
+  expectedParticipants: { type: String, required: true },
+  ageRestriction: { type: String, required: true },
+  organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  venue: { type: String, required: true },
   speakers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  maxAttendees: Number,
-  isActive: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-const eventCategorySchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true },
-  description: String,
-  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
-  createdAt: { type: Date, default: Date.now }
-});
+  agenda: [{ type: String }],
+  skillStations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SkillStation' }],
+  howItWorks: { type: String, required: true }
+}, { timestamps: true });
 
 const Event = mongoose.model('Event', eventSchema);
-const EventCategory = mongoose.model('EventCategory', eventCategorySchema);
 
 // Category mapping for frontend compatibility
 const categoryMapping = {
@@ -93,7 +90,7 @@ app.get('/api/categories', async (req, res) => {
     await connectDB();
     
     // Get all events to count by category
-    const events = await Event.find({ isActive: true }).populate('organizer', 'firstName lastName email');
+    const events = await Event.find({}).populate('organizer', 'firstName lastName email');
     
     // Group events by category
     const categoryCounts = {};
@@ -130,8 +127,7 @@ app.get('/api/categories/:title/events', async (req, res) => {
     
     // Find events by category
     let events = await Event.find({ 
-      eventType: dbCategory,
-      isActive: true 
+      eventType: dbCategory
     })
     .populate('organizer', 'firstName lastName email')
     .populate('speakers', 'firstName lastName email')
@@ -141,7 +137,7 @@ app.get('/api/categories/:title/events', async (req, res) => {
     // If no events found for specific category, return all events
     if (events.length === 0) {
       console.log(`No events found for category: ${dbCategory}, returning all events`);
-      events = await Event.find({ isActive: true })
+      events = await Event.find({})
         .populate('organizer', 'firstName lastName email')
         .populate('speakers', 'firstName lastName email')
         .sort({ date: 1 })
@@ -150,11 +146,11 @@ app.get('/api/categories/:title/events', async (req, res) => {
     
     // Format events for frontend
     const formattedEvents = events.map(event => ({
-      id: event._id.toString(),
+      id: event.id || event._id.toString(),
       name: event.name,
-      date: event.date ? event.date.toISOString().split('T')[0] : '',
+      date: event.date || '',
       time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event._id}`,
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
       address: event.address || '',
       eventType: event.eventType || '',
       organizer: event.organizer,
@@ -176,7 +172,7 @@ app.get('/api/events', async (req, res) => {
     
     await connectDB();
     
-    const events = await Event.find({ isActive: true })
+    const events = await Event.find({})
       .populate('organizer', 'firstName lastName email')
       .populate('speakers', 'firstName lastName email')
       .sort({ date: 1 })
@@ -184,11 +180,11 @@ app.get('/api/events', async (req, res) => {
     
     // Format events for frontend
     const formattedEvents = events.map(event => ({
-      id: event._id.toString(),
+      id: event.id || event._id.toString(),
       name: event.name,
-      date: event.date ? event.date.toISOString().split('T')[0] : '',
+      date: event.date || '',
       time: event.time || '',
-      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event._id}`,
+      thumbnail: event.thumbnail || `https://picsum.photos/800/600?random=${event.id || event._id}`,
       address: event.address || '',
       eventType: event.eventType || '',
       organizer: event.organizer,

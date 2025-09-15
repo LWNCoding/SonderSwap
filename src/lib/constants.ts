@@ -24,21 +24,21 @@ export const ERROR_MESSAGES = {
 
 // Layout Constants
 export const LAYOUT = {
-  MAX_WIDTH: 'max-w-7xl',
+  MAX_WIDTH: 'max-w-4xl',
   CONTAINER_PADDING: 'px-4 sm:px-6 lg:px-8',
-  HEADER_PADDING: 'pt-20 pb-8',
-  CONTENT_PADDING: 'py-8',
-  SECTION_SPACING: 'mb-12',
+  HEADER_PADDING: 'pt-16 pb-6',
+  CONTENT_PADDING: 'py-6',
+  SECTION_SPACING: 'mb-8',
 } as const;
 
 // Carousel Constants
 export const CAROUSEL = {
-  CARD_WIDTH: 288, // w-72 = 288px
+  CARD_WIDTH: 240, // w-60 = 240px
   CARD_GAP: 16, // space-x-4 = 16px
   CARDS_PER_PAGE: 4,
   SCROLL_TIMEOUT: 500,
-  BUTTON_SIZE: 'w-12 h-12',
-  INDICATOR_WIDTH: 'w-10',
+  BUTTON_SIZE: 'w-10 h-10',
+  INDICATOR_WIDTH: 'w-8',
   INDICATOR_HEIGHT: 'h-1',
 } as const;
 

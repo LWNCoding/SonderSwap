@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     {
       icon: 'heart',
       title: 'Built-In Analytics',
-      description: 'Track attendance, gather feedback, and measure outcomes to improve future events. [TEST DEPLOY]',
+      description: 'Track attendance, gather feedback, and measure outcomes to improve future events.',
       iconBgColor: 'bg-primary-100',
       iconColor: 'text-primary-600'
     }
@@ -43,7 +43,7 @@ const Home: React.FC = () => {
           {/* Hero Content */}
           <div className="text-center lg:text-left">
           <h1 className={`${typography.h1} text-gray-900 mb-6`}>
-            Welcome to SonderSwap - DEPLOY TEST 3{' '}
+            Welcome to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
                 SonderSwap
               </span>

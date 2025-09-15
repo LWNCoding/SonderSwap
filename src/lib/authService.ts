@@ -164,7 +164,11 @@ class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}/auth/me`, {
+      const url = `${API_CONFIG.BASE_URL}/auth/me`;
+      console.log('Frontend: Calling verifyToken with URL:', url);
+      console.log('Frontend: API_CONFIG.BASE_URL:', API_CONFIG.BASE_URL);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${this.token}`,
         },

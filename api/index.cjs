@@ -273,11 +273,11 @@ app.get('/api/users/:id', async (req, res) => {
   }
 });
 
-// Get participation status for an event
-app.get('/api/events/:eventId/participation-status', async (req, res) => {
+// Get participation status for an event (requires authentication)
+app.get('/api/events/:eventId/participation-status', verifyToken, async (req, res) => {
   try {
     const { eventId } = req.params;
-    const userId = req.headers['x-user-id']; // Assuming user ID is passed in header
+    const userId = req.user._id; // Get user ID from JWT token
     
     if (!userId) {
       return res.status(401).json({ error: 'User ID required' });
@@ -301,11 +301,11 @@ app.get('/api/events/:eventId/participation-status', async (req, res) => {
   }
 });
 
-// Join an event
-app.post('/api/events/:eventId/join', async (req, res) => {
+// Join an event (requires authentication)
+app.post('/api/events/:eventId/join', verifyToken, async (req, res) => {
   try {
     const { eventId } = req.params;
-    const userId = req.headers['x-user-id']; // Assuming user ID is passed in header
+    const userId = req.user._id; // Get user ID from JWT token
     
     if (!userId) {
       return res.status(401).json({ error: 'User ID required' });
@@ -647,19 +647,45 @@ app.get('/api/events/:id', async (req, res) => {
   }
 });
 
-// Event participants endpoint
+// Event participants endpoint (public - no auth required)
 app.get('/api/events/:id/participants', async (req, res) => {
   try {
     const { id } = req.params;
     console.log(`Event participants API: Fetching participants for event ID: ${id}`);
     const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
     
-    // For now, return empty array since we don't have participants collection
-    // This endpoint exists to prevent 404 errors
-    const participants = [];
+    // Get participants for this event
+    const participants = await db.collection('participants').find({
+      eventId: new ObjectId(id)
+    }).toArray();
     
-    console.log(`Returning ${participants.length} participants for event: ${id}`);
-    res.json(participants);
+    // Get user details for each participant
+    const participantDetails = [];
+    for (const participant of participants) {
+      try {
+        const user = await db.collection('users').findOne({
+          _id: participant.userId
+        });
+        if (user) {
+          participantDetails.push({
+            userId: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            joinedAt: participant.joinedAt
+          });
+        }
+      } catch (error) {
+        console.warn('Could not fetch user details for participant:', participant.userId);
+      }
+    }
+    
+    console.log(`Returning ${participantDetails.length} participants for event: ${id}`);
+    res.json({
+      participants: participantDetails,
+      count: participantDetails.length
+    });
   } catch (error) {
     console.error('Event participants API error:', error);
     res.status(500).json({ error: 'Failed to fetch participants from database' });

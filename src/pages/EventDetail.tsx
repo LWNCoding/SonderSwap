@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
 import { useEventParticipation } from '../hooks/useEventParticipation';
+import { useEventParticipants } from '../hooks/useEventParticipants';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import Icon from '../components/Icon';
@@ -26,8 +27,14 @@ const EventDetail: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   
+  // Get participant count (public - no auth required)
   const { 
     participantCount, 
+    loading: participantsLoading 
+  } = useEventParticipants(eventId);
+  
+  // Get participation status (auth required)
+  const { 
     isParticipating, 
     joinEvent, 
     leaveEvent 

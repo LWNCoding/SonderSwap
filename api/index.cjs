@@ -80,6 +80,10 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ error: 'No token provided' });
     }
 
+    console.log('Verify: Using JWT_SECRET length:', JWT_SECRET.length);
+    console.log('Verify: JWT_SECRET prefix:', JWT_SECRET.substring(0, 10));
+    console.log('Verify: Token prefix:', token.substring(0, 20) + '...');
+    
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
@@ -183,6 +187,8 @@ app.post('/api/auth/login', async (req, res) => {
     );
 
     // Generate JWT token
+    console.log('Login: Using JWT_SECRET length:', JWT_SECRET.length);
+    console.log('Login: JWT_SECRET prefix:', JWT_SECRET.substring(0, 10));
     const token = jwt.sign(
       { _id: user._id, email: user.email },
       JWT_SECRET,

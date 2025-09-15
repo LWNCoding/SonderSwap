@@ -672,6 +672,7 @@ app.get('/api/events/:id/participants', async (req, res) => {
     const ObjectId = require('mongodb').ObjectId;
     
     // First, find the event to get its actual _id
+    console.log('Looking for event with ID:', id);
     const event = await db.collection('events').findOne({
       $or: [
         { id: id },
@@ -685,10 +686,15 @@ app.get('/api/events/:id/participants', async (req, res) => {
       return res.json({ participants: [], count: 0 });
     }
     
+    console.log('Found event:', event._id, event.name);
+    
     // Get participants for this event using the event's _id
+    console.log('Looking for participants with eventId:', event._id);
     const participants = await db.collection('participants').find({
       eventId: event._id
     }).toArray();
+    
+    console.log('Found participants:', participants.length);
     
     // Get user details for each participant
     const participantDetails = [];

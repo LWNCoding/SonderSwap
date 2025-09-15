@@ -43,7 +43,7 @@ const Home: React.FC = () => {
           {/* Hero Content */}
           <div className="text-center lg:text-left">
           <h1 className={`${typography.h1} text-gray-900 mb-6`}>
-            Welcome to SonderSwap - TEST DEPLOY{' '}
+            Welcome to SonderSwap - DEPLOY TEST 2{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
                 SonderSwap
               </span>

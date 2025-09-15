@@ -2,6 +2,7 @@
   "name": "sonderswap",
   "private": true,
   "version": "0.0.0",
+  "_comment": "Trigger Vercel deployment",
   "type": "module",
   "scripts": {
     "dev": "vite",

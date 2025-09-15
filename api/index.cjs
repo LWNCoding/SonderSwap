@@ -671,9 +671,23 @@ app.get('/api/events/:id/participants', async (req, res) => {
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     
-    // Get participants for this event
+    // First, find the event to get its actual _id
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: id },
+        { id: parseInt(id) },
+        { _id: id }
+      ]
+    });
+    
+    if (!event) {
+      console.log(`Event not found with ID: ${id}`);
+      return res.json({ participants: [], count: 0 });
+    }
+    
+    // Get participants for this event using the event's _id
     const participants = await db.collection('participants').find({
-      eventId: new ObjectId(id)
+      eventId: event._id
     }).toArray();
     
     // Get user details for each participant

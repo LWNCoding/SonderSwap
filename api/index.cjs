@@ -290,8 +290,27 @@ app.get('/api/events/:eventId/participation-status', verifyToken, async (req, re
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     
+    // First, find the event to get its actual _id
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: eventId },
+        { id: parseInt(eventId) },
+        { _id: eventId }
+      ]
+    });
+    
+    if (!event) {
+      console.log(`Event not found with ID: ${eventId}`);
+      return res.json({ 
+        isParticipating: false,
+        status: 'not_registered',
+        participantCount: 0,
+        capacity: 0
+      });
+    }
+    
     const participation = await db.collection('participants').findOne({
-      eventId: new ObjectId(eventId),
+      eventId: event._id,
       userId: new ObjectId(userId)
     });
 
@@ -320,9 +339,22 @@ app.post('/api/events/:eventId/join', verifyToken, async (req, res) => {
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     
+    // First, find the event to get its actual _id
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: eventId },
+        { id: parseInt(eventId) },
+        { _id: eventId }
+      ]
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
     // Check if already participating
     const existingParticipation = await db.collection('participants').findOne({
-      eventId: new ObjectId(eventId),
+      eventId: event._id,
       userId: new ObjectId(userId)
     });
 
@@ -332,7 +364,7 @@ app.post('/api/events/:eventId/join', verifyToken, async (req, res) => {
 
     // Add participation
     const participation = {
-      eventId: new ObjectId(eventId),
+      eventId: event._id,
       userId: new ObjectId(userId),
       status: 'registered',
       joinedAt: new Date()

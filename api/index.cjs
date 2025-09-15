@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const app = express();
 
@@ -53,14 +56,166 @@ async function connectToDatabase() {
   }
 }
 
-// Test API
-app.get('/api/test', (req, res) => {
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
+// Auth endpoints
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, firstName, lastName } = req.body;
+    
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const { db } = await connectToDatabase();
+    
+    // Check if user already exists
+    const existingUser = await db.collection('users').findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = {
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      isEmailVerified: false,
+      profile: {
+        bio: '',
+        title: 'learner',
+        interests: [],
+        location: '',
+        profileImage: '',
+        socialMedia: {
+          linkedin: '',
+          twitter: '',
+          github: ''
+        }
+      },
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const result = await db.collection('users').insertOne(user);
+    const userId = result.insertedId;
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: userId, email: user.email },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.status(201).json({
+      user: { ...userWithoutPassword, _id: userId },
+      token
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const { db } = await connectToDatabase();
+    
+    // Find user by email
+    const user = await db.collection('users').findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    await db.collection('users').updateOne(
+      { _id: user._id },
+      { $set: { lastLogin: new Date() } }
+    );
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({
+      user: userWithoutPassword,
+      token
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.get('/api/auth/me', verifyToken, async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    
+    const user = await db.collection('users').findOne({ _id: req.user._id });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ error: 'Failed to get user' });
+  }
+});
+
+// Health endpoint
+app.get('/api/health', (req, res) => {
+  console.log('Health API: Request received');
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
-    corsOrigin: process.env.CORS_ORIGIN || 'Not set'
+    dbConnected: !!cachedDb
   });
 });
 
@@ -127,10 +282,7 @@ app.get('/api/categories/:title/events', async (req, res) => {
     if (eventIds.length > 0) {
       try {
         organizersData = await db.collection('users').find({
-          $or: [
-            { _id: { $in: eventIds } },
-            { id: { $in: eventIds } }
-          ]
+          _id: { $in: eventIds }
         }).toArray();
       } catch (error) {
         console.log('Could not fetch organizers data:', error.message);
@@ -141,9 +293,6 @@ app.get('/api/categories/:title/events', async (req, res) => {
     const organizerMap = new Map();
     organizersData.forEach(organizer => {
       organizerMap.set(organizer._id.toString(), organizer);
-      if (organizer.id) {
-        organizerMap.set(organizer.id.toString(), organizer);
-      }
     });
     
     // Format events for frontend
@@ -190,10 +339,7 @@ app.get('/api/events', async (req, res) => {
     if (eventIds.length > 0) {
       try {
         organizersData = await db.collection('users').find({
-          $or: [
-            { _id: { $in: eventIds } },
-            { id: { $in: eventIds } }
-          ]
+          _id: { $in: eventIds }
         }).toArray();
       } catch (error) {
         console.log('Could not fetch organizers data:', error.message);
@@ -204,9 +350,6 @@ app.get('/api/events', async (req, res) => {
     const organizerMap = new Map();
     organizersData.forEach(organizer => {
       organizerMap.set(organizer._id.toString(), organizer);
-      if (organizer.id) {
-        organizerMap.set(organizer.id.toString(), organizer);
-      }
     });
     
     // Format events for frontend
@@ -265,10 +408,7 @@ app.get('/api/events/:id', async (req, res) => {
     if (event.organizer) {
       try {
         organizerData = await db.collection('users').findOne({
-          $or: [
-            { _id: event.organizer },
-            { id: event.organizer }
-          ]
+          _id: event.organizer
         });
       } catch (error) {
         console.log('Could not fetch organizer data:', error.message);
@@ -280,10 +420,7 @@ app.get('/api/events/:id', async (req, res) => {
     if (event.speakers && event.speakers.length > 0) {
       try {
         speakersData = await db.collection('users').find({
-          $or: [
-            { _id: { $in: event.speakers } },
-            { id: { $in: event.speakers } }
-          ]
+          _id: { $in: event.speakers }
         }).toArray();
       } catch (error) {
         console.log('Could not fetch speakers data:', error.message);
@@ -348,36 +485,6 @@ app.get('/api/events/:id/participants', async (req, res) => {
     console.error('Event participants API error:', error);
     res.status(500).json({ error: 'Failed to fetch participants from database' });
   }
-});
-
-// Health endpoint
-app.get('/api/health', (req, res) => {
-  console.log('Health API: Request received');
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    mongoUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
-  });
-});
-
-// IP Check endpoint - shows the IP Vercel is using
-app.get('/api/ip', (req, res) => {
-  const clientIP = req.headers['x-forwarded-for'] || 
-                   req.headers['x-real-ip'] || 
-                   req.connection.remoteAddress || 
-                   req.socket.remoteAddress ||
-                   (req.connection.socket ? req.connection.socket.remoteAddress : null);
-  
-  res.json({
-    clientIP: clientIP,
-    headers: {
-      'x-forwarded-for': req.headers['x-forwarded-for'],
-      'x-real-ip': req.headers['x-real-ip'],
-      'user-agent': req.headers['user-agent']
-    },
-    timestamp: new Date().toISOString()
-  });
 });
 
 // Catch-all for undefined routes

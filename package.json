@@ -15,6 +15,7 @@
     "fix-event-refs": "node scripts/fixEventReferences.js",
     "repopulate-all": "node scripts/repopulateAllData.js",
     "generate-large-dataset": "node scripts/generateLargeDataset.js",
+    "populate-complete-data": "node scripts/populateCompleteData.js",
     "add-participants": "node scripts/addParticipants.js",
     "server": "node server.js",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",

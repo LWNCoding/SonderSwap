@@ -7,6 +7,12 @@ class ApiClient {
     try {
       const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
         signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
       
       if (!response.ok) {
@@ -89,7 +95,9 @@ class ApiClient {
   }
 
   async getEventParticipants(eventId: string): Promise<{ participants: any[]; count: number }> {
-    return this.request<{ participants: any[]; count: number }>(`/events/${eventId}/participants`);
+    // Add cache-busting parameter to prevent stale data
+    const cacheBuster = Date.now();
+    return this.request<{ participants: any[]; count: number }>(`/events/${eventId}/participants?t=${cacheBuster}`);
   }
 
   async getParticipationStatus(eventId: string, token: string): Promise<{ isParticipating: boolean; participantCount: number; capacity: number }> {

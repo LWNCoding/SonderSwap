@@ -229,6 +229,16 @@ app.get('/api/auth/test', (req, res) => {
   res.json({ message: 'Auth test endpoint working' });
 });
 
+// Test JWT secret endpoint
+app.get('/api/auth/test-secret', (req, res) => {
+  res.json({ 
+    message: 'JWT secret test',
+    secretLength: JWT_SECRET.length,
+    secretPrefix: JWT_SECRET.substring(0, 10) + '...',
+    hasEnvVar: !!process.env.JWT_SECRET
+  });
+});
+
 // Test auth endpoint with verification
 app.get('/api/auth/test-verify', verifyToken, (req, res) => {
   console.log('Auth test verify endpoint called, user:', req.user);

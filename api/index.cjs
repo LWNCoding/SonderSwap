@@ -62,7 +62,7 @@ async function connectToDatabase() {
 }
 
 // JWT secret
-const JWT_SECRET = process.env.JWT_SECRET || 'sonderswap-secret-key-2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'sonderswap-jwt-secret-2024-very-secure-key-abc123def456';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 // Middleware to verify JWT token

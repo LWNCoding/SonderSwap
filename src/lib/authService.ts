@@ -123,6 +123,9 @@ class AuthService {
   // Login user
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
+      console.log('Attempting login with URL:', `${API_CONFIG.BASE_URL}/auth/login`);
+      console.log('Credentials:', { email: credentials.email, password: '***' });
+      
       const response = await fetch(`${API_CONFIG.BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -131,7 +134,11 @@ class AuthService {
         body: JSON.stringify(credentials),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');

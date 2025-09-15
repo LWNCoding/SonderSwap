@@ -65,29 +65,22 @@ async function connectToDatabase() {
 const JWT_SECRET = process.env.JWT_SECRET || 'sonderswap-jwt-secret-2024-very-secure-key-abc123def456';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-// Middleware to verify JWT token
+// Simple middleware to verify JWT token
 const verifyToken = (req, res, next) => {
+  console.log('VerifyToken middleware called');
+  
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  const token = authHeader.substring(7);
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
   try {
-    console.log('VerifyToken middleware called');
-    const authHeader = req.headers.authorization;
-    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('No valid auth header');
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    console.log('Token extracted:', token ? 'Yes' : 'No');
-    
-    if (!token) {
-      console.log('No token after extraction');
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    console.log('About to verify token with JWT_SECRET');
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('Token verified successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -249,10 +242,7 @@ app.get('/api/auth/test-secret', (req, res) => {
 });
 
 // Test auth endpoint with verification
-app.get('/api/auth/test-verify', (req, res, next) => {
-  console.log('Test verify endpoint handler called');
-  verifyToken(req, res, next);
-}, (req, res) => {
+app.get('/api/auth/test-verify', verifyToken, (req, res) => {
   console.log('Auth test verify endpoint called, user:', req.user);
   res.json({ message: 'Auth test verify endpoint working', user: req.user });
 });

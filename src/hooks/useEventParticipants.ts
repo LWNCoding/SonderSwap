@@ -23,7 +23,10 @@ export const useEventParticipants = (eventId: string | undefined): UseEventParti
     async () => {
       if (!eventId) return { participants: [], count: 0 };
       try {
-        return await getEventParticipants(eventId);
+        console.log('Fetching participants for event:', eventId);
+        const result = await getEventParticipants(eventId);
+        console.log('Participants fetched:', result);
+        return result;
       } catch (error) {
         console.warn('Failed to fetch participants:', error);
         return { participants: [], count: 0 };
@@ -32,11 +35,17 @@ export const useEventParticipants = (eventId: string | undefined): UseEventParti
     [eventId]
   );
 
+  // Wrap refetch to add debugging
+  const wrappedRefetch = async () => {
+    console.log('Refetching participants for event:', eventId);
+    await refetch();
+  };
+
   return {
     participants: participantsData?.participants || [],
     participantCount: participantsData?.count || 0,
     loading,
     error,
-    refetch,
+    refetch: wrappedRefetch,
   };
 };

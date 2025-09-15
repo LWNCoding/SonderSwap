@@ -63,11 +63,14 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
     }
     
     try {
+      console.log('Joining event:', eventId);
       await joinEvent(eventId, token);
+      console.log('Successfully joined event');
       setIsParticipating(true);
       // Refetch participation status
       await refetchStatus();
       // Notify parent component to refresh participant count
+      console.log('Calling onParticipationChange callback');
       options?.onParticipationChange?.();
     } catch (error) {
       console.error('Failed to join event:', error);
@@ -83,11 +86,14 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
     }
     
     try {
+      console.log('Leaving event:', eventId);
       await leaveEvent(eventId, token);
+      console.log('Successfully left event');
       setIsParticipating(false);
       // Refetch participation status
       await refetchStatus();
       // Notify parent component to refresh participant count
+      console.log('Calling onParticipationChange callback');
       options?.onParticipationChange?.();
     } catch (error) {
       console.error('Failed to leave event:', error);

@@ -241,10 +241,30 @@ app.get('/api/auth/test-secret', (req, res) => {
   });
 });
 
-// Test auth endpoint with verification
-app.get('/api/auth/test-verify', verifyToken, (req, res) => {
-  console.log('Auth test verify endpoint called, user:', req.user);
-  res.json({ message: 'Auth test verify endpoint working', user: req.user });
+// Test auth endpoint with manual verification
+app.get('/api/auth/test-verify', (req, res) => {
+  try {
+    console.log('Manual verify endpoint called');
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.substring(7);
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    console.log('About to verify token manually');
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token verified successfully:', decoded);
+    
+    res.json({ message: 'Manual verification working', user: decoded });
+  } catch (error) {
+    console.error('Manual JWT verification error:', error.message);
+    res.status(401).json({ error: 'Invalid token' });
+  }
 });
 
 // Health endpoint

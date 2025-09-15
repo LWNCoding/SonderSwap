@@ -81,6 +81,7 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('JWT decoded successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -277,9 +278,12 @@ app.get('/api/users/:id', async (req, res) => {
 app.get('/api/events/:eventId/participation-status', verifyToken, async (req, res) => {
   try {
     const { eventId } = req.params;
+    console.log('Participation status - req.user:', req.user);
     const userId = req.user._id; // Get user ID from JWT token
+    console.log('Participation status - userId:', userId);
     
     if (!userId) {
+      console.log('No userId found in token');
       return res.status(401).json({ error: 'User ID required' });
     }
 

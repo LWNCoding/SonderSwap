@@ -9,7 +9,12 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'https://sonder-swap.vercel.app',
+  origin: [
+    'https://sonder-swap.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    process.env.CORS_ORIGIN
+  ].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

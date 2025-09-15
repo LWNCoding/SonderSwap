@@ -29,8 +29,7 @@ const EventDetail: React.FC = () => {
   
   // Get participant count (public - no auth required)
   const { 
-    participantCount, 
-    loading: participantsLoading 
+    participantCount
   } = useEventParticipants(eventId);
   
   // Get participation status (auth required)

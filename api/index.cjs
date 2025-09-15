@@ -69,15 +69,20 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   
+  console.log('JWT_SECRET:', JWT_SECRET);
+  console.log('Token received:', token ? 'Yes' : 'No');
+  
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token decoded successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
+    console.error('JWT verification error:', error);
     return res.status(401).json({ error: 'Invalid token' });
   }
 };

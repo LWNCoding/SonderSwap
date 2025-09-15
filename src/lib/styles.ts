@@ -12,16 +12,16 @@ export const COMMON_STYLES = {
   INPUT_ERROR: 'border-red-300 focus:ring-red-500 focus:border-red-500',
   
   // Layout styles
-  CONTAINER: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-  SECTION_PADDING: 'py-16 lg:py-20',
+  CONTAINER: 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8',
+  SECTION_PADDING: 'py-12 lg:py-16',
   
   // Layout Constants
   LAYOUT: {
-    MAX_WIDTH: 'max-w-7xl',
+    MAX_WIDTH: 'max-w-4xl',
     CONTAINER_PADDING: 'px-4 sm:px-6 lg:px-8',
-    HEADER_PADDING: 'pt-20 pb-8',
-    CONTENT_PADDING: 'py-8',
-    SECTION_SPACING: 'mb-12',
+    HEADER_PADDING: 'pt-16 pb-6',
+    CONTENT_PADDING: 'py-6',
+    SECTION_SPACING: 'mb-8',
   },
   
   // Text styles

@@ -42,9 +42,9 @@ const Home: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
           <div className="text-center lg:text-left">
-            <h1 className={`${typography.h1} text-gray-900 mb-6`}>
-              Welcome to{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
+          <h1 className={`${typography.h1} text-gray-900 mb-6`}>
+            Welcome to SonderSwap - TEST DEPLOY{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
                 SonderSwap
               </span>
             </h1>

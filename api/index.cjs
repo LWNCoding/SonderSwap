@@ -273,6 +273,77 @@ app.get('/api/users/:id', async (req, res) => {
   }
 });
 
+// Get participation status for an event
+app.get('/api/events/:eventId/participation-status', async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.headers['x-user-id']; // Assuming user ID is passed in header
+    
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID required' });
+    }
+
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    const participation = await db.collection('participants').findOne({
+      eventId: new ObjectId(eventId),
+      userId: new ObjectId(userId)
+    });
+
+    res.json({ 
+      isParticipating: !!participation,
+      status: participation?.status || 'not_registered'
+    });
+  } catch (error) {
+    console.error('Get participation status error:', error);
+    res.status(500).json({ error: 'Failed to get participation status' });
+  }
+});
+
+// Join an event
+app.post('/api/events/:eventId/join', async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.headers['x-user-id']; // Assuming user ID is passed in header
+    
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID required' });
+    }
+
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // Check if already participating
+    const existingParticipation = await db.collection('participants').findOne({
+      eventId: new ObjectId(eventId),
+      userId: new ObjectId(userId)
+    });
+
+    if (existingParticipation) {
+      return res.status(409).json({ error: 'Already participating in this event' });
+    }
+
+    // Add participation
+    const participation = {
+      eventId: new ObjectId(eventId),
+      userId: new ObjectId(userId),
+      status: 'registered',
+      joinedAt: new Date()
+    };
+
+    await db.collection('participants').insertOne(participation);
+
+    res.json({ 
+      message: 'Successfully joined event',
+      participation: participation
+    });
+  } catch (error) {
+    console.error('Join event error:', error);
+    res.status(500).json({ error: 'Failed to join event' });
+  }
+});
+
 // Test auth endpoint without verification
 app.get('/api/auth/test', (req, res) => {
   console.log('Auth test endpoint called');

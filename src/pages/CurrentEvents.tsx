@@ -150,20 +150,20 @@ const CurrentEvents: React.FC = () => {
           'left',
           () => handlePreviousPage(categoryIndex),
           currentPage[categoryIndex] === 0,
-          'left-0 top-1/2 -translate-y-1/2 ml-2'
+          'left-0 top-1/2 -translate-y-1/2'
         )}
 
         {renderNavigationButton(
           'right',
           () => handleNextPage(categoryIndex, events.length),
           currentPage[categoryIndex] >= getTotalPages(events.length) - 1,
-          'right-0 top-1/2 -translate-y-1/2 mr-2'
+          'right-0 top-1/2 -translate-y-1/2'
         )}
 
         <div
           ref={(el) => { containerRefs.current[categoryIndex] = el; }}
           id={`scroll-container-${categoryIndex}`}
-          className={`flex overflow-x-hidden ${SPACING.SMALL} pb-4 scroll-smooth`}
+          className={`flex overflow-x-hidden ${SPACING.SMALL} pb-4 scroll-smooth w-full`}
         >
           {events.map((event: EventDetailData) => renderEventCard(event))}
         </div>

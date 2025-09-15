@@ -20,12 +20,20 @@ export const useEventParticipation = (eventId: string | undefined): UseEventPart
   // Load participation status for authenticated users only
   const { data: statusData, loading: statusLoading, error: statusError, refetch: refetchStatus } = useAsync(
     async () => {
+      // Only proceed if we have all required data
+      if (!eventId || !isAuthenticated) {
+        console.log('Skipping participation status check - not authenticated or no eventId');
+        return { isParticipating: false };
+      }
+      
       const token = authService.getToken();
-      if (!eventId || !isAuthenticated || !token) {
+      if (!token) {
+        console.log('Skipping participation status check - no token');
         return { isParticipating: false };
       }
       
       try {
+        console.log('Calling participation status API for event:', eventId);
         return await getParticipationStatus(eventId, token);
       } catch (error) {
         // If user is not authenticated or token is invalid, return default values

@@ -67,22 +67,24 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  
-  console.log('JWT_SECRET:', JWT_SECRET);
-  console.log('Token received:', token ? 'Yes' : 'No');
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-
   try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('Token decoded successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
-    console.error('JWT verification error:', error);
+    console.error('JWT verification error:', error.message);
     return res.status(401).json({ error: 'Invalid token' });
   }
 };
@@ -189,7 +191,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;
-    res.json({
+  res.json({
       user: userWithoutPassword,
       token
     });
@@ -201,31 +203,20 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/me', verifyToken, async (req, res) => {
   try {
-    console.log('Auth me endpoint called, user:', req.user);
+    const { db } = await connectToDatabase();
     
-    // For now, return the user data from the token without database lookup
-    // This will help us test if the verifyToken middleware is working
-    res.json({ 
-      user: {
-        _id: req.user._id,
-        email: req.user.email,
-        firstName: 'Zion',
-        lastName: 'Anderson',
-        isEmailVerified: true,
-        profile: {
-          bio: 'Passionate professional with expertise in technology and innovation.',
-          title: 'learner',
-          interests: ['JavaScript', 'Python', 'React', 'Node.js', 'Design'],
-          location: 'Boston, MA',
-          socialMedia: {
-            linkedin: 'https://linkedin.com/in/zion-anderson',
-            twitter: 'https://twitter.com/zionanderson',
-            github: 'https://github.com/zionanderson'
-          },
-          profileImage: 'https://i.pravatar.cc/150?img=56'
-        }
-      }
-    });
+    // Convert string ID to ObjectId
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.user._id);
+    
+    const user = await db.collection('users').findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to get user' });

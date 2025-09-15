@@ -29,6 +29,20 @@ export const useAsync = <T>(
     }
   }, dependencies);
 
+  const forceExecute = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await asyncFunction();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Async operation failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [asyncFunction]); // Only depend on the function itself
+
   useEffect(() => {
     execute();
   }, [execute]);
@@ -37,6 +51,6 @@ export const useAsync = <T>(
     data,
     loading,
     error,
-    refetch: execute,
+    refetch: forceExecute, // Use forceExecute for refetch to bypass caching
   };
 };

@@ -205,7 +205,12 @@ app.get('/api/auth/me', verifyToken, async (req, res) => {
     const { db } = await connectToDatabase();
     console.log('Database connected successfully');
     
-    const user = await db.collection('users').findOne({ _id: req.user._id });
+    // Convert string ID to ObjectId
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.user._id);
+    console.log('Looking for user with ID:', userId);
+    
+    const user = await db.collection('users').findOne({ _id: userId });
     console.log('User found:', !!user);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

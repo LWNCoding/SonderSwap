@@ -33,7 +33,7 @@ export const LAYOUT = {
 
 // Carousel Constants
 export const CAROUSEL = {
-  CARD_WIDTH: 208, // w-52 = 208px, calculated for 4 cards to fit in max-w-4xl container
+  CARD_WIDTH: 192, // w-48 = 192px, smaller to ensure 4 cards fit completely
   CARD_GAP: 16, // space-x-4 = 16px
   CARDS_PER_PAGE: 4,
   SCROLL_TIMEOUT: 500,
@@ -76,7 +76,7 @@ export const COLORS = {
 
 // Size Constants
 export const SIZES = {
-  CARD_WIDTH: 'w-52', // w-52 = 208px, close to calculated 212px for 4 cards
+  CARD_WIDTH: 'w-48', // w-48 = 192px, smaller to ensure 4 cards fit completely
   FULL_WIDTH: 'w-full',
   FULL_HEIGHT: 'h-full',
   ASPECT_SQUARE: 'aspect-square',

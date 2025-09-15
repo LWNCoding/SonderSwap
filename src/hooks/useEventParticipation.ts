@@ -13,7 +13,11 @@ interface UseEventParticipationReturn {
   refetch: () => Promise<void>;
 }
 
-export const useEventParticipation = (eventId: string | undefined): UseEventParticipationReturn => {
+interface UseEventParticipationOptions {
+  onParticipationChange?: () => void;
+}
+
+export const useEventParticipation = (eventId: string | undefined, options?: UseEventParticipationOptions): UseEventParticipationReturn => {
   const { isAuthenticated } = useAuth();
   const [isParticipating, setIsParticipating] = useState(false);
 
@@ -63,6 +67,8 @@ export const useEventParticipation = (eventId: string | undefined): UseEventPart
       setIsParticipating(true);
       // Refetch participation status
       await refetchStatus();
+      // Notify parent component to refresh participant count
+      options?.onParticipationChange?.();
     } catch (error) {
       console.error('Failed to join event:', error);
       throw error;
@@ -81,6 +87,8 @@ export const useEventParticipation = (eventId: string | undefined): UseEventPart
       setIsParticipating(false);
       // Refetch participation status
       await refetchStatus();
+      // Notify parent component to refresh participant count
+      options?.onParticipationChange?.();
     } catch (error) {
       console.error('Failed to leave event:', error);
       throw error;

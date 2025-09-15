@@ -29,7 +29,8 @@ const EventDetail: React.FC = () => {
   
   // Get participant count (public - no auth required)
   const { 
-    participantCount
+    participantCount,
+    refetch: refetchParticipants
   } = useEventParticipants(eventId);
   
   // Get participation status (auth required)
@@ -37,7 +38,9 @@ const EventDetail: React.FC = () => {
     isParticipating, 
     joinEvent, 
     leaveEvent 
-  } = useEventParticipation(eventId);
+  } = useEventParticipation(eventId, {
+    onParticipationChange: refetchParticipants
+  });
 
   // Check if current user is the organizer
   const isOrganizer = () => {

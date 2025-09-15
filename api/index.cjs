@@ -249,7 +249,10 @@ app.get('/api/auth/test-secret', (req, res) => {
 });
 
 // Test auth endpoint with verification
-app.get('/api/auth/test-verify', verifyToken, (req, res) => {
+app.get('/api/auth/test-verify', (req, res, next) => {
+  console.log('Test verify endpoint handler called');
+  verifyToken(req, res, next);
+}, (req, res) => {
   console.log('Auth test verify endpoint called, user:', req.user);
   res.json({ message: 'Auth test verify endpoint working', user: req.user });
 });

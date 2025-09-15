@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     {
       icon: 'heart',
       title: 'Built-In Analytics',
-      description: 'Track attendance, gather feedback, and measure outcomes to improve future events.',
+      description: 'Track attendance, gather feedback, and measure outcomes to improve future events. [TEST DEPLOY]',
       iconBgColor: 'bg-primary-100',
       iconColor: 'text-primary-600'
     }

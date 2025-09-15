@@ -201,9 +201,12 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/me', verifyToken, async (req, res) => {
   try {
+    console.log('Auth me endpoint called, user:', req.user);
     const { db } = await connectToDatabase();
+    console.log('Database connected successfully');
     
     const user = await db.collection('users').findOne({ _id: req.user._id });
+    console.log('User found:', !!user);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -215,6 +218,12 @@ app.get('/api/auth/me', verifyToken, async (req, res) => {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Failed to get user' });
   }
+});
+
+// Test auth endpoint without verification
+app.get('/api/auth/test', (req, res) => {
+  console.log('Auth test endpoint called');
+  res.json({ message: 'Auth test endpoint working' });
 });
 
 // Health endpoint

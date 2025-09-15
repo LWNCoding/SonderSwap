@@ -33,7 +33,7 @@ const CurrentEvents: React.FC = () => {
 
     clearScrollTimeout(categoryIndex);
     
-    const scrollPosition = page * CAROUSEL.CARDS_PER_PAGE * (CAROUSEL.CARD_WIDTH + CAROUSEL.CARD_GAP);
+    const scrollPosition = page * CAROUSEL.CARDS_PER_PAGE * (CAROUSEL.CARD_WIDTH + 16); // 16px for margin
     container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
     
     setCurrentPage(prev => ({ ...prev, [categoryIndex]: page }));
@@ -88,7 +88,7 @@ const CurrentEvents: React.FC = () => {
     return (
       <div key={event.id} className={`flex-shrink-0 ${SIZES.CARD_WIDTH} cursor-pointer relative`}>
         <Link to={`/event/${event.id}`} className="block">
-          <div className={`relative bg-white rounded-lg overflow-hidden transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl shadow-lg`}>
+          <div className={`relative bg-white rounded-lg overflow-hidden transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl shadow-lg`} style={{margin: '0 8px'}}>
             {/* Thumbnail */}
             <div className={`${SIZES.ASPECT_SQUARE} relative`}>
               <img
@@ -163,7 +163,7 @@ const CurrentEvents: React.FC = () => {
         <div
           ref={(el) => { containerRefs.current[categoryIndex] = el; }}
           id={`scroll-container-${categoryIndex}`}
-          className={`flex overflow-x-auto ${SPACING.SMALL} pb-4 scroll-smooth w-full`}
+          className={`flex overflow-x-auto pb-4 scroll-smooth w-full`}
         >
           {events.map((event: EventDetailData) => renderEventCard(event))}
         </div>

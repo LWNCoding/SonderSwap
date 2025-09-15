@@ -297,7 +297,9 @@ app.get('/api/events/:eventId/participation-status', verifyToken, async (req, re
 
     res.json({ 
       isParticipating: !!participation,
-      status: participation?.status || 'not_registered'
+      status: participation?.status || 'not_registered',
+      participantCount: 0, // This will be fetched separately by the frontend
+      capacity: 0 // This will be fetched separately by the frontend
     });
   } catch (error) {
     console.error('Get participation status error:', error);
@@ -361,6 +363,16 @@ app.get('/api/auth/test-secret', (req, res) => {
     secretLength: JWT_SECRET.length,
     secretPrefix: JWT_SECRET.substring(0, 10) + '...',
     hasEnvVar: !!process.env.JWT_SECRET
+  });
+});
+
+// Test JWT token verification endpoint
+app.get('/api/auth/test-token', verifyToken, (req, res) => {
+  res.json({
+    message: 'Token verification successful',
+    user: req.user,
+    userId: req.user._id,
+    email: req.user.email
   });
 });
 

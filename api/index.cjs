@@ -382,6 +382,57 @@ app.post('/api/events/:eventId/join', verifyToken, async (req, res) => {
   }
 });
 
+// Leave an event (requires authentication)
+app.delete('/api/events/:eventId/leave', verifyToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user._id; // Get user ID from JWT token
+    
+    if (!userId) {
+      return res.status(401).json({ error: 'User ID required' });
+    }
+
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // First, find the event to get its actual _id
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: eventId },
+        { id: parseInt(eventId) },
+        { _id: eventId }
+      ]
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Check if user is participating
+    const existingParticipation = await db.collection('participants').findOne({
+      eventId: event._id,
+      userId: new ObjectId(userId)
+    });
+
+    if (!existingParticipation) {
+      return res.status(404).json({ error: 'Not participating in this event' });
+    }
+
+    // Remove participation
+    await db.collection('participants').deleteOne({
+      eventId: event._id,
+      userId: new ObjectId(userId)
+    });
+
+    res.json({ 
+      message: 'Successfully left event'
+    });
+  } catch (error) {
+    console.error('Leave event error:', error);
+    res.status(500).json({ error: 'Failed to leave event' });
+  }
+});
+
 // Test auth endpoint without verification
 app.get('/api/auth/test', (req, res) => {
   console.log('Auth test endpoint called');

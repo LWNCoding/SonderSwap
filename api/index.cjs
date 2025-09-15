@@ -249,6 +249,30 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
+// Get user by ID endpoint
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    console.log('Get user by ID endpoint called for:', req.params.id);
+    const { db } = await connectToDatabase();
+    
+    // Convert string ID to ObjectId
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.params.id);
+    
+    const user = await db.collection('users').findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword });
+  } catch (error) {
+    console.error('Get user by ID error:', error);
+    res.status(500).json({ error: 'Failed to get user' });
+  }
+});
+
 // Test auth endpoint without verification
 app.get('/api/auth/test', (req, res) => {
   console.log('Auth test endpoint called');

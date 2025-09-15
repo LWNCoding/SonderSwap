@@ -88,7 +88,7 @@ const CurrentEvents: React.FC = () => {
     return (
       <div key={event.id} className={`flex-shrink-0 ${SIZES.CARD_WIDTH} cursor-pointer relative`}>
         <Link to={`/event/${event.id}`} className="block">
-          <div className={`relative bg-white rounded-lg overflow-hidden shadow-lg transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl`}>
+          <div className={`relative bg-white rounded-lg overflow-hidden transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl shadow-lg`}>
             {/* Thumbnail */}
             <div className={`${SIZES.ASPECT_SQUARE} relative`}>
               <img
@@ -163,7 +163,7 @@ const CurrentEvents: React.FC = () => {
         <div
           ref={(el) => { containerRefs.current[categoryIndex] = el; }}
           id={`scroll-container-${categoryIndex}`}
-          className={`flex overflow-x-auto ${SPACING.SMALL} pb-4 scroll-smooth w-full px-1`}
+          className={`flex overflow-x-auto ${SPACING.SMALL} pb-4 scroll-smooth w-full`}
         >
           {events.map((event: EventDetailData) => renderEventCard(event))}
         </div>

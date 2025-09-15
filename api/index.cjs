@@ -314,11 +314,16 @@ app.get('/api/events/:eventId/participation-status', verifyToken, async (req, re
       userId: new ObjectId(userId)
     });
 
+    // Get actual participant count
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+    
     res.json({ 
       isParticipating: !!participation,
       status: participation?.status || 'not_registered',
-      participantCount: 0, // This will be fetched separately by the frontend
-      capacity: 0 // This will be fetched separately by the frontend
+      participantCount: participantCount,
+      capacity: event.capacity || 0
     });
   } catch (error) {
     console.error('Get participation status error:', error);
@@ -372,9 +377,15 @@ app.post('/api/events/:eventId/join', verifyToken, async (req, res) => {
 
     await db.collection('participants').insertOne(participation);
 
+    // Get updated participant count
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+
     res.json({ 
       message: 'Successfully joined event',
-      participation: participation
+      participation: participation,
+      participantCount: participantCount
     });
   } catch (error) {
     console.error('Join event error:', error);
@@ -424,8 +435,14 @@ app.delete('/api/events/:eventId/leave', verifyToken, async (req, res) => {
       userId: new ObjectId(userId)
     });
 
+    // Get updated participant count
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+
     res.json({ 
-      message: 'Successfully left event'
+      message: 'Successfully left event',
+      participantCount: participantCount
     });
   } catch (error) {
     console.error('Leave event error:', error);

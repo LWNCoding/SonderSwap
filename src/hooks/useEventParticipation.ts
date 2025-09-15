@@ -64,8 +64,8 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
     
     try {
       console.log('Joining event:', eventId);
-      await joinEvent(eventId, token);
-      console.log('Successfully joined event');
+      const response = await joinEvent(eventId, token);
+      console.log('Successfully joined event, response:', response);
       setIsParticipating(true);
       // Refetch participation status
       await refetchStatus();
@@ -87,8 +87,8 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
     
     try {
       console.log('Leaving event:', eventId);
-      await leaveEvent(eventId, token);
-      console.log('Successfully left event');
+      const response = await leaveEvent(eventId, token);
+      console.log('Successfully left event, response:', response);
       setIsParticipating(false);
       // Refetch participation status
       await refetchStatus();

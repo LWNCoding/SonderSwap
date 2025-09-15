@@ -163,7 +163,7 @@ const CurrentEvents: React.FC = () => {
         <div
           ref={(el) => { containerRefs.current[categoryIndex] = el; }}
           id={`scroll-container-${categoryIndex}`}
-          className={`flex overflow-x-hidden ${SPACING.SMALL} pb-4 scroll-smooth w-full`}
+          className={`flex overflow-x-auto ${SPACING.SMALL} pb-4 scroll-smooth w-full px-1`}
         >
           {events.map((event: EventDetailData) => renderEventCard(event))}
         </div>

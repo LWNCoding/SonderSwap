@@ -238,6 +238,12 @@ app.get('/api/auth/test', (req, res) => {
   res.json({ message: 'Auth test endpoint working' });
 });
 
+// Test auth endpoint with verification
+app.get('/api/auth/test-verify', verifyToken, (req, res) => {
+  console.log('Auth test verify endpoint called, user:', req.user);
+  res.json({ message: 'Auth test verify endpoint working', user: req.user });
+});
+
 // Health endpoint
 app.get('/api/health', (req, res) => {
   console.log('Health API: Request received');

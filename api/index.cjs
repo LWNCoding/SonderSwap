@@ -68,23 +68,26 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
   try {
+    console.log('VerifyToken middleware called');
     const authHeader = req.headers.authorization;
+    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('No valid auth header');
       return res.status(401).json({ error: 'No token provided' });
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    console.log('Token extracted:', token ? 'Yes' : 'No');
     
     if (!token) {
+      console.log('No token after extraction');
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    console.log('Verify: Using JWT_SECRET length:', JWT_SECRET.length);
-    console.log('Verify: JWT_SECRET prefix:', JWT_SECRET.substring(0, 10));
-    console.log('Verify: Token prefix:', token.substring(0, 20) + '...');
-    
+    console.log('About to verify token with JWT_SECRET');
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token verified successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {

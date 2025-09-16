@@ -936,6 +936,12 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     
+    // Validate ObjectId format
+    if (!ObjectId.isValid(id)) {
+      console.error('Invalid ObjectId format:', id);
+      return res.status(400).json({ error: 'Invalid event ID format' });
+    }
+    
     // First, get the event to check if user is the organizer
     const event = await db.collection('events').findOne({
       _id: new ObjectId(id)
@@ -1043,6 +1049,12 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Event update API error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      eventId: req.params.id,
+      userId: req.user?._id
+    });
     res.status(500).json({ error: 'Failed to update event in database' });
   }
 });

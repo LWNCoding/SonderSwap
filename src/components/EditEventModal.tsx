@@ -218,6 +218,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter event name"
               />
+              {/* Debug: Show actual value */}
+              <div className="text-xs text-gray-500 mt-1">Debug: {formData.name || 'EMPTY'}</div>
             </div>
 
             {/* Description */}
@@ -247,6 +249,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
+              {/* Debug: Show actual value */}
+              <div className="text-xs text-gray-500 mt-1">Debug: {formData.date || 'EMPTY'}</div>
             </div>
 
             <div>
@@ -261,6 +265,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   onChange={handleInputChange}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
+                {/* Debug: Show actual value */}
+                <div className="text-xs text-gray-500 mt-1">Debug: {formData.time || 'EMPTY'}</div>
                 <select
                   name="timeFormat"
                   value={formData.timeFormat || '24h'}

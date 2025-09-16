@@ -97,7 +97,21 @@ class ApiClient {
   async getEventParticipants(eventId: string): Promise<{ participants: any[]; count: number }> {
     // Add cache-busting parameter to prevent stale data
     const cacheBuster = Date.now();
-    return this.request<{ participants: any[]; count: number }>(`/events/${eventId}/participants?t=${cacheBuster}`);
+    const response = await fetch(`${API_CONFIG.BASE_URL}/events/${eventId}/participants?t=${cacheBuster}`, {
+      signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
+      cache: 'no-cache',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
   }
 
   async getParticipationStatus(eventId: string, token: string): Promise<{ isParticipating: boolean; participantCount: number; capacity: number }> {

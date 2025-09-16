@@ -1,4 +1,4 @@
-import { useAsync } from './useAsync';
+import { useState, useEffect, useCallback } from 'react';
 import { getEventParticipants } from '../lib/api';
 
 interface Participant {
@@ -18,34 +18,53 @@ interface UseEventParticipantsReturn {
 }
 
 export const useEventParticipants = (eventId: string | undefined): UseEventParticipantsReturn => {
-  // Load participants data (public - no auth required)
-  const { data: participantsData, loading, error, refetch } = useAsync(
-    async () => {
-      if (!eventId) return { participants: [], count: 0 };
-      try {
-        console.log('Fetching participants for event:', eventId);
-        const result = await getEventParticipants(eventId);
-        console.log('Participants fetched:', result);
-        return result;
-      } catch (error) {
-        console.warn('Failed to fetch participants:', error);
-        return { participants: [], count: 0 };
-      }
-    },
-    [eventId]
-  );
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [participantCount, setParticipantCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Wrap refetch to add debugging
-  const wrappedRefetch = async () => {
+  const fetchParticipants = useCallback(async () => {
+    if (!eventId) {
+      setParticipants([]);
+      setParticipantCount(0);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Fetching participants for event:', eventId);
+      const result = await getEventParticipants(eventId);
+      console.log('Participants fetched:', result);
+      setParticipants(result.participants || []);
+      setParticipantCount(result.count || 0);
+    } catch (err) {
+      console.warn('Failed to fetch participants:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch participants');
+      setParticipants([]);
+      setParticipantCount(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [eventId]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchParticipants();
+  }, [fetchParticipants]);
+
+  // Refetch function that forces a new fetch
+  const refetch = useCallback(async () => {
     console.log('Refetching participants for event:', eventId);
-    await refetch();
-  };
+    await fetchParticipants();
+  }, [fetchParticipants]);
 
   return {
-    participants: participantsData?.participants || [],
-    participantCount: participantsData?.count || 0,
+    participants,
+    participantCount,
     loading,
     error,
-    refetch: wrappedRefetch,
+    refetch,
   };
 };

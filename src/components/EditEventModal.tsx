@@ -56,8 +56,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     if (name === 'timeFormat') {
       setFormData(prev => ({
         ...prev,
-        [name]: value,
-        time: convertTimeFormat(prev.time || '', prev.timeFormat || '24h', value)
+        timeFormat: value as '12h' | '24h',
+        time: convertTimeFormat(prev.time || '', prev.timeFormat || '24h', value as '12h' | '24h')
       }));
     } else {
       setFormData(prev => ({
@@ -68,7 +68,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   };
 
   // Convert time between 12h and 24h formats
-  const convertTimeFormat = (time: string, fromFormat: string, toFormat: string): string => {
+  const convertTimeFormat = (time: string, fromFormat: '12h' | '24h', toFormat: '12h' | '24h'): string => {
     if (!time || fromFormat === toFormat) return time;
     
     if (fromFormat === '24h' && toFormat === '12h') {

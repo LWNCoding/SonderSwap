@@ -811,10 +811,15 @@ app.get('/api/events/:id/participants', async (req, res) => {
       }
     }
     
-    console.log(`Returning ${participantDetails.length} participants for event: ${id}`);
+    // Get actual participant count from database (not just the length of details array)
+    const actualParticipantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+    
+    console.log(`Returning ${participantDetails.length} participant details and ${actualParticipantCount} total participants for event: ${id}`);
     res.json({
       participants: participantDetails,
-      count: participantDetails.length
+      count: actualParticipantCount
     });
   } catch (error) {
     console.error('Event participants API error:', error);

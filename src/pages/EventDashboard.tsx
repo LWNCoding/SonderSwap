@@ -39,17 +39,34 @@ const EventDashboard: React.FC = () => {
     if (!eventId) return;
     
     try {
+      // Get token at the very beginning and log everything
+      console.log('EventDashboard: handleUpdateEvent called');
+      console.log('EventDashboard: eventId:', eventId);
+      console.log('EventDashboard: updatedEventData:', updatedEventData);
+      
       const token = authService.getToken();
       console.log('EventDashboard: Token from authService:', token);
+      console.log('EventDashboard: Token length:', token?.length);
       console.log('EventDashboard: Is authenticated:', authService.isAuthenticated());
       console.log('EventDashboard: Current user:', authService.getCurrentUser());
       
-      if (!token) {
+      // Also check localStorage directly
+      const storedToken = localStorage.getItem('authToken');
+      console.log('EventDashboard: Token from localStorage:', storedToken);
+      console.log('EventDashboard: localStorage token length:', storedToken?.length);
+      
+      // Use localStorage token as fallback if authService token is null
+      const finalToken = token || storedToken;
+      
+      if (!finalToken) {
+        console.error('EventDashboard: No token found in authService or localStorage');
         throw new Error('No authentication token found');
       }
+      
+      console.log('EventDashboard: Using final token:', finalToken.substring(0, 20) + '...');
 
-      console.log('EventDashboard: Calling updateEvent with token:', token.substring(0, 20) + '...');
-      await updateEvent(eventId, updatedEventData, token);
+      console.log('EventDashboard: Calling updateEvent with token:', finalToken.substring(0, 20) + '...');
+      await updateEvent(eventId, updatedEventData, finalToken);
       
       // Refresh the event data
       window.location.reload(); // Simple refresh for now

@@ -950,6 +950,13 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
     
+    console.log('Found event:', {
+      eventId: event._id,
+      eventStringId: event.id,
+      organizer: event.organizer,
+      organizerType: typeof event.organizer
+    });
+    
     // Check if user is the organizer
     const organizerId = typeof event.organizer === 'string' 
       ? event.organizer 

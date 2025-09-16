@@ -954,6 +954,17 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       ? event.organizer 
       : event.organizer._id;
     
+    console.log('Permission check:', {
+      userId: userId,
+      userIdType: typeof userId,
+      organizerId: organizerId,
+      organizerIdType: typeof organizerId,
+      organizerRaw: event.organizer,
+      areEqual: userId === organizerId,
+      userIdString: userId?.toString(),
+      organizerIdString: organizerId?.toString()
+    });
+    
     if (userId !== organizerId) {
       return res.status(403).json({ error: 'Only the event organizer can update this event' });
     }

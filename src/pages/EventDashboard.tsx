@@ -7,8 +7,10 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import Icon from '../components/Icon';
 import ParticipantsList from '../components/ParticipantsList';
 import ManageParticipantsModal from '../components/ManageParticipantsModal';
+import EditEventModal from '../components/EditEventModal';
 import { LAYOUT, GRADIENTS, LOADING_STATES } from '../lib/constants';
-import { getEventParticipants } from '../lib/api';
+import { getEventParticipants, updateEvent } from '../lib/api';
+import { authService } from '../lib/authService';
 
 const EventDashboard: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -18,6 +20,7 @@ const EventDashboard: React.FC = () => {
   const [participantCount, setParticipantCount] = useState<number>(0);
   const [participants, setParticipants] = useState<any[]>([]);
   const [isManageParticipantsOpen, setIsManageParticipantsOpen] = useState(false);
+  const [isEditEventOpen, setIsEditEventOpen] = useState(false);
 
   // Fetch participant count and participants list
   const fetchParticipantCount = async () => {
@@ -28,6 +31,26 @@ const EventDashboard: React.FC = () => {
       setParticipants(data.participants || []);
     } catch (error) {
       console.error('Failed to fetch participant count:', error);
+    }
+  };
+
+  // Handle event update
+  const handleUpdateEvent = async (updatedEventData: any) => {
+    if (!eventId) return;
+    
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      await updateEvent(eventId, updatedEventData, token);
+      
+      // Refresh the event data
+      window.location.reload(); // Simple refresh for now
+    } catch (error) {
+      console.error('Failed to update event:', error);
+      throw error;
     }
   };
 
@@ -247,7 +270,10 @@ const EventDashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className={`${typography.h3} text-gray-900 mb-4`}>Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
+                <button 
+                  onClick={() => setIsEditEventOpen(true)}
+                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                >
                   <div className="flex items-center">
                     <Icon name="edit" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Details</span>
@@ -315,6 +341,14 @@ const EventDashboard: React.FC = () => {
           console.log('Edit participant:', participant);
           // TODO: Implement participant editing functionality
         }}
+      />
+
+      {/* Edit Event Modal */}
+      <EditEventModal
+        isOpen={isEditEventOpen}
+        onClose={() => setIsEditEventOpen(false)}
+        event={event}
+        onSave={handleUpdateEvent}
       />
     </div>
   );

@@ -150,6 +150,24 @@ class ApiClient {
       eventTypeList: eventTypes
     };
   }
+
+  async updateEvent(eventId: string, eventData: Partial<EventDetailData>, token: string): Promise<{ message: string; event: EventDetailData }> {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/events/${eventId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update event');
+    }
+
+    return response.json();
+  }
 }
 
 // Create singleton instance
@@ -169,6 +187,7 @@ export const joinEvent = (eventId: string, token: string) => apiClient.joinEvent
 export const leaveEvent = (eventId: string, token: string) => apiClient.leaveEvent(eventId, token);
 export const getEventParticipants = (eventId: string) => apiClient.getEventParticipants(eventId);
 export const getParticipationStatus = (eventId: string, token: string) => apiClient.getParticipationStatus(eventId, token);
+export const updateEvent = (eventId: string, eventData: Partial<EventDetailData>, token: string) => apiClient.updateEvent(eventId, eventData, token);
 
 // Export the client for advanced usage
 export { apiClient };

@@ -922,6 +922,131 @@ app.put('/api/profile', verifyToken, async (req, res) => {
   }
 });
 
+// Update event (requires authentication and organizer permission)
+app.put('/api/events/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const userId = req.user._id;
+    
+    console.log('Event update API: Updating event ID:', id);
+    console.log('Update data:', updateData);
+    console.log('User ID:', userId);
+    
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // First, get the event to check if user is the organizer
+    const event = await db.collection('events').findOne({
+      _id: new ObjectId(id)
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Check if user is the organizer
+    const organizerId = typeof event.organizer === 'string' 
+      ? event.organizer 
+      : event.organizer._id;
+    
+    if (userId !== organizerId) {
+      return res.status(403).json({ error: 'Only the event organizer can update this event' });
+    }
+    
+    // Validate required fields
+    const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'duration', 'eventType', 'ageRestriction', 'expectedParticipants', 'howItWorks'];
+    for (const field of requiredFields) {
+      if (!updateData[field]) {
+        return res.status(400).json({ error: `${field} is required` });
+      }
+    }
+    
+    // Prepare update object
+    const updateFields = {
+      name: updateData.name,
+      description: updateData.description,
+      date: updateData.date,
+      time: updateData.time,
+      venue: updateData.venue,
+      address: updateData.address,
+      price: updateData.price,
+      capacity: updateData.capacity,
+      duration: updateData.duration,
+      eventType: updateData.eventType,
+      ageRestriction: updateData.ageRestriction,
+      expectedParticipants: updateData.expectedParticipants,
+      howItWorks: updateData.howItWorks,
+      agenda: updateData.agenda || [],
+      updatedAt: new Date()
+    };
+    
+    // Update event in database
+    const result = await db.collection('events').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateFields }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Fetch updated event with organizer and speakers populated
+    const updatedEvent = await db.collection('events').findOne({
+      _id: new ObjectId(id)
+    });
+    
+    // Get organizer details
+    const organizer = await db.collection('users').findOne({
+      _id: new ObjectId(updatedEvent.organizer)
+    });
+    
+    // Get speakers details
+    const speakers = await db.collection('users').find({
+      _id: { $in: updatedEvent.speakers.map(id => new ObjectId(id)) }
+    }).toArray();
+    
+    // Get participant count for this event
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: updatedEvent._id
+    });
+    
+    const formattedEvent = {
+      _id: updatedEvent._id,
+      id: updatedEvent.id,
+      name: updatedEvent.name,
+      description: updatedEvent.description,
+      date: updatedEvent.date,
+      time: updatedEvent.time,
+      venue: updatedEvent.venue,
+      address: updatedEvent.address,
+      price: updatedEvent.price,
+      capacity: updatedEvent.capacity,
+      duration: updatedEvent.duration,
+      eventType: updatedEvent.eventType,
+      ageRestriction: updatedEvent.ageRestriction,
+      expectedParticipants: updatedEvent.expectedParticipants,
+      howItWorks: updatedEvent.howItWorks,
+      agenda: updatedEvent.agenda || [],
+      thumbnail: updatedEvent.thumbnail,
+      organizer: organizer,
+      speakers: speakers,
+      participantCount: participantCount,
+      createdAt: updatedEvent.createdAt,
+      updatedAt: updatedEvent.updatedAt
+    };
+    
+    console.log('Event updated successfully:', formattedEvent.name);
+    res.json({ 
+      message: 'Event updated successfully',
+      event: formattedEvent 
+    });
+  } catch (error) {
+    console.error('Event update API error:', error);
+    res.status(500).json({ error: 'Failed to update event in database' });
+  }
+});
+
 // Catch-all for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

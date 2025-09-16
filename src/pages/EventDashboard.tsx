@@ -40,10 +40,15 @@ const EventDashboard: React.FC = () => {
     
     try {
       const token = authService.getToken();
+      console.log('EventDashboard: Token from authService:', token);
+      console.log('EventDashboard: Is authenticated:', authService.isAuthenticated());
+      console.log('EventDashboard: Current user:', authService.getCurrentUser());
+      
       if (!token) {
         throw new Error('No authentication token found');
       }
 
+      console.log('EventDashboard: Calling updateEvent with token:', token.substring(0, 20) + '...');
       await updateEvent(eventId, updatedEventData, token);
       
       // Refresh the event data

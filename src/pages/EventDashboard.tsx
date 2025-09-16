@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
@@ -6,12 +6,41 @@ import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Icon from '../components/Icon';
 import { LAYOUT, GRADIENTS, LOADING_STATES } from '../lib/constants';
+import { getEventParticipants } from '../lib/api';
 
 const EventDashboard: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { event, loading, error } = useEvent(eventId);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [participantCount, setParticipantCount] = useState<number>(0);
+
+  // Fetch participant count
+  const fetchParticipantCount = async () => {
+    if (!eventId) return;
+    try {
+      const data = await getEventParticipants(eventId);
+      setParticipantCount(data.count);
+    } catch (error) {
+      console.error('Failed to fetch participant count:', error);
+    }
+  };
+
+  // Update participant count when event loads
+  useEffect(() => {
+    if (event) {
+      setParticipantCount(event.participantCount || 0);
+      fetchParticipantCount(); // Get fresh count
+    }
+  }, [event, eventId]);
+
+  // Set up periodic refresh of participant count (every 30 seconds)
+  useEffect(() => {
+    if (!eventId) return;
+    
+    const interval = setInterval(fetchParticipantCount, 30000);
+    return () => clearInterval(interval);
+  }, [eventId]);
 
   // Check if current user is the organizer after event is loaded
   useEffect(() => {
@@ -240,7 +269,7 @@ const EventDashboard: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className={`${typography.small} text-gray-600`}>Participants</span>
                   <span className={`${typography.bodySmall} font-semibold text-gray-900`}>
-                    {event.participantCount || 0} / {event.capacity}
+                    {participantCount} / {event.capacity}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

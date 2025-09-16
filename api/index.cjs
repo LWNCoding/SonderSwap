@@ -722,6 +722,11 @@ app.get('/api/events/:id', async (req, res) => {
       }
     }
     
+    // Get participant count for this event
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+    
     // Format event for frontend
     const formattedEvent = {
       id: event.id || event._id.toString(),
@@ -739,6 +744,7 @@ app.get('/api/events/:id', async (req, res) => {
       ageRestriction: event.ageRestriction || '',
       venue: event.venue || '',
       howItWorks: event.howItWorks || '',
+      participantCount: participantCount,
       organizer: organizerData ? {
         _id: organizerData._id,
         firstName: organizerData.firstName || 'Unknown',

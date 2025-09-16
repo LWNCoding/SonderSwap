@@ -152,6 +152,13 @@ class ApiClient {
   }
 
   async updateEvent(eventId: string, eventData: Partial<EventDetailData>, token: string): Promise<{ message: string; event: EventDetailData }> {
+    console.log('API: updateEvent called with:', {
+      eventId,
+      token: token ? token.substring(0, 20) + '...' : 'null',
+      tokenLength: token?.length,
+      apiUrl: `${API_CONFIG.BASE_URL}/events/${eventId}`
+    });
+
     const response = await fetch(`${API_CONFIG.BASE_URL}/events/${eventId}`, {
       method: 'PUT',
       headers: {
@@ -161,8 +168,15 @@ class ApiClient {
       body: JSON.stringify(eventData),
     });
 
+    console.log('API: updateEvent response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok
+    });
+
     if (!response.ok) {
       const error = await response.json();
+      console.log('API: updateEvent error:', error);
       throw new Error(error.error || 'Failed to update event');
     }
 

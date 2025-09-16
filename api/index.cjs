@@ -68,9 +68,12 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 // Simple middleware to verify JWT token
 const verifyToken = (req, res, next) => {
   console.log('VerifyToken middleware called');
+  console.log('Request headers:', req.headers);
+  console.log('Authorization header:', req.headers.authorization);
   
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No valid authorization header found');
     return res.status(401).json({ error: 'No token provided' });
   }
 

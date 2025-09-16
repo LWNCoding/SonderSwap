@@ -25,11 +25,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
 
   // Initialize form data when event changes
   useEffect(() => {
+    console.log('EditEventModal: Event prop changed:', event);
     if (event) {
       // Detect if time is in 12h or 24h format
       const timeFormat = event.time && event.time.includes('AM') || event.time?.includes('PM') ? '12h' : '24h';
       
-      setFormData({
+      const initialData = {
         name: event.name || '',
         description: event.description || '',
         date: event.date || '',
@@ -45,7 +46,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         expectedParticipants: event.expectedParticipants || '',
         howItWorks: event.howItWorks || '',
         agenda: event.agenda || []
-      });
+      };
+      
+      console.log('EditEventModal: Setting form data:', initialData);
+      setFormData(initialData);
+    } else {
+      console.log('EditEventModal: No event provided');
     }
   }, [event]);
 
@@ -159,6 +165,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   };
 
   if (!isOpen || !event) return null;
+
+  console.log('EditEventModal: Rendering with formData:', formData);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

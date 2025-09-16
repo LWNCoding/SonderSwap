@@ -276,12 +276,31 @@ const EventDashboard: React.FC = () => {
               <h3 className={`${typography.h3} text-gray-900 mb-4`}>Quick Actions</h3>
               <div className="space-y-3">
                 <button 
-                  onClick={() => setIsEditEventOpen(true)}
+                  onClick={() => {
+                    console.log('EventDashboard: Opening edit modal with event:', event);
+                    setIsEditEventOpen(true);
+                  }}
                   className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <Icon name="edit" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Details</span>
+                  </div>
+                </button>
+                
+                {/* Debug button */}
+                <button 
+                  onClick={() => {
+                    console.log('Debug: Event object:', event);
+                    console.log('Debug: Token:', authService.getToken());
+                    console.log('Debug: Is authenticated:', authService.isAuthenticated());
+                    console.log('Debug: Current user:', authService.getCurrentUser());
+                  }}
+                  className="w-full text-left p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Icon name="settings" size="md" className="text-yellow-600 mr-3" />
+                    <span className={`${typography.bodySmall} text-gray-700`}>Debug Info</span>
                   </div>
                 </button>
                 <button 

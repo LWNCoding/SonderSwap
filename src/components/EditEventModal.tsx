@@ -403,7 +403,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
           <Button
             onClick={onClose}
-            variant="secondary"
+            variant="outline"
             disabled={loading}
           >
             Cancel

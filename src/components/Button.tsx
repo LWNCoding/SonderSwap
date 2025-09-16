@@ -22,6 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className,
   type = 'button',
+  disabled = false,
   ...props
 }) => {
   return (
@@ -31,9 +32,11 @@ const Button: React.FC<ButtonProps> = ({
         BUTTON_CONSTANTS.BASE_CLASSES,
         BUTTON_CONSTANTS.VARIANTS[variant],
         BUTTON_CONSTANTS.SIZES[size],
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
       onClick={onClick}
+      disabled={disabled}
       {...props}
     >
       {children}

@@ -15,7 +15,7 @@ interface UseEventParticipantsReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  updateCount: (newCount: number) => void;
+  updateCount: (newCount?: number) => void;
 }
 
 export const useEventParticipants = (eventId: string | undefined): UseEventParticipantsReturn => {
@@ -64,9 +64,11 @@ export const useEventParticipants = (eventId: string | undefined): UseEventParti
   }, [fetchParticipants]);
 
   // Function to directly update the count
-  const updateCount = useCallback((newCount: number) => {
-    console.log('Directly updating participant count to:', newCount);
-    setParticipantCount(newCount);
+  const updateCount = useCallback((newCount?: number) => {
+    if (newCount !== undefined) {
+      console.log('Directly updating participant count to:', newCount);
+      setParticipantCount(newCount);
+    }
   }, []);
 
   return {

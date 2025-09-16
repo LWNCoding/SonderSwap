@@ -121,8 +121,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       
       // Calculate end time when start time or duration changes
       if (name === 'startTime' || name === 'duration') {
-        const startTime = name === 'startTime' ? value : prev.startTime;
-        const duration = name === 'duration' ? value : prev.duration;
+        const startTime = name === 'startTime' ? value : (prev.startTime || '');
+        const duration = name === 'duration' ? value : (prev.duration || '');
         const endTime = calculateEndTime(startTime, duration);
         newData.endTime = endTime;
       }
@@ -183,8 +183,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       };
 
       // Remove fields that shouldn't be sent to API
-      delete eventData.startTime;
-      delete eventData.endTime;
+      delete (eventData as any).startTime;
+      delete (eventData as any).endTime;
       
       await onSave(eventData);
       

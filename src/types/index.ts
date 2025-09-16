@@ -129,6 +129,9 @@ export interface EventDetailData {
   populatedSpeakers?: Speaker[];
   populatedSkillStations?: SkillStation[];
   participantCount?: number;
+  // Form-specific fields for EditEventModal
+  startTime?: string;
+  endTime?: string;
 }
 
 // User Types

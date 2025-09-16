@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAsync } from './useAsync';
-import { joinEvent, leaveEvent, getParticipationStatus } from '../lib/api';
+import { joinEvent, leaveEvent, getParticipationStatus, getEventParticipants } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../lib/authService';
 
@@ -14,7 +14,7 @@ interface UseEventParticipationReturn {
 }
 
 interface UseEventParticipationOptions {
-  onParticipationChange?: () => void;
+  onParticipationChange?: (newCount?: number) => void;
 }
 
 export const useEventParticipation = (eventId: string | undefined, options?: UseEventParticipationOptions): UseEventParticipationReturn => {
@@ -69,9 +69,11 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
       setIsParticipating(true);
       // Refetch participation status
       await refetchStatus();
-      // Notify parent component to refresh participant count
-      console.log('Calling onParticipationChange callback');
-      options?.onParticipationChange?.();
+      // Directly fetch updated participant count and notify parent
+      console.log('Fetching updated participant count after join');
+      const participantsData = await getEventParticipants(eventId);
+      console.log('Updated participant count:', participantsData.count);
+      options?.onParticipationChange?.(participantsData.count);
     } catch (error) {
       console.error('Failed to join event:', error);
       throw error;
@@ -92,9 +94,11 @@ export const useEventParticipation = (eventId: string | undefined, options?: Use
       setIsParticipating(false);
       // Refetch participation status
       await refetchStatus();
-      // Notify parent component to refresh participant count
-      console.log('Calling onParticipationChange callback');
-      options?.onParticipationChange?.();
+      // Directly fetch updated participant count and notify parent
+      console.log('Fetching updated participant count after leave');
+      const participantsData = await getEventParticipants(eventId);
+      console.log('Updated participant count:', participantsData.count);
+      options?.onParticipationChange?.(participantsData.count);
     } catch (error) {
       console.error('Failed to leave event:', error);
       throw error;

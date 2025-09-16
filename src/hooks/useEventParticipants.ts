@@ -15,6 +15,7 @@ interface UseEventParticipantsReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  updateCount: (newCount: number) => void;
 }
 
 export const useEventParticipants = (eventId: string | undefined): UseEventParticipantsReturn => {
@@ -37,8 +38,10 @@ export const useEventParticipants = (eventId: string | undefined): UseEventParti
       console.log('Fetching participants for event:', eventId);
       const result = await getEventParticipants(eventId);
       console.log('Participants fetched:', result);
+      console.log('Setting participant count to:', result.count);
       setParticipants(result.participants || []);
       setParticipantCount(result.count || 0);
+      console.log('Participant count state updated to:', result.count);
     } catch (err) {
       console.warn('Failed to fetch participants:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch participants');
@@ -60,11 +63,18 @@ export const useEventParticipants = (eventId: string | undefined): UseEventParti
     await fetchParticipants();
   }, [fetchParticipants]);
 
+  // Function to directly update the count
+  const updateCount = useCallback((newCount: number) => {
+    console.log('Directly updating participant count to:', newCount);
+    setParticipantCount(newCount);
+  }, []);
+
   return {
     participants,
     participantCount,
     loading,
     error,
     refetch,
+    updateCount,
   };
 };

@@ -833,6 +833,95 @@ app.get('/api/events/:id/participants', async (req, res) => {
   }
 });
 
+// Get user profile (requires authentication)
+app.get('/api/profile', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    console.log('Profile API: Fetching profile for user ID:', userId);
+    
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    const user = await db.collection('users').findOne({
+      _id: new ObjectId(userId)
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    console.log('Profile found for user:', user.email);
+    res.json({ user });
+  } catch (error) {
+    console.error('Profile API error:', error);
+    res.status(500).json({ error: 'Failed to fetch profile from database' });
+  }
+});
+
+// Update user profile (requires authentication)
+app.put('/api/profile', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const updateData = req.body;
+    console.log('Profile update API: Updating profile for user ID:', userId);
+    console.log('Update data:', updateData);
+    
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // Validate required fields
+    if (!updateData.firstName || !updateData.lastName) {
+      return res.status(400).json({ error: 'First name and last name are required' });
+    }
+    
+    // Prepare update object
+    const updateFields = {
+      firstName: updateData.firstName,
+      lastName: updateData.lastName,
+      profile: {
+        bio: updateData.profile?.bio || '',
+        description: updateData.profile?.description || '',
+        title: updateData.profile?.title || 'learner',
+        interests: updateData.profile?.interests || [],
+        location: updateData.profile?.location || '',
+        website: updateData.profile?.website || '',
+        phone: updateData.profile?.phone || '',
+        socialMedia: {
+          linkedin: updateData.profile?.socialMedia?.linkedin || '',
+          twitter: updateData.profile?.socialMedia?.twitter || '',
+          github: updateData.profile?.socialMedia?.github || ''
+        },
+        profileImage: updateData.profile?.profileImage || ''
+      },
+      updatedAt: new Date()
+    };
+    
+    // Update user in database
+    const result = await db.collection('users').updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: updateFields }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Fetch updated user
+    const updatedUser = await db.collection('users').findOne({
+      _id: new ObjectId(userId)
+    });
+    
+    console.log('Profile updated successfully for user:', updatedUser.email);
+    res.json({ 
+      message: 'Profile updated successfully',
+      user: updatedUser 
+    });
+  } catch (error) {
+    console.error('Profile update API error:', error);
+    res.status(500).json({ error: 'Failed to update profile in database' });
+  }
+});
+
 // Catch-all for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

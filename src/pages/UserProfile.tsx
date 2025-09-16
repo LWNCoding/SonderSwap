@@ -17,6 +17,7 @@ const UserProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     firstName: '',
     lastName: '',
@@ -99,10 +100,13 @@ const UserProfile: React.FC = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = authService.getToken();
       if (!token) {
         throw new Error('No authentication token found');
       }
+      
+      console.log('Saving profile with data:', editForm);
       
       const response = await fetch(`${API_CONFIG.BASE_URL}/profile`, {
         method: 'PUT',
@@ -114,13 +118,22 @@ const UserProfile: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update profile');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update profile');
       }
 
       const data = await response.json();
+      console.log('Profile updated successfully:', data);
+      
+      // Update local state
       setProfile(data.user);
       setIsEditing(false);
+      setSuccessMessage('Profile updated successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
+      console.error('Profile save error:', err);
       setError(err instanceof Error ? err.message : ERROR_MESSAGES.GENERIC);
     } finally {
       setLoading(false);
@@ -168,6 +181,32 @@ const UserProfile: React.FC = () => {
         interests
       }
     }));
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setEditForm({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        profile: {
+          bio: profile.profile.bio || '',
+          description: profile.profile.description || '',
+          title: profile.profile.title || 'learner',
+          interests: profile.profile.interests || [],
+          location: profile.profile.location || '',
+          website: profile.profile.website || '',
+          phone: profile.profile.phone || '',
+          socialMedia: {
+            linkedin: profile.profile.socialMedia?.linkedin || '',
+            twitter: profile.profile.socialMedia?.twitter || '',
+            github: profile.profile.socialMedia?.github || ''
+          },
+          profileImage: profile.profile.profileImage || ''
+        }
+      });
+    }
+    setIsEditing(false);
+    setError(null);
   };
 
   const getTitleColor = (title: string) => {
@@ -234,6 +273,22 @@ const UserProfile: React.FC = () => {
 
       {/* Content */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.CONTENT_PADDING}`}>
+        
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
+            <Icon name="checkCircle" className="w-5 h-5 mr-2" />
+            <span className={typography.bodySmall}>{successMessage}</span>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
+            <Icon name="alertCircle" className="w-5 h-5 mr-2" />
+            <span className={typography.bodySmall}>{error}</span>
+          </div>
+        )}
 
         {/* Profile Content */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -559,7 +614,7 @@ const UserProfile: React.FC = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex justify-end space-x-4">
                   <Button
-                    onClick={() => setIsEditing(false)}
+                    onClick={handleCancel}
                     variant="outline"
                   >
                     Cancel

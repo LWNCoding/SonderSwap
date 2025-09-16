@@ -26,9 +26,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   // Initialize form data when event changes
   useEffect(() => {
     if (event) {
-      // Detect if time is in 12h or 24h format
-      const timeFormat: '12h' | '24h' = event.time && (event.time.includes('AM') || event.time?.includes('PM')) ? '12h' : '24h';
-      
       // Convert date format from "December 7, 2025" to "2025-12-07" for HTML date input
       const convertDateForInput = (dateStr: string): string => {
         if (!dateStr) return '';
@@ -41,16 +38,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         }
       };
 
-      // Convert time format from "8:00 AM - 2:00 PM" to "08:00" for HTML time input
+      // Convert time format from "8:00 AM - 2:00 PM" to "8:00 AM" for display
       const convertTimeForInput = (timeStr: string): string => {
         if (!timeStr) return '';
         try {
           // Extract start time (before the dash)
           const startTime = timeStr.split(' - ')[0];
-          // Convert "8:00 AM" to "08:00"
-          const time = new Date(`2000-01-01 ${startTime}`);
-          if (isNaN(time.getTime())) return '';
-          return time.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+          return startTime.trim();
         } catch {
           return '';
         }
@@ -61,7 +55,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         description: event.description || '',
         date: convertDateForInput(event.date || ''),
         time: convertTimeForInput(event.time || ''),
-        timeFormat: timeFormat,
         venue: event.venue || '',
         address: event.address || '',
         price: event.price || '',
@@ -81,51 +74,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Handle time format conversion
-    if (name === 'timeFormat') {
-      setFormData(prev => ({
-        ...prev,
-        timeFormat: value as '12h' | '24h',
-        time: convertTimeFormat(prev.time || '', prev.timeFormat || '24h', value as '12h' | '24h')
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  // Convert time between 12h and 24h formats
-  const convertTimeFormat = (time: string, fromFormat: '12h' | '24h', toFormat: '12h' | '24h'): string => {
-    if (!time || fromFormat === toFormat) return time;
-    
-    if (fromFormat === '24h' && toFormat === '12h') {
-      // Convert 24h to 12h
-      const [hours, minutes] = time.split(':');
-      const hour24 = parseInt(hours);
-      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
-      const ampm = hour24 >= 12 ? 'PM' : 'AM';
-      return `${hour12.toString().padStart(2, '0')}:${minutes} ${ampm}`;
-    } else if (fromFormat === '12h' && toFormat === '24h') {
-      // Convert 12h to 24h
-      const match = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-      if (!match) return time;
-      
-      const [, hours, minutes, ampm] = match;
-      let hour24 = parseInt(hours);
-      
-      if (ampm.toUpperCase() === 'AM' && hour24 === 12) {
-        hour24 = 0;
-      } else if (ampm.toUpperCase() === 'PM' && hour24 !== 12) {
-        hour24 += 12;
-      }
-      
-      return `${hour24.toString().padStart(2, '0')}:${minutes}`;
-    }
-    
-    return time;
-  };
 
   const handleAgendaChange = (index: number, value: string) => {
     setFormData(prev => ({
@@ -281,23 +235,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               </label>
               <div className="flex space-x-2">
                 <input
-                  type="time"
+                  type="text"
                   name="time"
                   value={formData.time || ''}
                   onChange={handleInputChange}
+                  placeholder="e.g., 8:00 AM - 2:00 PM"
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                {/* Debug: Show actual value */}
-                <div className="text-xs text-gray-500 mt-1">Debug: {formData.time || 'EMPTY'}</div>
-                <select
-                  name="timeFormat"
-                  value={formData.timeFormat || '24h'}
-                  onChange={handleInputChange}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  <option value="24h">24 Hour</option>
-                  <option value="12h">12 Hour (AM/PM)</option>
-                </select>
               </div>
             </div>
 

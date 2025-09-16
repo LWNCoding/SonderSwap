@@ -936,15 +936,13 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     
-    // Validate ObjectId format
-    if (!ObjectId.isValid(id)) {
-      console.error('Invalid ObjectId format:', id);
-      return res.status(400).json({ error: 'Invalid event ID format' });
-    }
-    
-    // First, get the event to check if user is the organizer
+    // First, find the event by either string id or _id (like other endpoints)
     const event = await db.collection('events').findOne({
-      _id: new ObjectId(id)
+      $or: [
+        { id: id },
+        { id: parseInt(id) },
+        { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }
+      ].filter(Boolean) // Remove null values
     });
     
     if (!event) {
@@ -987,9 +985,9 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       updatedAt: new Date()
     };
     
-    // Update event in database
+    // Update event in database using the found event's _id
     const result = await db.collection('events').updateOne(
-      { _id: new ObjectId(id) },
+      { _id: event._id },
       { $set: updateFields }
     );
     
@@ -999,7 +997,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     
     // Fetch updated event with organizer and speakers populated
     const updatedEvent = await db.collection('events').findOne({
-      _id: new ObjectId(id)
+      _id: event._id
     });
     
     // Get organizer details

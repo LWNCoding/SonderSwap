@@ -28,7 +28,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     console.log('EditEventModal: Event prop changed:', event);
     if (event) {
       // Detect if time is in 12h or 24h format
-      const timeFormat = event.time && event.time.includes('AM') || event.time?.includes('PM') ? '12h' : '24h';
+      const timeFormat: '12h' | '24h' = event.time && event.time.includes('AM') || event.time?.includes('PM') ? '12h' : '24h';
       
       const initialData = {
         name: event.name || '',

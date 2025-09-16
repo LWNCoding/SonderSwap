@@ -966,7 +966,17 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       organizerIdString: organizerId?.toString()
     });
     
-    if (userId !== organizerId) {
+    // Compare user IDs (handle both string and ObjectId formats)
+    const userIdStr = userId?.toString();
+    const organizerIdStr = organizerId?.toString();
+    
+    if (userIdStr !== organizerIdStr) {
+      console.log('Permission denied - IDs do not match:', {
+        userIdStr,
+        organizerIdStr,
+        originalUserId: userId,
+        originalOrganizerId: organizerId
+      });
       return res.status(403).json({ error: 'Only the event organizer can update this event' });
     }
     

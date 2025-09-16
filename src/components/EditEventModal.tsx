@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { typography } from '../lib/typography';
 import Icon from './Icon';
 import Button from './Button';
-import { Event } from '../types';
+import { EventDetailData } from '../types';
 
 interface EditEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  event: Event | null;
-  onSave: (updatedEvent: Partial<Event>) => Promise<void>;
+  event: EventDetailData | null;
+  onSave: (updatedEvent: Partial<EventDetailData>) => Promise<void>;
 }
 
 const EditEventModal: React.FC<EditEventModalProps> = ({
@@ -17,7 +17,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   event,
   onSave
 }) => {
-  const [formData, setFormData] = useState<Partial<Event>>({});
+  const [formData, setFormData] = useState<Partial<EventDetailData>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

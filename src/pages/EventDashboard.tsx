@@ -5,6 +5,8 @@ import { useEvent } from '../hooks/useEvent';
 import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Icon from '../components/Icon';
+import ParticipantsList from '../components/ParticipantsList';
+import ManageParticipantsModal from '../components/ManageParticipantsModal';
 import { LAYOUT, GRADIENTS, LOADING_STATES } from '../lib/constants';
 import { getEventParticipants } from '../lib/api';
 
@@ -14,13 +16,16 @@ const EventDashboard: React.FC = () => {
   const { event, loading, error } = useEvent(eventId);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [participantCount, setParticipantCount] = useState<number>(0);
+  const [participants, setParticipants] = useState<any[]>([]);
+  const [isManageParticipantsOpen, setIsManageParticipantsOpen] = useState(false);
 
-  // Fetch participant count
+  // Fetch participant count and participants list
   const fetchParticipantCount = async () => {
     if (!eventId) return;
     try {
       const data = await getEventParticipants(eventId);
       setParticipantCount(data.count);
+      setParticipants(data.participants || []);
     } catch (error) {
       console.error('Failed to fetch participant count:', error);
     }
@@ -196,15 +201,28 @@ const EventDashboard: React.FC = () => {
 
             {/* Participants Management */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Participants</h3>
-              <div className="text-center py-8">
-                <Icon name="users" size="xl" className="text-gray-400 mx-auto mb-4" />
-                <p className={`${typography.body} text-gray-600 mb-4`}>
-                  Participant management features coming soon
-                </p>
-                <p className={`${typography.small} text-gray-500`}>
-                  You'll be able to view, manage, and communicate with event participants here.
-                </p>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={`${typography.h3} text-gray-900`}>Participants</h3>
+                <div className="flex items-center space-x-2">
+                  <span className={`${typography.small} text-gray-500`}>
+                    {participantCount} registered
+                  </span>
+                  <button
+                    onClick={() => setIsManageParticipantsOpen(true)}
+                    className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                    title="Manage participants"
+                  >
+                    <Icon name="settings" size="sm" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="border border-gray-200 rounded-lg p-4">
+                <ParticipantsList
+                  participants={participants}
+                  maxHeight="max-h-64"
+                  showEditIcon={false}
+                />
               </div>
             </div>
 
@@ -235,7 +253,10 @@ const EventDashboard: React.FC = () => {
                     <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Details</span>
                   </div>
                 </button>
-                <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
+                <button 
+                  onClick={() => setIsManageParticipantsOpen(true)}
+                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                >
                   <div className="flex items-center">
                     <Icon name="users" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700`}>Manage Participants</span>
@@ -283,6 +304,18 @@ const EventDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Manage Participants Modal */}
+      <ManageParticipantsModal
+        isOpen={isManageParticipantsOpen}
+        onClose={() => setIsManageParticipantsOpen(false)}
+        eventId={eventId || ''}
+        eventName={event?.name || ''}
+        onEditParticipant={(participant) => {
+          console.log('Edit participant:', participant);
+          // TODO: Implement participant editing functionality
+        }}
+      />
     </div>
   );
 };

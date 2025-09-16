@@ -932,6 +932,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     console.log('Event update API: Updating event ID:', id);
     console.log('Update data:', updateData);
     console.log('User ID:', userId);
+    console.log('JWT User object:', req.user);
     
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;

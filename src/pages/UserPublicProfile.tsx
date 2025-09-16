@@ -20,10 +20,16 @@ const UserPublicProfile: React.FC = () => {
   const isOwnProfile = currentUser && userId === currentUser._id;
 
   useEffect(() => {
+    // If viewing own profile, redirect to /profile
+    if (isOwnProfile) {
+      navigate('/profile');
+      return;
+    }
+    
     if (userId) {
       fetchUserProfile();
     }
-  }, [userId]);
+  }, [userId, isOwnProfile, navigate]);
 
   const fetchUserProfile = async () => {
     try {

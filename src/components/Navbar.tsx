@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                     <button
                       onClick={() => {
                         setShowUserMenu(false);
-                        navigate(`/user/${user?._id}`);
+                        navigate('/profile');
                       }}
                       className="block w-full text-left px-6 py-4 text-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     >

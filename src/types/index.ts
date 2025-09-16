@@ -111,6 +111,7 @@ export interface EventDetailData {
   address: string;
   date: string;
   time: string;
+  timeFormat?: '12h' | '24h'; // Optional time format for UI
   thumbnail: string;
   description: string;
   eventType: string;

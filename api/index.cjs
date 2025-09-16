@@ -1049,6 +1049,14 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     const userIdStr = userId?.toString();
     const organizerIdStr = organizerId?.toString();
     
+    console.log('Final permission check:', {
+      userIdStr,
+      organizerIdStr,
+      areEqual: userIdStr === organizerIdStr,
+      originalUserId: userId,
+      originalOrganizerId: organizerId
+    });
+    
     if (userIdStr !== organizerIdStr) {
       console.log('Permission denied - IDs do not match:', {
         userIdStr,
@@ -1058,6 +1066,8 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       });
       return res.status(403).json({ error: 'Only the event organizer can update this event' });
     }
+    
+    console.log('Permission granted - user is the organizer');
     
     // Validate required fields
     const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'duration', 'eventType', 'ageRestriction', 'expectedParticipants', 'howItWorks'];

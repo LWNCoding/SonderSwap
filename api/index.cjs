@@ -67,13 +67,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 // Simple middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  console.log('VerifyToken middleware called');
-  console.log('Request headers:', req.headers);
-  console.log('Authorization header:', req.headers.authorization);
-  
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('No valid authorization header found');
     return res.status(401).json({ error: 'No token provided' });
   }
 
@@ -84,7 +79,6 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('JWT decoded successfully:', decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -479,60 +473,6 @@ app.get('/api/auth/test-token', verifyToken, (req, res) => {
   });
 });
 
-// Debug endpoint to check event organizer info
-app.get('/api/debug/event/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    console.log('Debug endpoint - Event ID:', id);
-    
-    const { db } = await connectToDatabase();
-    const ObjectId = require('mongodb').ObjectId;
-    
-    // Find the event
-    const event = await db.collection('events').findOne({
-      $or: [
-        { id: id },
-        { id: parseInt(id) },
-        { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }
-      ].filter(Boolean)
-    });
-    
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    
-    // Get organizer details
-    const organizerId = typeof event.organizer === 'string' 
-      ? event.organizer 
-      : event.organizer._id;
-    
-    const organizerData = await db.collection('users').findOne({
-      _id: new ObjectId(organizerId)
-    });
-    
-    res.json({
-      event: {
-        _id: event._id,
-        id: event.id,
-        name: event.name,
-        organizer: event.organizer,
-        organizerType: typeof event.organizer
-      },
-      organizerId: organizerId,
-      organizerData: organizerData ? {
-        _id: organizerData._id,
-        email: organizerData.email,
-        firstName: organizerData.firstName,
-        lastName: organizerData.lastName
-      } : null,
-      note: "This endpoint shows the event organizer info. Check the server logs for the actual permission check details when you try to edit an event."
-    });
-  } catch (error) {
-    console.error('Debug endpoint error:', error);
-    res.status(500).json({ error: 'Debug endpoint failed', details: error.message });
-  }
-});
 
 // Test auth endpoint with manual verification
 app.get('/api/auth/test-verify', (req, res) => {
@@ -987,10 +927,6 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     const updateData = req.body;
     const userId = req.user._id;
     
-    console.log('Event update API: Updating event ID:', id);
-    console.log('Update data:', updateData);
-    console.log('User ID:', userId);
-    console.log('JWT User object:', req.user);
     
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
@@ -1008,55 +944,22 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
     
-    console.log('Found event:', {
-      eventId: event._id,
-      eventStringId: event.id,
-      organizer: event.organizer,
-      organizerType: typeof event.organizer
-    });
     
     // Check if user is the organizer
     const organizerId = typeof event.organizer === 'string' 
       ? event.organizer 
       : event.organizer._id;
     
-    console.log('Permission check:', {
-      userId: userId,
-      userIdType: typeof userId,
-      organizerId: organizerId,
-      organizerIdType: typeof organizerId,
-      organizerRaw: event.organizer,
-      areEqual: userId === organizerId,
-      userIdString: userId?.toString(),
-      organizerIdString: organizerId?.toString()
-    });
     
     // Compare user IDs (handle both string and ObjectId formats)
     const userIdStr = userId?.toString();
     const organizerIdStr = organizerId?.toString();
     
-    console.log('Final permission check:', {
-      userIdStr,
-      organizerIdStr,
-      areEqual: userIdStr === organizerIdStr,
-      originalUserId: userId,
-      originalOrganizerId: organizerId
-    });
     
     if (userIdStr !== organizerIdStr) {
-      console.log('Permission denied - IDs do not match:', {
-        userIdStr,
-        organizerIdStr,
-        originalUserId: userId,
-        originalOrganizerId: organizerId
-      });
-      
-      // TEMPORARY: Allow access for testing - remove this later
-      console.log('TEMPORARY: Bypassing permission check for testing');
-      // return res.status(403).json({ error: 'Only the event organizer can update this event' });
+      return res.status(403).json({ error: 'Only the event organizer can update this event' });
     }
     
-    console.log('Permission granted - user is the organizer');
     
     // Validate required fields
     const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'duration', 'eventType', 'ageRestriction', 'expectedParticipants', 'howItWorks'];

@@ -39,34 +39,13 @@ const EventDashboard: React.FC = () => {
     if (!eventId) return;
     
     try {
-      // Get token at the very beginning and log everything
-      console.log('EventDashboard: handleUpdateEvent called');
-      console.log('EventDashboard: eventId:', eventId);
-      console.log('EventDashboard: updatedEventData:', updatedEventData);
-      
       const token = authService.getToken();
-      console.log('EventDashboard: Token from authService:', token);
-      console.log('EventDashboard: Token length:', token?.length);
-      console.log('EventDashboard: Is authenticated:', authService.isAuthenticated());
-      console.log('EventDashboard: Current user:', authService.getCurrentUser());
       
-      // Also check localStorage directly
-      const storedToken = localStorage.getItem('authToken');
-      console.log('EventDashboard: Token from localStorage:', storedToken);
-      console.log('EventDashboard: localStorage token length:', storedToken?.length);
-      
-      // Use localStorage token as fallback if authService token is null
-      const finalToken = token || storedToken;
-      
-      if (!finalToken) {
-        console.error('EventDashboard: No token found in authService or localStorage');
+      if (!token) {
         throw new Error('No authentication token found');
       }
-      
-      console.log('EventDashboard: Using final token:', finalToken.substring(0, 20) + '...');
 
-      console.log('EventDashboard: Calling updateEvent with token:', finalToken.substring(0, 20) + '...');
-      await updateEvent(eventId, updatedEventData, finalToken);
+      await updateEvent(eventId, updatedEventData, token);
       
       // Refresh the event data
       window.location.reload(); // Simple refresh for now
@@ -293,31 +272,12 @@ const EventDashboard: React.FC = () => {
               <h3 className={`${typography.h3} text-gray-900 mb-4`}>Quick Actions</h3>
               <div className="space-y-3">
                 <button 
-                  onClick={() => {
-                    console.log('EventDashboard: Opening edit modal with event:', event);
-                    setIsEditEventOpen(true);
-                  }}
+                  onClick={() => setIsEditEventOpen(true)}
                   className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <Icon name="edit" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Details</span>
-                  </div>
-                </button>
-                
-                {/* Debug button */}
-                <button 
-                  onClick={() => {
-                    console.log('Debug: Event object:', event);
-                    console.log('Debug: Token:', authService.getToken());
-                    console.log('Debug: Is authenticated:', authService.isAuthenticated());
-                    console.log('Debug: Current user:', authService.getCurrentUser());
-                  }}
-                  className="w-full text-left p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
-                >
-                  <div className="flex items-center">
-                    <Icon name="settings" size="md" className="text-yellow-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>Debug Info</span>
                   </div>
                 </button>
                 <button 

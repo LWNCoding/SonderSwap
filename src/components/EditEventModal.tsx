@@ -26,11 +26,15 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   // Initialize form data when event changes
   useEffect(() => {
     if (event) {
+      // Detect if time is in 12h or 24h format
+      const timeFormat = event.time && event.time.includes('AM') || event.time?.includes('PM') ? '12h' : '24h';
+      
       setFormData({
         name: event.name || '',
         description: event.description || '',
         date: event.date || '',
         time: event.time || '',
+        timeFormat: timeFormat,
         venue: event.venue || '',
         address: event.address || '',
         price: event.price || '',
@@ -47,10 +51,51 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Handle time format conversion
+    if (name === 'timeFormat') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        time: convertTimeFormat(prev.time || '', prev.timeFormat || '24h', value)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  // Convert time between 12h and 24h formats
+  const convertTimeFormat = (time: string, fromFormat: string, toFormat: string): string => {
+    if (!time || fromFormat === toFormat) return time;
+    
+    if (fromFormat === '24h' && toFormat === '12h') {
+      // Convert 24h to 12h
+      const [hours, minutes] = time.split(':');
+      const hour24 = parseInt(hours);
+      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+      const ampm = hour24 >= 12 ? 'PM' : 'AM';
+      return `${hour12.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+    } else if (fromFormat === '12h' && toFormat === '24h') {
+      // Convert 12h to 24h
+      const match = time.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      if (!match) return time;
+      
+      const [, hours, minutes, ampm] = match;
+      let hour24 = parseInt(hours);
+      
+      if (ampm.toUpperCase() === 'AM' && hour24 === 12) {
+        hour24 = 0;
+      } else if (ampm.toUpperCase() === 'PM' && hour24 !== 12) {
+        hour24 += 12;
+      }
+      
+      return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+    }
+    
+    return time;
   };
 
   const handleAgendaChange = (index: number, value: string) => {
@@ -68,10 +113,22 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   };
 
   const removeAgendaItem = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      agenda: prev.agenda?.filter((_, i) => i !== index) || []
-    }));
+    const item = formData.agenda?.[index];
+    if (item && item.trim()) {
+      // If item has content, ask for confirmation
+      if (window.confirm(`Remove agenda item: "${item}"?`)) {
+        setFormData(prev => ({
+          ...prev,
+          agenda: prev.agenda?.filter((_, i) => i !== index) || []
+        }));
+      }
+    } else {
+      // If item is empty, remove without confirmation
+      setFormData(prev => ({
+        ...prev,
+        agenda: prev.agenda?.filter((_, i) => i !== index) || []
+      }));
+    }
   };
 
   const handleSave = async () => {
@@ -188,13 +245,24 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
                 Time *
               </label>
-              <input
-                type="time"
-                name="time"
-                value={formData.time || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
+              <div className="flex space-x-2">
+                <input
+                  type="time"
+                  name="time"
+                  value={formData.time || ''}
+                  onChange={handleInputChange}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                <select
+                  name="timeFormat"
+                  value={formData.timeFormat || '24h'}
+                  onChange={handleInputChange}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="24h">24 Hour</option>
+                  <option value="12h">12 Hour (AM/PM)</option>
+                </select>
+              </div>
             </div>
 
             {/* Venue and Address */}
@@ -339,32 +407,45 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
                 Agenda
               </label>
-              <div className="space-y-2">
-                {formData.agenda?.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={item}
-                      onChange={(e) => handleAgendaChange(index, e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder={`Agenda item ${index + 1}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeAgendaItem(index)}
-                      className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Icon name="trash" size="sm" />
-                    </button>
+              <div className="space-y-3">
+                {formData.agenda && formData.agenda.length > 0 ? (
+                  formData.agenda.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex-shrink-0 w-6 h-6 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                        {index + 1}
+                      </div>
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleAgendaChange(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                        placeholder={`Agenda item ${index + 1}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeAgendaItem(index)}
+                        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remove agenda item"
+                      >
+                        <Icon name="trash" size="sm" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    <Icon name="calendar" size="lg" className="mx-auto mb-2 text-gray-400" />
+                    <p className={`${typography.small}`}>No agenda items yet</p>
+                    <p className={`${typography.small} text-gray-400`}>Add items to create an event schedule</p>
                   </div>
-                ))}
+                )}
+                
                 <button
                   type="button"
                   onClick={addAgendaItem}
-                  className="flex items-center text-primary-600 hover:text-primary-700 transition-colors"
+                  className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 text-gray-600 hover:border-primary-500 hover:text-primary-600 rounded-lg transition-colors"
                 >
-                  <Icon name="plus" size="sm" className="mr-1" />
-                  <span className={`${typography.small}`}>Add agenda item</span>
+                  <Icon name="plus" size="sm" className="mr-2" />
+                  <span className={`${typography.small} font-medium`}>Add agenda item</span>
                 </button>
               </div>
             </div>

@@ -480,13 +480,11 @@ app.get('/api/auth/test-token', verifyToken, (req, res) => {
 });
 
 // Debug endpoint to check event organizer info
-app.get('/api/debug/event/:id', verifyToken, async (req, res) => {
+app.get('/api/debug/event/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
     
     console.log('Debug endpoint - Event ID:', id);
-    console.log('Debug endpoint - User ID:', userId);
     
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
@@ -528,19 +526,7 @@ app.get('/api/debug/event/:id', verifyToken, async (req, res) => {
         firstName: organizerData.firstName,
         lastName: organizerData.lastName
       } : null,
-      currentUser: {
-        _id: userId,
-        email: req.user.email,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName
-      },
-      comparison: {
-        userId: userId,
-        organizerId: organizerId,
-        userIdStr: userId?.toString(),
-        organizerIdStr: organizerId?.toString(),
-        areEqual: userId?.toString() === organizerId?.toString()
-      }
+      note: "This endpoint shows the event organizer info. Check the server logs for the actual permission check details when you try to edit an event."
     });
   } catch (error) {
     console.error('Debug endpoint error:', error);

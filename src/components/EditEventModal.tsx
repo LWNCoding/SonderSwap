@@ -30,11 +30,38 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       // Detect if time is in 12h or 24h format
       const timeFormat: '12h' | '24h' = event.time && event.time.includes('AM') || event.time?.includes('PM') ? '12h' : '24h';
       
+      // Convert date format from "December 7, 2025" to "2025-12-07"
+      const convertDateForInput = (dateStr: string): string => {
+        if (!dateStr) return '';
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+        } catch {
+          return '';
+        }
+      };
+
+      // Convert time format from "8:00 AM - 2:00 PM" to "08:00"
+      const convertTimeForInput = (timeStr: string): string => {
+        if (!timeStr) return '';
+        try {
+          // Extract start time (before the dash)
+          const startTime = timeStr.split(' - ')[0];
+          // Convert "8:00 AM" to "08:00"
+          const time = new Date(`2000-01-01 ${startTime}`);
+          if (isNaN(time.getTime())) return '';
+          return time.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+        } catch {
+          return '';
+        }
+      };
+
       const initialData = {
         name: event.name || '',
         description: event.description || '',
-        date: event.date || '',
-        time: event.time || '',
+        date: convertDateForInput(event.date || ''),
+        time: convertTimeForInput(event.time || ''),
         timeFormat: timeFormat,
         venue: event.venue || '',
         address: event.address || '',
@@ -49,6 +76,14 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       };
       
       console.log('EditEventModal: Setting form data:', initialData);
+      console.log('EditEventModal: Date conversion:', {
+        original: event.date,
+        converted: convertDateForInput(event.date || '')
+      });
+      console.log('EditEventModal: Time conversion:', {
+        original: event.time,
+        converted: convertTimeForInput(event.time || '')
+      });
       setFormData(initialData);
     } else {
       console.log('EditEventModal: No event provided');

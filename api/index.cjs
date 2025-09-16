@@ -476,6 +476,75 @@ app.get('/api/auth/test-token', verifyToken, (req, res) => {
   });
 });
 
+// Debug endpoint to check event organizer info
+app.get('/api/debug/event/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    
+    console.log('Debug endpoint - Event ID:', id);
+    console.log('Debug endpoint - User ID:', userId);
+    
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // Find the event
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: id },
+        { id: parseInt(id) },
+        { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }
+      ].filter(Boolean)
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Get organizer details
+    const organizerId = typeof event.organizer === 'string' 
+      ? event.organizer 
+      : event.organizer._id;
+    
+    const organizerData = await db.collection('users').findOne({
+      _id: new ObjectId(organizerId)
+    });
+    
+    res.json({
+      event: {
+        _id: event._id,
+        id: event.id,
+        name: event.name,
+        organizer: event.organizer,
+        organizerType: typeof event.organizer
+      },
+      organizerId: organizerId,
+      organizerData: organizerData ? {
+        _id: organizerData._id,
+        email: organizerData.email,
+        firstName: organizerData.firstName,
+        lastName: organizerData.lastName
+      } : null,
+      currentUser: {
+        _id: userId,
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName
+      },
+      comparison: {
+        userId: userId,
+        organizerId: organizerId,
+        userIdStr: userId?.toString(),
+        organizerIdStr: organizerId?.toString(),
+        areEqual: userId?.toString() === organizerId?.toString()
+      }
+    });
+  } catch (error) {
+    console.error('Debug endpoint error:', error);
+    res.status(500).json({ error: 'Debug endpoint failed', details: error.message });
+  }
+});
+
 // Test auth endpoint with manual verification
 app.get('/api/auth/test-verify', (req, res) => {
   try {

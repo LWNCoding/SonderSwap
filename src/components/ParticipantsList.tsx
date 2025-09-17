@@ -100,3 +100,4 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
 };
 
 export default ParticipantsList;
+

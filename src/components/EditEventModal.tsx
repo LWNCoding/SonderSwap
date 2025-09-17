@@ -124,7 +124,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         const startTime = name === 'startTime' ? value : (prev.startTime || '');
         const duration = name === 'duration' ? value : (prev.duration || '');
         const endTime = calculateEndTime(startTime, duration);
-        newData.endTime = endTime;
+        (newData as any).endTime = endTime;
       }
       
       return newData;
@@ -173,9 +173,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       setError(null);
       
       // Combine start time and end time into the expected format
-      const timeRange = formData.startTime && formData.endTime 
-        ? `${formData.startTime} - ${formData.endTime}`
-        : formData.startTime || '';
+      const timeRange = (formData as any).startTime && (formData as any).endTime 
+        ? `${(formData as any).startTime} - ${(formData as any).endTime}`
+        : (formData as any).startTime || '';
 
       const eventData = {
         ...formData,
@@ -299,7 +299,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <input
                 type="text"
                 name="startTime"
-                value={formData.startTime || ''}
+                value={(formData as any).startTime || ''}
                 onChange={handleInputChange}
                 placeholder="--:-- --"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -318,9 +318,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 placeholder="e.g., 6 hours"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               />
-              {formData.endTime && (
+              {(formData as any).endTime && (
                 <div className="mt-2 text-sm text-gray-600">
-                  End Time: {formData.endTime}
+                  End Time: {(formData as any).endTime}
                 </div>
               )}
             </div>

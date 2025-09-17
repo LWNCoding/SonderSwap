@@ -179,3 +179,4 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 };
 
 export default ManageParticipantsModal;
+

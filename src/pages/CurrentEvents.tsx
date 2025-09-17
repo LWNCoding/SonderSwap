@@ -110,6 +110,9 @@ const CurrentEvents: React.FC = () => {
               <p className={`${typography.caption} ${GRADIENTS.PRIMARY_SECONDARY_TEXT} mt-1 font-bold`}>
                 {event.date}
               </p>
+              <p className={`${typography.caption} text-gray-500 mt-1`}>
+                {event.time}
+              </p>
             </div>
           </div>
         </Link>

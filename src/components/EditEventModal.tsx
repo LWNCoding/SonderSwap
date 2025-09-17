@@ -93,33 +93,53 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     }));
   };
 
-  // Format time input to ensure AM/PM format
+  // Format time input to enforce --:-- -- format
   const formatTimeInput = (time: string): string => {
     if (!time) return '';
     
-    // If time already has AM/PM, return as is
-    if (time.includes('AM') || time.includes('PM')) {
-      return time;
+    // Remove any non-digit characters except : and AM/PM
+    let cleanTime = time.replace(/[^\d:APM\s]/g, '');
+    
+    // If time already has AM/PM, validate and format
+    if (cleanTime.includes('AM') || cleanTime.includes('PM')) {
+      const timeMatch = cleanTime.match(/^(\d{1,2}):?(\d{0,2})\s*(AM|PM)$/i);
+      if (timeMatch) {
+        const hours = parseInt(timeMatch[1]);
+        const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
+        const period = timeMatch[3].toUpperCase();
+        
+        // Validate hours (1-12)
+        if (hours >= 1 && hours <= 12) {
+          return `${hours}:${minutes} ${period}`;
+        }
+      }
+      return time; // Return as-is if invalid format
     }
     
-    // If time is in 24-hour format or just numbers, try to convert
-    const timeMatch = time.match(/^(\d{1,2}):?(\d{0,2})$/);
+    // If no AM/PM, try to parse as 24-hour format
+    const timeMatch = cleanTime.match(/^(\d{1,2}):?(\d{0,2})$/);
     if (timeMatch) {
       let hours = parseInt(timeMatch[1]);
       const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
       
+      // Validate minutes (00-59)
+      if (parseInt(minutes) > 59) {
+        return time; // Return as-is if invalid
+      }
+      
+      // Convert 24-hour to 12-hour format
       if (hours === 0) {
         return `12:${minutes} AM`;
       } else if (hours < 12) {
         return `${hours}:${minutes} AM`;
       } else if (hours === 12) {
         return `12:${minutes} PM`;
-      } else {
+      } else if (hours <= 23) {
         return `${hours - 12}:${minutes} PM`;
       }
     }
     
-    return time;
+    return time; // Return as-is if doesn't match expected patterns
   };
 
 
@@ -156,6 +176,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     }
   };
 
+  // Validate time format
+  const isValidTimeFormat = (time: string): boolean => {
+    if (!time) return false;
+    const timeRegex = /^(\d{1,2}):(\d{2})\s+(AM|PM)$/i;
+    return timeRegex.test(time);
+  };
+
   const handleSave = async () => {
     if (!event) return;
 
@@ -163,10 +190,24 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       setLoading(true);
       setError(null);
       
+      // Validate time formats
+      const startTime = (formData as any).startTime;
+      const endTime = (formData as any).endTime;
+      
+      if (startTime && !isValidTimeFormat(startTime)) {
+        setError('Start time must be in format --:-- -- (e.g., 8:00 AM)');
+        return;
+      }
+      
+      if (endTime && !isValidTimeFormat(endTime)) {
+        setError('End time must be in format --:-- -- (e.g., 6:00 PM)');
+        return;
+      }
+      
       // Combine start time and end time into the expected format
-      const timeRange = (formData as any).startTime && (formData as any).endTime 
-        ? `${(formData as any).startTime} - ${(formData as any).endTime}`
-        : (formData as any).startTime || '';
+      const timeRange = startTime && endTime 
+        ? `${startTime} - ${endTime}`
+        : startTime || '';
 
       const eventData = {
         ...formData,
@@ -293,10 +334,10 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="startTime"
                   value={(formData as any).startTime || ''}
                   onChange={handleInputChange}
-                  placeholder="8:00 AM"
+                  placeholder="--:-- --"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>Format: 8:00 AM or 8 AM</p>
+                <p className={`${typography.caption} text-gray-500 mt-1`}>Required format: --:-- -- (e.g., 8:00 AM)</p>
               </div>
 
               <div className="flex-1">
@@ -308,10 +349,10 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="endTime"
                   value={(formData as any).endTime || ''}
                   onChange={handleInputChange}
-                  placeholder="6:00 PM"
+                  placeholder="--:-- --"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>Format: 6:00 PM or 6 PM</p>
+                <p className={`${typography.caption} text-gray-500 mt-1`}>Required format: --:-- -- (e.g., 6:00 PM)</p>
               </div>
             </div>
 

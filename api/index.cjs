@@ -79,6 +79,9 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Backend Debug - JWT token decoded:', decoded);
+    console.log('Backend Debug - User ID from token:', decoded._id);
+    console.log('Backend Debug - User ID type:', typeof decoded._id);
     req.user = decoded;
     next();
   } catch (error) {
@@ -950,15 +953,27 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       ? event.organizer 
       : event.organizer._id;
     
+    console.log('Backend Debug - Event update authorization check:');
+    console.log('Backend Debug - userId from token:', userId);
+    console.log('Backend Debug - userId type:', typeof userId);
+    console.log('Backend Debug - event.organizer:', event.organizer);
+    console.log('Backend Debug - organizerId:', organizerId);
+    console.log('Backend Debug - organizerId type:', typeof organizerId);
     
     // Compare user IDs (handle both string and ObjectId formats)
     const userIdStr = userId?.toString();
     const organizerIdStr = organizerId?.toString();
     
+    console.log('Backend Debug - userIdStr:', userIdStr);
+    console.log('Backend Debug - organizerIdStr:', organizerIdStr);
+    console.log('Backend Debug - IDs match:', userIdStr === organizerIdStr);
     
     if (userIdStr !== organizerIdStr) {
+      console.log('Backend Debug - Authorization failed: User is not organizer');
       return res.status(403).json({ error: 'Only the event organizer can update this event' });
     }
+    
+    console.log('Backend Debug - Authorization passed: User is organizer');
     
     
     // Validate required fields

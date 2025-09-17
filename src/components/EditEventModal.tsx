@@ -75,7 +75,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         capacity: event.capacity || '',
         eventType: event.eventType || '',
         ageRestriction: event.ageRestriction || '',
-        expectedParticipants: event.expectedParticipants || '',
         howItWorks: event.howItWorks || '',
         agenda: event.agenda || []
       };
@@ -493,7 +492,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               </select>
             </div>
 
-            {/* Age Restriction and Expected Participants */}
+            {/* Age Restriction */}
             <div>
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
                 Age Restriction *
@@ -508,20 +507,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               />
             </div>
 
-            <div>
-              <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
-                Expected Participants *
-              </label>
-              <input
-                type="text"
-                name="expectedParticipants"
-                value={formData.expectedParticipants || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="e.g., 30-50, 100+"
-              />
-            </div>
-
             {/* How It Works */}
             <div className="md:col-span-2">
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
@@ -530,9 +515,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <textarea
                 name="howItWorks"
                 value={formData.howItWorks || ''}
-                onChange={handleInputChange}
+                readOnly
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
                 placeholder="Describe how the event works"
               />
             </div>

@@ -195,6 +195,26 @@ export const getEventStats = () => apiClient.getEventStats();
 export const joinEvent = (eventId: string, token: string) => apiClient.joinEvent(eventId, token);
 export const leaveEvent = (eventId: string, token: string) => apiClient.leaveEvent(eventId, token);
 export const getEventParticipants = (eventId: string) => apiClient.getEventParticipants(eventId);
+
+export const removeEventParticipant = async (eventId: string, userId: string): Promise<void> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch(`${API_CONFIG.BASE_URL}/events/${eventId}/participants/${userId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to remove participant');
+  }
+};
 export const getParticipationStatus = (eventId: string, token: string) => apiClient.getParticipationStatus(eventId, token);
 export const updateEvent = (eventId: string, eventData: Partial<EventDetailData>, token: string) => apiClient.updateEvent(eventId, eventData, token);
 

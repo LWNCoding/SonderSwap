@@ -832,6 +832,70 @@ app.get('/api/events/:id/participants', async (req, res) => {
   }
 });
 
+// Remove participant from event endpoint (requires auth)
+app.delete('/api/events/:eventId/participants/:userId', verifyToken, async (req, res) => {
+  try {
+    const { eventId, userId } = req.params;
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    console.log(`Remove participant API: Removing user ${userId} from event ${eventId}`);
+    
+    // Find the event
+    const event = await db.collection('events').findOne({
+      $or: [
+        { _id: new ObjectId(eventId) },
+        { id: eventId }
+      ]
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    // Check if user is the organizer (only organizers can remove participants)
+    const organizerId = typeof event.organizer === 'string' 
+      ? event.organizer 
+      : event.organizer.toString();
+    
+    if (req.user._id !== organizerId) {
+      return res.status(403).json({ error: 'Only the event organizer can remove participants' });
+    }
+    
+    // Check if participant exists
+    const participant = await db.collection('participants').findOne({
+      eventId: event._id,
+      userId: new ObjectId(userId)
+    });
+    
+    if (!participant) {
+      return res.status(404).json({ error: 'Participant not found' });
+    }
+    
+    // Remove participant
+    await db.collection('participants').deleteOne({
+      eventId: event._id,
+      userId: new ObjectId(userId)
+    });
+    
+    // Get updated participant count
+    const participantCount = await db.collection('participants').countDocuments({
+      eventId: event._id
+    });
+    
+    console.log(`Successfully removed participant ${userId} from event ${eventId}. New count: ${participantCount}`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Participant removed successfully',
+      participantCount 
+    });
+  } catch (error) {
+    console.error('Remove participant API error:', error);
+    res.status(500).json({ error: 'Failed to remove participant' });
+  }
+});
+
 // Get user profile (requires authentication)
 app.get('/api/profile', verifyToken, async (req, res) => {
   try {

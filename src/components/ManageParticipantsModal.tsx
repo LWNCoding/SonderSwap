@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { typography } from '../lib/typography';
 import Icon from './Icon';
 import ParticipantsList from './ParticipantsList';
-import { getEventParticipants } from '../lib/api';
+import { getEventParticipants, removeEventParticipant } from '../lib/api';
 
 interface Participant {
   userId: string;
@@ -31,6 +31,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   // Fetch participants when modal opens
   useEffect(() => {
@@ -61,6 +62,28 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 
   const handleRefresh = () => {
     fetchParticipants();
+  };
+
+  const handleRemoveParticipant = async (participant: Participant) => {
+    if (!window.confirm(`Are you sure you want to remove ${participant.firstName} ${participant.lastName} from this event?`)) {
+      return;
+    }
+
+    setRemoving(participant.userId);
+    try {
+      await removeEventParticipant(eventId, participant.userId);
+      
+      // Remove participant from local state
+      setParticipants(prev => prev.filter(p => p.userId !== participant.userId));
+      
+      // Show success message briefly
+      setError(null);
+    } catch (err) {
+      setError(`Failed to remove ${participant.firstName} ${participant.lastName}`);
+      console.error('Error removing participant:', err);
+    } finally {
+      setRemoving(null);
+    }
   };
 
   if (!isOpen) return null;
@@ -144,8 +167,10 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
                 <ParticipantsList
                   participants={participants}
                   onEdit={handleEditParticipant}
+                  onRemove={handleRemoveParticipant}
                   maxHeight="max-h-96"
                   showEditIcon={true}
+                  removing={removing}
                 />
               </div>
             </div>

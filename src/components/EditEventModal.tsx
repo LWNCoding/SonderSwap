@@ -38,18 +38,34 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         }
       };
 
-      // Convert time format from "8:00 AM - 2:00 PM" to separate start time and end time
+      // Convert time format from "8:00 AM - 2:00 PM" to masked format
       const parseTimeRange = (timeStr: string): { startTime: string; endTime: string } => {
-        if (!timeStr) return { startTime: '', endTime: '' };
+        if (!timeStr) return { startTime: '--:-- --', endTime: '--:-- --' };
         try {
           // Extract start and end times
           const parts = timeStr.split(' - ');
           const startTime = parts[0]?.trim() || '';
           const endTime = parts[1]?.trim() || '';
           
-          return { startTime, endTime };
+          // Convert to masked format
+          const convertToMasked = (time: string): string => {
+            if (!time) return '--:-- --';
+            const timeMatch = time.match(/^(\d{1,2}):(\d{2})\s+(AM|PM)$/i);
+            if (timeMatch) {
+              const hours = timeMatch[1].padStart(2, '0');
+              const minutes = timeMatch[2];
+              const period = timeMatch[3].toUpperCase();
+              return `${hours}:${minutes} ${period}`;
+            }
+            return '--:-- --';
+          };
+          
+          return { 
+            startTime: convertToMasked(startTime), 
+            endTime: convertToMasked(endTime) 
+          };
         } catch {
-          return { startTime: '', endTime: '' };
+          return { startTime: '--:-- --', endTime: '--:-- --' };
         }
       };
       
@@ -81,65 +97,79 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    // Format time inputs to ensure AM/PM format
-    let formattedValue = value;
+    // Handle time inputs with masking
     if (name === 'startTime' || name === 'endTime') {
-      formattedValue = formatTimeInput(value);
+      handleTimeChange(name, value);
+      return;
     }
     
     setFormData(prev => ({
       ...prev,
-      [name]: formattedValue
+      [name]: value
     }));
   };
 
-  // Format time input to enforce --:-- -- format
-  const formatTimeInput = (time: string): string => {
-    if (!time) return '';
+  // Handle masked time input character by character
+  const handleTimeInput = (value: string): string => {
+    const template = '--:-- --';
+    let result = '';
+    let valueIndex = 0;
     
-    // Remove any non-digit characters except : and AM/PM
-    let cleanTime = time.replace(/[^\d:APM\s]/g, '');
+    // Extract digits and AM/PM from input
+    const digitsOnly = value.replace(/[^\d]/g, '');
+    const hasAM = value.toUpperCase().includes('AM');
+    const hasPM = value.toUpperCase().includes('PM');
     
-    // If time already has AM/PM, validate and format
-    if (cleanTime.includes('AM') || cleanTime.includes('PM')) {
-      const timeMatch = cleanTime.match(/^(\d{1,2}):?(\d{0,2})\s*(AM|PM)$/i);
-      if (timeMatch) {
-        const hours = parseInt(timeMatch[1]);
-        const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
-        const period = timeMatch[3].toUpperCase();
-        
-        // Validate hours (1-12)
-        if (hours >= 1 && hours <= 12) {
-          return `${hours}:${minutes} ${period}`;
+    for (let i = 0; i < template.length; i++) {
+      const templateChar = template[i];
+      
+      if (templateChar === '-') {
+        // This position should be filled with a digit
+        if (valueIndex < digitsOnly.length) {
+          result += digitsOnly[valueIndex];
+          valueIndex++;
+        } else {
+          result += '-';
+        }
+      } else if (templateChar === ' ') {
+        // Space before AM/PM
+        result += ' ';
+      } else if (templateChar === ':') {
+        // Colon between hours and minutes
+        result += ':';
+      } else {
+        // Handle AM/PM
+        if (i === template.length - 2) { // Second to last position
+          if (hasAM) {
+            result += 'A';
+          } else if (hasPM) {
+            result += 'P';
+          } else {
+            result += '-';
+          }
+        } else if (i === template.length - 1) { // Last position
+          if (hasAM) {
+            result += 'M';
+          } else if (hasPM) {
+            result += 'M';
+          } else {
+            result += '-';
+          }
         }
       }
-      return time; // Return as-is if invalid format
     }
     
-    // If no AM/PM, try to parse as 24-hour format
-    const timeMatch = cleanTime.match(/^(\d{1,2}):?(\d{0,2})$/);
-    if (timeMatch) {
-      let hours = parseInt(timeMatch[1]);
-      const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
-      
-      // Validate minutes (00-59)
-      if (parseInt(minutes) > 59) {
-        return time; // Return as-is if invalid
-      }
-      
-      // Convert 24-hour to 12-hour format
-      if (hours === 0) {
-        return `12:${minutes} AM`;
-      } else if (hours < 12) {
-        return `${hours}:${minutes} AM`;
-      } else if (hours === 12) {
-        return `12:${minutes} PM`;
-      } else if (hours <= 23) {
-        return `${hours - 12}:${minutes} PM`;
-      }
-    }
+    return result;
+  };
+
+  // Handle time input change with masking
+  const handleTimeChange = (name: string, value: string) => {
+    const maskedValue = handleTimeInput(value);
     
-    return time; // Return as-is if doesn't match expected patterns
+    setFormData(prev => ({
+      ...prev,
+      [name]: maskedValue
+    }));
   };
 
 
@@ -176,11 +206,11 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     }
   };
 
-  // Validate time format
+  // Validate time format (check if all dashes are replaced)
   const isValidTimeFormat = (time: string): boolean => {
     if (!time) return false;
-    const timeRegex = /^(\d{1,2}):(\d{2})\s+(AM|PM)$/i;
-    return timeRegex.test(time);
+    // Check if there are no dashes remaining (all positions filled)
+    return !time.includes('-') && time.length === 8; // --:-- -- = 8 characters
   };
 
   const handleSave = async () => {
@@ -204,10 +234,24 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         return;
       }
       
+      // Convert masked format to proper format for storage
+      const formatMaskedTime = (maskedTime: string): string => {
+        if (!maskedTime || maskedTime.includes('-')) return '';
+        // Convert from --:-- -- to H:MM AM format
+        const parts = maskedTime.split(' ');
+        const timePart = parts[0]; // HH:MM
+        const period = parts[1]; // AM/PM
+        
+        return `${timePart} ${period}`;
+      };
+      
+      const formattedStartTime = formatMaskedTime(startTime);
+      const formattedEndTime = formatMaskedTime(endTime);
+      
       // Combine start time and end time into the expected format
-      const timeRange = startTime && endTime 
-        ? `${startTime} - ${endTime}`
-        : startTime || '';
+      const timeRange = formattedStartTime && formattedEndTime 
+        ? `${formattedStartTime} - ${formattedEndTime}`
+        : formattedStartTime || '';
 
       const eventData = {
         ...formData,

@@ -45,6 +45,10 @@ const EventDashboard: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
+      console.log('Debug - Updating event with data:', updatedEventData);
+      console.log('Debug - Current user:', user);
+      console.log('Debug - Event organizer:', event?.organizer);
+      
       await updateEvent(eventId, updatedEventData, token);
       
       // Refresh the event data
@@ -78,14 +82,24 @@ const EventDashboard: React.FC = () => {
         ? event.organizer 
         : event.organizer._id;
       
+      console.log('Debug - User ID:', user._id);
+      console.log('Debug - Organizer ID:', organizerId);
+      console.log('Debug - User ID type:', typeof user._id);
+      console.log('Debug - Organizer ID type:', typeof organizerId);
+      console.log('Debug - IDs match:', user._id === organizerId);
+      
       const userIsOrganizer = user._id === organizerId;
       
       if (!userIsOrganizer) {
+        console.log('Debug - User is not organizer, redirecting...');
         // Redirect to event detail page if not authorized
         navigate(`/event/${eventId}`, { replace: true });
         return;
+      } else {
+        console.log('Debug - User is organizer, access granted');
       }
     } else if (event && !event.organizer) {
+      console.log('Debug - Event has no organizer, redirecting...');
       // If event has no organizer, redirect to event detail page
       navigate(`/event/${eventId}`, { replace: true });
       return;

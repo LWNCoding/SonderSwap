@@ -81,10 +81,45 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
+    // Format time inputs to ensure AM/PM format
+    let formattedValue = value;
+    if (name === 'startTime' || name === 'endTime') {
+      formattedValue = formatTimeInput(value);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: formattedValue
     }));
+  };
+
+  // Format time input to ensure AM/PM format
+  const formatTimeInput = (time: string): string => {
+    if (!time) return '';
+    
+    // If time already has AM/PM, return as is
+    if (time.includes('AM') || time.includes('PM')) {
+      return time;
+    }
+    
+    // If time is in 24-hour format or just numbers, try to convert
+    const timeMatch = time.match(/^(\d{1,2}):?(\d{0,2})$/);
+    if (timeMatch) {
+      let hours = parseInt(timeMatch[1]);
+      const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
+      
+      if (hours === 0) {
+        return `12:${minutes} AM`;
+      } else if (hours < 12) {
+        return `${hours}:${minutes} AM`;
+      } else if (hours === 12) {
+        return `12:${minutes} PM`;
+      } else {
+        return `${hours - 12}:${minutes} PM`;
+      }
+    }
+    
+    return time;
   };
 
 
@@ -261,6 +296,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   placeholder="8:00 AM"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
+                <p className={`${typography.caption} text-gray-500 mt-1`}>Format: 8:00 AM or 8 AM</p>
               </div>
 
               <div className="flex-1">
@@ -275,6 +311,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   placeholder="6:00 PM"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
+                <p className={`${typography.caption} text-gray-500 mt-1`}>Format: 6:00 PM or 6 PM</p>
               </div>
             </div>
 

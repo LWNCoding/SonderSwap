@@ -204,7 +204,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-app.get('/api/auth/me', (req, res) => {
+app.get('/api/auth/me', async (req, res) => {
   try {
     console.log('Auth me endpoint called');
     const authHeader = req.headers.authorization;
@@ -222,25 +222,36 @@ app.get('/api/auth/me', (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     console.log('Token verified successfully in auth/me:', decoded);
     
-    // Return user data from token (simplified version)
+    // Get actual user data from database
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    const user = await db.collection('users').findOne({ 
+      _id: new ObjectId(decoded._id) 
+    });
+    
+    if (!user) {
+      console.log('User not found in database for ID:', decoded._id);
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    console.log('Found user in database:', user);
+    
+    // Return actual user data from database
     res.json({ 
       user: {
-        _id: decoded._id,
-        email: decoded.email,
-        firstName: 'Jaden',
-        lastName: 'Johnson',
-        isEmailVerified: true,
-        profile: {
-          bio: 'Passionate professional with expertise in technology and innovation.',
+        _id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isEmailVerified: user.isEmailVerified || false,
+        profile: user.profile || {
+          bio: '',
           title: 'learner',
-          interests: ['JavaScript', 'Python', 'React', 'Node.js', 'Design'],
-          location: 'San Francisco, CA',
-          socialMedia: {
-            linkedin: 'https://linkedin.com/in/jaden-johnson',
-            twitter: 'https://twitter.com/jadenjohnson',
-            github: 'https://github.com/jadenjohnson'
-          },
-          profileImage: 'https://i.pravatar.cc/150?img=1'
+          interests: [],
+          location: '',
+          socialMedia: {},
+          profileImage: ''
         }
       }
     });

@@ -841,13 +841,21 @@ app.delete('/api/events/:eventId/participants/:userId', verifyToken, async (req,
     
     console.log(`Remove participant API: Removing user ${userId} from event ${eventId}`);
     
-    // Find the event
-    const event = await db.collection('events').findOne({
-      $or: [
-        { _id: new ObjectId(eventId) },
-        { id: eventId }
-      ]
-    });
+    // Find the event - try ObjectId first, then fall back to string id
+    let event;
+    try {
+      // Try to find by ObjectId if eventId looks like one
+      if (ObjectId.isValid(eventId)) {
+        event = await db.collection('events').findOne({ _id: new ObjectId(eventId) });
+      }
+      // If not found or not a valid ObjectId, try by string id
+      if (!event) {
+        event = await db.collection('events').findOne({ id: eventId });
+      }
+    } catch (error) {
+      console.log('Error finding event by ObjectId, trying by string id:', error.message);
+      event = await db.collection('events').findOne({ id: eventId });
+    }
     
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
@@ -870,7 +878,11 @@ app.delete('/api/events/:eventId/participants/:userId', verifyToken, async (req,
     
     console.log('Backend Debug - Authorization passed: User is organizer');
     
-    // Check if participant exists
+    // Check if participant exists - validate userId ObjectId
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID format' });
+    }
+    
     const participant = await db.collection('participants').findOne({
       eventId: event._id,
       userId: new ObjectId(userId)

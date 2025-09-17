@@ -740,7 +740,6 @@ app.get('/api/events/:id', async (req, res) => {
       description: event.description || '',
       price: event.price || '',
       capacity: event.capacity || '',
-      expectedParticipants: event.expectedParticipants || '',
       ageRestriction: event.ageRestriction || '',
       venue: event.venue || '',
       howItWorks: event.howItWorks || '',
@@ -991,7 +990,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     
     
     // Validate required fields (removed duration since it's calculated from start/end times)
-    const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'eventType', 'ageRestriction', 'expectedParticipants', 'howItWorks'];
+    const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'eventType', 'ageRestriction', 'howItWorks'];
     for (const field of requiredFields) {
       if (!updateData[field]) {
         return res.status(400).json({ error: `${field} is required` });
@@ -1010,7 +1009,6 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       capacity: updateData.capacity,
       eventType: updateData.eventType,
       ageRestriction: updateData.ageRestriction,
-      expectedParticipants: updateData.expectedParticipants,
       howItWorks: updateData.howItWorks,
       agenda: updateData.agenda || [],
       updatedAt: new Date()
@@ -1059,7 +1057,6 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       capacity: updatedEvent.capacity,
       eventType: updatedEvent.eventType,
       ageRestriction: updatedEvent.ageRestriction,
-      expectedParticipants: updatedEvent.expectedParticipants,
       howItWorks: updatedEvent.howItWorks,
       agenda: updatedEvent.agenda || [],
       thumbnail: updatedEvent.thumbnail,

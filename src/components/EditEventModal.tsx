@@ -20,6 +20,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   const [formData, setFormData] = useState<Partial<EventDetailData>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [timeErrors, setTimeErrors] = useState<{startTime?: string; endTime?: string}>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [sendEmailNotification, setSendEmailNotification] = useState(false);
 
@@ -80,10 +81,34 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       };
       
       setFormData(initialData);
+      setTimeErrors({});
     }
   }, [event]);
 
 
+
+  // Validate individual time input
+  const validateTimeInput = (name: string, value: string) => {
+    if (!value) {
+      setTimeErrors(prev => ({ ...prev, [name]: undefined }));
+      return;
+    }
+    
+    if (!isValidTimeFormat(value)) {
+      setTimeErrors(prev => ({ ...prev, [name]: 'Invalid time format' }));
+      return;
+    }
+    
+    // Check if end time is after start time
+    if (name === 'endTime' && (formData as any).startTime) {
+      if (!isEndTimeAfterStart((formData as any).startTime, value)) {
+        setTimeErrors(prev => ({ ...prev, [name]: 'End time must be after start time' }));
+        return;
+      }
+    }
+    
+    setTimeErrors(prev => ({ ...prev, [name]: undefined }));
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -92,6 +117,11 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       ...prev,
       [name]: value
     }));
+    
+    // Validate time inputs
+    if (name === 'startTime' || name === 'endTime') {
+      validateTimeInput(name, value);
+    }
   };
 
 
@@ -211,6 +241,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       // Check if end time is after start time
       if (startTime && endTime && !isEndTimeAfterStart(startTime, endTime)) {
         setError('End time must be after start time');
+        return;
+      }
+      
+      // Check for any time validation errors
+      if (timeErrors.startTime || timeErrors.endTime) {
+        setError('Please fix time validation errors before saving');
         return;
       }
       
@@ -348,11 +384,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="startTime"
                   value={(formData as any).startTime || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                    timeErrors.startTime ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>
-                  24-hour format (e.g., 08:00 for 8:00 AM)
-                </p>
+                {timeErrors.startTime && (
+                  <p className="text-red-500 text-sm mt-1">{timeErrors.startTime}</p>
+                )}
               </div>
 
               <div className="flex-1">
@@ -364,11 +402,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="endTime"
                   value={(formData as any).endTime || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                    timeErrors.endTime ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>
-                  24-hour format (e.g., 18:00 for 6:00 PM)
-                </p>
+                {timeErrors.endTime && (
+                  <p className="text-red-500 text-sm mt-1">{timeErrors.endTime}</p>
+                )}
               </div>
             </div>
 

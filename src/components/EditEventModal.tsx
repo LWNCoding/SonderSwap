@@ -389,7 +389,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   }`}
                 />
                 {timeErrors.startTime && (
-                  <p className="text-red-500 text-xs mt-1">{timeErrors.startTime}</p>
+                  <p className="text-red-500 mt-1" style={{ fontSize: '10px' }}>{timeErrors.startTime}</p>
                 )}
               </div>
 
@@ -407,7 +407,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   }`}
                 />
                 {timeErrors.endTime && (
-                  <p className="text-red-500 text-xs mt-1">{timeErrors.endTime}</p>
+                  <p className="text-red-500 mt-1" style={{ fontSize: '10px' }}>{timeErrors.endTime}</p>
                 )}
               </div>
             </div>

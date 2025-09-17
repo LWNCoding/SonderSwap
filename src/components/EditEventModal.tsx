@@ -38,32 +38,22 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         }
       };
 
-      // Convert time format from "8:00 AM - 2:00 PM" to separate start time, end time, and duration
-      const parseTimeRange = (timeStr: string): { startTime: string; endTime: string; duration: string } => {
-        if (!timeStr) return { startTime: '', endTime: '', duration: '' };
+      // Convert time format from "8:00 AM - 2:00 PM" to separate start time and end time
+      const parseTimeRange = (timeStr: string): { startTime: string; endTime: string } => {
+        if (!timeStr) return { startTime: '', endTime: '' };
         try {
           // Extract start and end times
           const parts = timeStr.split(' - ');
           const startTime = parts[0]?.trim() || '';
           const endTime = parts[1]?.trim() || '';
           
-          // Calculate duration from start and end time
-          let duration = '';
-          if (startTime && endTime) {
-            const start = new Date(`2000-01-01 ${startTime}`);
-            const end = new Date(`2000-01-01 ${endTime}`);
-            const diffMs = end.getTime() - start.getTime();
-            const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-            duration = diffHours > 0 ? `${diffHours} hours` : '';
-          }
-          
-          return { startTime, endTime, duration };
+          return { startTime, endTime };
         } catch {
-          return { startTime: '', endTime: '', duration: '' };
+          return { startTime: '', endTime: '' };
         }
       };
       
-      const { startTime, endTime, duration } = parseTimeRange(event.time || '');
+      const { startTime, endTime } = parseTimeRange(event.time || '');
       
       const initialData = {
         name: event.name || '',
@@ -71,7 +61,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         date: convertDateForInput(event.date || ''),
         startTime: startTime,
         endTime: endTime,
-        duration: duration || event.duration || '',
         venue: event.venue || '',
         address: event.address || '',
         price: event.price || '',
@@ -87,50 +76,15 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     }
   }, [event]);
 
-  // Calculate duration from start time and end time
-  const calculateDuration = (startTime: string, endTime: string): string => {
-    if (!startTime || !endTime) return '';
-    
-    try {
-      // Parse start and end times
-      const start = new Date(`2000-01-01 ${startTime}`);
-      const end = new Date(`2000-01-01 ${endTime}`);
-      
-      // Calculate difference in hours
-      const diffMs = end.getTime() - start.getTime();
-      const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-      
-      if (diffHours <= 0) return '';
-      
-      return `${diffHours} hours`;
-    } catch {
-      return '';
-    }
-  };
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [name]: value
-      };
-      
-      // Calculate duration when start time or end time changes
-      if (name === 'startTime' || name === 'endTime') {
-        const startTime = name === 'startTime' ? value : ((prev as any).startTime || '');
-        const endTime = name === 'endTime' ? value : ((prev as any).endTime || '');
-        
-        if (startTime && endTime) {
-          const duration = calculateDuration(startTime, endTime);
-          newData.duration = duration;
-        }
-      }
-      
-      return newData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
 
@@ -324,19 +278,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               </div>
             </div>
 
-            <div>
-              <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
-                Duration *
-              </label>
-              <input
-                type="text"
-                name="duration"
-                value={formData.duration || ''}
-                onChange={handleInputChange}
-                placeholder="e.g., 6 hours"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
 
             {/* Venue and Address */}
             <div>

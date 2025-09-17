@@ -354,6 +354,7 @@ const EventDashboard: React.FC = () => {
         onClose={() => setIsManageParticipantsOpen(false)}
         eventId={eventId || ''}
         eventName={event?.name || ''}
+        token={authService.getToken() || ''}
         onEditParticipant={(participant) => {
           console.log('Edit participant:', participant);
           // TODO: Implement participant editing functionality

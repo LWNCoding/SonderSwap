@@ -121,18 +121,6 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
                 {openDropdown === participant.userId && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                     <div className="py-1">
-                      {onEdit && (
-                        <button
-                          onClick={() => {
-                            onEdit(participant);
-                            setOpenDropdown(null);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                        >
-                          <Icon name="edit" size="sm" />
-                          <span>Edit Details</span>
-                        </button>
-                      )}
                       {onRemove && (
                         <button
                           onClick={() => handleRemoveClick(participant)}

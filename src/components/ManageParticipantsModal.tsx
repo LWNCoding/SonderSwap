@@ -18,6 +18,7 @@ interface ManageParticipantsModalProps {
   onClose: () => void;
   eventId: string;
   eventName: string;
+  token: string;
   onEditParticipant?: (participant: Participant) => void;
 }
 
@@ -26,6 +27,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
   onClose,
   eventId,
   eventName,
+  token,
   onEditParticipant
 }) => {
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -66,12 +68,6 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 
   const handleRemoveParticipant = async (participant: Participant) => {
     if (!window.confirm(`Are you sure you want to remove ${participant.firstName} ${participant.lastName} from this event?`)) {
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No authentication token found');
       return;
     }
 

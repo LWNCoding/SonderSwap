@@ -930,6 +930,11 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     const updateData = req.body;
     const userId = req.user._id;
     
+    console.log('Backend Debug - Event update request received:');
+    console.log('Backend Debug - Event ID from params:', id);
+    console.log('Backend Debug - Event ID type:', typeof id);
+    console.log('Backend Debug - Update data keys:', Object.keys(updateData));
+    
     
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
@@ -943,7 +948,17 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
       ].filter(Boolean) // Remove null values
     });
     
+    console.log('Backend Debug - Event found in database:', event ? 'Yes' : 'No');
+    if (event) {
+      console.log('Backend Debug - Event details:');
+      console.log('Backend Debug - Event _id:', event._id);
+      console.log('Backend Debug - Event id:', event.id);
+      console.log('Backend Debug - Event organizer:', event.organizer);
+      console.log('Backend Debug - Event organizer type:', typeof event.organizer);
+    }
+    
     if (!event) {
+      console.log('Backend Debug - Event not found in database');
       return res.status(404).json({ error: 'Event not found' });
     }
     

@@ -48,6 +48,8 @@ const EventDashboard: React.FC = () => {
       console.log('Debug - Updating event with data:', updatedEventData);
       console.log('Debug - Current user:', user);
       console.log('Debug - Event organizer:', event?.organizer);
+      console.log('Debug - Token retrieved:', token ? 'Yes' : 'No');
+      console.log('Debug - Token length:', token ? token.length : 0);
       
       await updateEvent(eventId, updatedEventData, token);
       

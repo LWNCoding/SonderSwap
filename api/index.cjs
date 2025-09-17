@@ -858,9 +858,17 @@ app.delete('/api/events/:eventId/participants/:userId', verifyToken, async (req,
       ? event.organizer 
       : event.organizer.toString();
     
+    console.log('Backend Debug - Remove participant authorization check:');
+    console.log('Backend Debug - Current user ID:', req.user._id);
+    console.log('Backend Debug - Event organizer ID:', organizerId);
+    console.log('Backend Debug - IDs match:', req.user._id === organizerId);
+    
     if (req.user._id !== organizerId) {
+      console.log('Backend Debug - Authorization failed: User is not organizer');
       return res.status(403).json({ error: 'Only the event organizer can remove participants' });
     }
+    
+    console.log('Backend Debug - Authorization passed: User is organizer');
     
     // Check if participant exists
     const participant = await db.collection('participants').findOne({

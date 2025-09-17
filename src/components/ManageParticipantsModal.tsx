@@ -69,9 +69,15 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
       return;
     }
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No authentication token found');
+      return;
+    }
+
     setRemoving(participant.userId);
     try {
-      await removeEventParticipant(eventId, participant.userId);
+      await removeEventParticipant(eventId, participant.userId, token);
       
       // Remove participant from local state
       setParticipants(prev => prev.filter(p => p.userId !== participant.userId));

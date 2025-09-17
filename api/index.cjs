@@ -966,7 +966,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     // Check if user is the organizer
     const organizerId = typeof event.organizer === 'string' 
       ? event.organizer 
-      : event.organizer._id;
+      : event.organizer.toString();
     
     console.log('Backend Debug - Event update authorization check:');
     console.log('Backend Debug - userId from token:', userId);

@@ -94,6 +94,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     }));
   };
 
+
   // Convert 24-hour time to 12-hour format for display
   const formatTo12Hour = (time24: string): string => {
     if (!time24) return '';
@@ -126,6 +127,66 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       hours = 0;
     } else if (period === 'PM' && hours !== 12) {
       hours += 12;
+    }
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+  };
+
+  // Smart time parsing for user input like "915" or "90"
+  const parseSmartTime = (input: string, isEndTime: boolean = false, startTime: string = ''): string => {
+    if (!input) return '';
+    
+    // Remove all non-digits
+    const digits = input.replace(/\D/g, '');
+    
+    if (digits.length === 0) return '';
+    
+    let hours: number;
+    let minutes: string;
+    
+    if (digits.length === 1) {
+      // Single digit: "9" -> 9:00
+      hours = parseInt(digits);
+      minutes = '00';
+    } else if (digits.length === 2) {
+      // Two digits: "91" -> 9:15, "90" -> 9:00
+      hours = parseInt(digits[0]);
+      minutes = digits[1] + '0';
+    } else if (digits.length === 3) {
+      // Three digits: "915" -> 9:15
+      hours = parseInt(digits[0]);
+      minutes = digits.slice(1);
+    } else if (digits.length === 4) {
+      // Four digits: "0915" -> 9:15
+      hours = parseInt(digits.slice(0, 2));
+      minutes = digits.slice(2);
+    } else {
+      // More than 4 digits, take first 4
+      hours = parseInt(digits.slice(0, 2));
+      minutes = digits.slice(2, 4);
+    }
+    
+    // Validate hours and minutes
+    if (hours > 23) hours = 23;
+    if (parseInt(minutes) > 59) minutes = '59';
+    
+    // Smart AM/PM detection for end time
+    if (isEndTime && startTime) {
+      const startHour24 = parseInt(startTime.split(':')[0]);
+      
+      // If the entered hour is less than start hour, assume PM
+      if (hours < startHour24) {
+        hours += 12;
+        if (hours > 23) hours = 23;
+      }
+      // If the entered hour equals start hour but minutes are less, assume PM
+      else if (hours === startHour24) {
+        const startMinutes = parseInt(startTime.split(':')[1]);
+        if (parseInt(minutes) <= startMinutes) {
+          hours += 12;
+          if (hours > 23) hours = 23;
+        }
+      }
     }
     
     return `${hours.toString().padStart(2, '0')}:${minutes}`;
@@ -172,6 +233,19 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
     return timeRegex.test(time);
   };
 
+  // Check if end time is after start time
+  const isEndTimeAfterStart = (startTime: string, endTime: string): boolean => {
+    if (!startTime || !endTime) return true; // Allow empty times
+    
+    const [startHour, startMin] = startTime.split(':').map(Number);
+    const [endHour, endMin] = endTime.split(':').map(Number);
+    
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+    
+    return endMinutes > startMinutes;
+  };
+
   const handleSave = async () => {
     if (!event) return;
 
@@ -190,6 +264,12 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
       
       if (endTime && !isValidTimeFormat(endTime)) {
         setError('End time must be in valid 24-hour format (e.g., 18:00)');
+        return;
+      }
+      
+      // Check if end time is after start time
+      if (startTime && endTime && !isEndTimeAfterStart(startTime, endTime)) {
+        setError('End time must be after start time');
         return;
       }
       
@@ -329,7 +409,23 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>24-hour format (e.g., 08:00 for 8:00 AM)</p>
+                <input
+                  type="text"
+                  placeholder="Or type: 915, 9, 0915"
+                  onChange={(e) => {
+                    const parsedTime = parseSmartTime(e.target.value, false, '');
+                    if (parsedTime) {
+                      setFormData(prev => ({
+                        ...prev,
+                        startTime: parsedTime
+                      }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 mt-2"
+                />
+                <p className={`${typography.caption} text-gray-500 mt-1`}>
+                  Smart parsing: 915 → 9:15 AM, 9 → 9:00 AM
+                </p>
               </div>
 
               <div className="flex-1">
@@ -343,7 +439,23 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
-                <p className={`${typography.caption} text-gray-500 mt-1`}>24-hour format (e.g., 18:00 for 6:00 PM)</p>
+                <input
+                  type="text"
+                  placeholder="Or type: 90, 1430, 2"
+                  onChange={(e) => {
+                    const parsedTime = parseSmartTime(e.target.value, true, (formData as any).startTime || '');
+                    if (parsedTime) {
+                      setFormData(prev => ({
+                        ...prev,
+                        endTime: parsedTime
+                      }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 mt-2"
+                />
+                <p className={`${typography.caption} text-gray-500 mt-1`}>
+                  Smart parsing: 90 → 9:00 PM (auto PM if after start time)
+                </p>
               </div>
             </div>
 

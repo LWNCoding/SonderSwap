@@ -1,14 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import FeatureCard from '../components/FeatureCard';
 import Section from '../components/Section';
 import Icon from '../components/Icon';
 import { typography } from '../lib/typography';
+import { ROUTE_PATHS } from '../lib/routes';
 
 const Home: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleCtaClick = () => {
-    console.log('CTA button clicked!');
-    // Add your CTA logic here
+    navigate(ROUTE_PATHS.CURRENT_EVENTS);
   };
 
   const features = [
@@ -63,7 +66,13 @@ const Home: React.FC = () => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => console.log('Learn more clicked')}
+                onClick={() => {
+                  // Scroll to the features section
+                  const featuresSection = document.getElementById('features');
+                  if (featuresSection) {
+                    featuresSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="px-8 py-4"
               >
                 Learn More
@@ -86,7 +95,7 @@ const Home: React.FC = () => {
       </Section>
 
       {/* Features Preview */}
-      <Section background="white" padding="xl">
+      <Section background="white" padding="xl" id="features">
         <div className="text-center mb-16">
           <h2 className={`${typography.h2} text-gray-900 mb-4`}>
             Why Choose SonderSwap?

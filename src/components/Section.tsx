@@ -8,6 +8,7 @@ interface SectionProps {
   containerClassName?: string;
   background?: 'white' | 'gray' | 'gradient' | 'transparent';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  id?: string;
 }
 
 const BACKGROUND_CLASSES = {
@@ -30,14 +31,18 @@ const Section: React.FC<SectionProps> = ({
   className,
   containerClassName,
   background = 'white',
-  padding = 'lg'
+  padding = 'lg',
+  id
 }) => {
   return (
-    <section className={cn(
-      BACKGROUND_CLASSES[background],
-      PADDING_CLASSES[padding],
-      className
-    )}>
+    <section 
+      id={id}
+      className={cn(
+        BACKGROUND_CLASSES[background],
+        PADDING_CLASSES[padding],
+        className
+      )}
+    >
       <div className={cn(
         COMMON_STYLES.LAYOUT.MAX_WIDTH,
         'mx-auto',

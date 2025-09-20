@@ -19,6 +19,7 @@ interface SkillStationModalProps {
 const SkillStationModal: React.FC<SkillStationModalProps> = ({
   isOpen,
   onClose,
+  eventId,
   onSave
 }) => {
   const [stations, setStations] = useState<SkillStationWithLeader[]>([]);
@@ -30,126 +31,49 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
   const [editFormData, setEditFormData] = useState<Partial<SkillStationWithLeader>>({});
   const [deleteConfirmStation, setDeleteConfirmStation] = useState<SkillStationWithLeader | null>(null);
 
-  // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
     if (isOpen) {
-      // Mock skill stations data
-      const mockStations: SkillStationWithLeader[] = [
-        {
-          _id: '1',
-          name: 'Woodworking Station',
-          description: 'Learn basic woodworking techniques and create small projects',
-          skills: ['Woodworking', 'Carpentry', 'Safety'],
-          location: 'Workshop A',
-          capacity: 8,
-          equipment: ['Saw', 'Chisel', 'Sandpaper'],
-          requirements: ['Safety glasses', 'Closed-toe shoes'],
-          difficulty: 'Beginner',
-          duration: 120,
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          leader: {
-            _id: 'user1',
-            firstName: 'John',
-            lastName: 'Smith',
-            email: 'john@example.com',
-            isEmailVerified: true,
-            profile: {
-              title: 'both'
-            }
-          }
-        },
-        {
-          _id: '2',
-          name: 'Electronics Lab',
-          description: 'Build circuits and learn electronics fundamentals',
-          skills: ['Electronics', 'Soldering', 'Circuit Design'],
-          location: 'Lab B',
-          capacity: 6,
-          equipment: ['Soldering iron', 'Multimeter', 'Breadboard'],
-          requirements: ['Basic math knowledge'],
-          difficulty: 'Intermediate',
-          duration: 90,
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          leader: {
-            _id: 'user2',
-            firstName: 'Sarah',
-            lastName: 'Johnson',
-            email: 'sarah@example.com',
-            isEmailVerified: true,
-            profile: {
-              title: 'both'
-            }
-          }
-        },
-        {
-          _id: '3',
-          name: '3D Printing Station',
-          description: 'Design and print 3D models',
-          skills: ['3D Modeling', '3D Printing', 'CAD'],
-          location: 'Tech Lab',
-          capacity: 4,
-          equipment: ['3D Printer', 'Filament', 'Computer'],
-          requirements: ['Laptop recommended'],
-          difficulty: 'Advanced',
-          duration: 180,
-          isActive: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      ];
-
-      // Mock available users
-      const mockUsers: User[] = [
-        {
-          _id: 'user1',
-          firstName: 'John',
-          lastName: 'Smith',
-          email: 'john@example.com',
-          isEmailVerified: true,
-          profile: {
-            title: 'both'
-          }
-        },
-        {
-          _id: 'user2',
-          firstName: 'Sarah',
-          lastName: 'Johnson',
-          email: 'sarah@example.com',
-          isEmailVerified: true,
-          profile: {
-            title: 'both'
-          }
-        },
-        {
-          _id: 'user3',
-          firstName: 'Mike',
-          lastName: 'Davis',
-          email: 'mike@example.com',
-          isEmailVerified: true,
-          profile: {
-            title: 'both'
-          }
-        },
-        {
-          _id: 'user4',
-          firstName: 'Lisa',
-          lastName: 'Wilson',
-          email: 'lisa@example.com',
-          isEmailVerified: true,
-          profile: {
-            title: 'both'
-          }
-        }
-      ];
-
-      setStations(mockStations);
-      setAvailableUsers(mockUsers);
+      loadSkillStations();
+      loadAvailableUsers();
     }
-  }, [isOpen]);
+  }, [isOpen, eventId]);
+
+  const loadSkillStations = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/events/${eventId}/skill-stations`);
+      if (!response.ok) {
+        throw new Error('Failed to load skill stations');
+      }
+      const data = await response.json();
+      setStations(data);
+    } catch (err) {
+      console.error('Error loading skill stations:', err);
+      setError('Failed to load skill stations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAvailableUsers = async () => {
+    try {
+      const response = await fetch('/api/users', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to load users');
+      }
+      const data = await response.json();
+      setAvailableUsers(data.users || []);
+    } catch (err) {
+      console.error('Error loading users:', err);
+      // Fallback to empty array if users can't be loaded
+      setAvailableUsers([]);
+    }
+  };
 
   const handleStationClick = (stationId: string) => {
     setExpandedStation(expandedStation === stationId ? null : stationId);
@@ -236,11 +160,29 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
   const handleSaveAll = async () => {
     setLoading(true);
+    setError(null);
     try {
-      await onSave(stations);
+      const response = await fetch(`/api/events/${eventId}/skill-stations`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ skillStations: stations })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save skill stations');
+      }
+
+      const result = await response.json();
+      setStations(result.skillStations);
+      await onSave(result.skillStations);
       onClose();
     } catch (err) {
-      setError('Failed to save skill stations');
+      console.error('Error saving skill stations:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save skill stations');
     } finally {
       setLoading(false);
     }

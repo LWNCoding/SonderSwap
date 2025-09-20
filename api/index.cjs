@@ -1299,8 +1299,9 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
         updatedSkillStations.push(result.insertedId);
       } else if (stationData._id) {
         // Update existing skill station
+        const { _id, ...stationFields } = stationData;
         const updateFields = {
-          ...stationData,
+          ...stationFields,
           updatedAt: new Date()
         };
         const result = await db.collection('skillstations').updateOne(

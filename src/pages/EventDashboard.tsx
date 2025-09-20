@@ -305,6 +305,18 @@ const EventDashboard: React.FC = () => {
                     <span className={`${typography.bodySmall} text-gray-700`}>Manage Participants</span>
                   </div>
                 </button>
+                <button 
+                  onClick={() => {
+                    // TODO: Implement skill station management
+                    console.log('Edit Event Stations clicked - feature coming soon');
+                  }}
+                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Icon name="settings" size="md" className="text-primary-600 mr-3" />
+                    <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Stations</span>
+                  </div>
+                </button>
                 <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
                   <div className="flex items-center">
                     <Icon name="message" size="md" className="text-primary-600 mr-3" />

@@ -1220,8 +1220,16 @@ app.get('/api/events/:id/skill-stations', async (req, res) => {
     // Get skill stations
     let skillStations = [];
     if (event.skillStations && event.skillStations.length > 0) {
+      // Handle both ObjectId instances and string IDs
+      const skillStationIds = event.skillStations.map(id => {
+        if (typeof id === 'string') {
+          return new ObjectId(id);
+        }
+        return id; // Already an ObjectId
+      });
+      
       skillStations = await db.collection('skillstations').find({
-        _id: { $in: event.skillStations.map(id => new ObjectId(id)) }
+        _id: { $in: skillStationIds }
       }).toArray();
       
       // Populate leader data

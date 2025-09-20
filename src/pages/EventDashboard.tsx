@@ -381,15 +381,16 @@ const EventDashboard: React.FC = () => {
       />
 
       {/* Skill Station Modal */}
-      <SkillStationModal
-        isOpen={isSkillStationModalOpen}
-        onClose={() => setIsSkillStationModalOpen(false)}
-        eventId={eventId || ''}
-        onSave={async (updatedStations) => {
-          // TODO: Implement API call to save skill stations
-          console.log('Saving skill stations:', updatedStations);
-        }}
-      />
+        <SkillStationModal
+          isOpen={isSkillStationModalOpen}
+          onClose={() => setIsSkillStationModalOpen(false)}
+          eventId={eventId || ''}
+          onSave={async (updatedStations) => {
+            console.log('Skill stations saved successfully:', updatedStations);
+            // The actual saving is handled in the SkillStationModal component
+            // This callback is for any additional actions after saving
+          }}
+        />
     </div>
   );
 };

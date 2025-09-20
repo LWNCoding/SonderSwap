@@ -71,7 +71,7 @@ const EventCategory = mongoose.model('EventCategory', eventCategorySchema);
 app.get('/api/events', asyncHandler(async (req, res) => {
   const events = await Event.find({})
     .populate('speakers', 'firstName lastName profile')
-    .populate('skillStations', 'name description skills location capacity difficulty')
+    .populate('skillStations', 'name description skills location capacity difficulty duration leader')
     .populate('organizer', 'firstName lastName email');
   
   // Add participant count to each event
@@ -89,7 +89,7 @@ app.get('/api/events', asyncHandler(async (req, res) => {
 app.get('/api/events/:id', asyncHandler(async (req, res) => {
   const event = await Event.findOne({ id: req.params.id })
     .populate('speakers', 'firstName lastName profile')
-    .populate('skillStations', 'name description skills location capacity equipment requirements difficulty duration')
+    .populate('skillStations', 'name description skills location capacity equipment requirements difficulty duration leader')
     .populate('organizer', 'firstName lastName email');
   if (!event) {
     return res.status(404).json({ error: 'Event not found' });
@@ -217,6 +217,12 @@ app.get('/api/users/:userId', asyncHandler(async (req, res) => {
   res.json({ user });
 }));
 
+// Get all users (for skill station leader selection)
+app.get('/api/users', authenticateToken, asyncHandler(async (req, res) => {
+  const users = await User.find({}).select('-password -email').limit(100);
+  res.json({ users });
+}));
+
 
 // Event participation routes
 app.post('/api/events/:id/join', authenticateToken, asyncHandler(async (req, res) => {
@@ -338,6 +344,71 @@ app.post('/api/skill-stations', authenticateToken, asyncHandler(async (req, res)
   const skillStation = new SkillStation(req.body);
   await skillStation.save();
   res.status(201).json(skillStation);
+}));
+
+// Event Skill Station Management Routes
+app.get('/api/events/:id/skill-stations', asyncHandler(async (req, res) => {
+  const event = await Event.findOne({ id: req.params.id });
+  if (!event) {
+    return res.status(404).json({ error: 'Event not found' });
+  }
+
+  const skillStations = await SkillStation.find({ _id: { $in: event.skillStations } })
+    .populate('leader', 'firstName lastName email');
+  
+  res.json(skillStations);
+}));
+
+app.put('/api/events/:id/skill-stations', authenticateToken, asyncHandler(async (req, res) => {
+  const eventId = req.params.id;
+  const { skillStations } = req.body;
+
+  // Verify user is the organizer
+  const event = await Event.findOne({ id: eventId });
+  if (!event) {
+    return res.status(404).json({ error: 'Event not found' });
+  }
+
+  // Check if user is the organizer
+  const organizerId = typeof event.organizer === 'string' ? event.organizer : event.organizer._id;
+  if (req.user._id.toString() !== organizerId.toString()) {
+    return res.status(403).json({ error: 'Only the event organizer can manage skill stations' });
+  }
+
+  // Update or create skill stations
+  const updatedSkillStations = [];
+  for (const stationData of skillStations) {
+    if (stationData._id && stationData._id.startsWith('temp_')) {
+      // Create new skill station
+      const { _id, ...stationFields } = stationData;
+      const newStation = new SkillStation(stationFields);
+      await newStation.save();
+      updatedSkillStations.push(newStation._id);
+    } else if (stationData._id) {
+      // Update existing skill station
+      const updatedStation = await SkillStation.findByIdAndUpdate(
+        stationData._id,
+        stationData,
+        { new: true, runValidators: true }
+      );
+      if (updatedStation) {
+        updatedSkillStations.push(updatedStation._id);
+      }
+    }
+  }
+
+  // Update event with new skill station references
+  event.skillStations = updatedSkillStations;
+  await event.save();
+
+  // Return updated skill stations with populated leader data
+  const populatedStations = await SkillStation.find({ _id: { $in: updatedSkillStations } })
+    .populate('leader', 'firstName lastName email');
+
+  res.json({
+    message: 'Skill stations updated successfully',
+    skillStations: populatedStations
+  });
 }));
 
 // Participant API Routes

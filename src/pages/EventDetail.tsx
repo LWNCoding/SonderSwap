@@ -269,8 +269,8 @@ const EventDetail: React.FC = () => {
 
     clearScrollTimeout();
     
-    // Calculate scroll position for one card per page with proper spacing
-    const cardWidth = container.offsetWidth - 16; // Account for margins
+    // Calculate scroll position for one card per page with fixed width (320px + 16px margin)
+    const cardWidth = 320 + 16; // w-80 (320px) + margin
     const scrollPosition = page * cardWidth;
     container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
     
@@ -389,13 +389,13 @@ const EventDetail: React.FC = () => {
               const stationDifficulty = stationData?.difficulty;
 
               return (
-                <div key={index} className="flex-shrink-0 w-full max-w-md cursor-pointer relative" style={{margin: '0 8px'}}>
-                  <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300">
-                    <div className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
+                <div key={index} className="flex-shrink-0 w-80 h-80 cursor-pointer relative" style={{margin: '0 8px'}}>
+                  <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
+                    <div className="p-6 h-full flex flex-col">
+                      <div className="flex items-start justify-between mb-4">
+                        <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
                         {stationDifficulty && (
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
                             stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
                             stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
                             stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
@@ -406,11 +406,11 @@ const EventDetail: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <p className={`${typography.small} text-gray-600`}>
+                      <div className="space-y-3 flex-1">
+                        <p className={`${typography.body} text-gray-600`}>
                           <strong>Skills:</strong> {stationSkills}
                         </p>
-                        <p className={`${typography.small} text-gray-600`}>
+                        <p className={`${typography.body} text-gray-600`}>
                           <strong>Location:</strong> {stationLocation}
                         </p>
                         <div className="flex gap-4 text-sm text-gray-600">
@@ -422,6 +422,26 @@ const EventDetail: React.FC = () => {
                           )}
                         </div>
                       </div>
+
+                      {/* Leader Information */}
+                      {stationData?.leader && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                              {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
+                            </div>
+                            <div className="flex-1">
+                              <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                              <button
+                                onClick={() => navigate(`/user/${stationData.leader?._id}?returnTo=/event/${eventId}`)}
+                                className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                              >
+                                {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

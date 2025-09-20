@@ -28,6 +28,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [editingStation, setEditingStation] = useState<SkillStationWithLeader | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<SkillStationWithLeader>>({});
+  const [deleteConfirmStation, setDeleteConfirmStation] = useState<SkillStationWithLeader | null>(null);
 
   // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
@@ -202,6 +203,26 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
     setEditFormData({});
   };
 
+  const handleDeleteStation = (station: SkillStationWithLeader) => {
+    setDeleteConfirmStation(station);
+  };
+
+  const confirmDeleteStation = () => {
+    if (!deleteConfirmStation) return;
+    
+    setStations(prev => prev.filter(station => station._id !== deleteConfirmStation._id));
+    setDeleteConfirmStation(null);
+    
+    // If the deleted station was expanded, close it
+    if (expandedStation === deleteConfirmStation._id) {
+      setExpandedStation(null);
+    }
+  };
+
+  const cancelDeleteStation = () => {
+    setDeleteConfirmStation(null);
+  };
+
   const handleLeaderChange = (stationId: string, leaderId: string) => {
     const leader = availableUsers.find(user => user._id === leaderId);
     setStations(prev => 
@@ -295,6 +316,18 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                       }`}>
                         {station.isActive ? 'Active' : 'Inactive'}
                       </span>
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteStation(station);
+                        }}
+                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete station"
+                      >
+                        <Icon name="trash" size="sm" />
+                      </button>
                       
                       {/* Expand/Collapse Icon */}
                       <Icon 
@@ -583,6 +616,44 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirmStation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                  <Icon name="alertTriangle" size="md" className="text-red-600" />
+                </div>
+                <h3 className={`${typography.h3} text-gray-900`}>Delete Skill Station</h3>
+              </div>
+              
+              <p className={`${typography.body} text-gray-600 mb-6`}>
+                Are you sure you want to delete <strong>"{deleteConfirmStation.name}"</strong>? 
+                This action cannot be undone and will remove the station from this event.
+              </p>
+              
+              <div className="flex justify-end space-x-3">
+                <Button
+                  onClick={cancelDeleteStation}
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmDeleteStation}
+                  variant="primary"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <Icon name="trash" size="sm" className="mr-2" />
+                  Delete Station
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

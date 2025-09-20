@@ -1179,6 +1179,175 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
   }
 });
 
+// Get all users (for skill station leader selection)
+app.get('/api/users', verifyToken, async (req, res) => {
+  try {
+    console.log('Fetching users for skill station leader selection');
+    const { db } = await connectToDatabase();
+    const users = await db.collection('users').find({}).project({ password: 0, email: 0 }).limit(100).toArray();
+    console.log('Found users:', users.length);
+    res.json({ users });
+  } catch (error) {
+    console.error('Get users API error:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// Event Skill Station Management Routes
+app.get('/api/events/:id/skill-stations', async (req, res) => {
+  try {
+    console.log('Fetching skill stations for event ID:', req.params.id);
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // Find the event
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: req.params.id },
+        { id: parseInt(req.params.id) },
+        { _id: ObjectId.isValid(req.params.id) ? new ObjectId(req.params.id) : null }
+      ].filter(Boolean)
+    });
+    
+    if (!event) {
+      console.log('Event not found for ID:', req.params.id);
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    console.log('Event found, skillStations array:', event.skillStations);
+    
+    // Get skill stations
+    let skillStations = [];
+    if (event.skillStations && event.skillStations.length > 0) {
+      skillStations = await db.collection('skillstations').find({
+        _id: { $in: event.skillStations.map(id => new ObjectId(id)) }
+      }).toArray();
+      
+      // Populate leader data
+      for (let station of skillStations) {
+        if (station.leader) {
+          const leader = await db.collection('users').findOne({
+            _id: new ObjectId(station.leader)
+          });
+          if (leader) {
+            station.leader = {
+              _id: leader._id,
+              firstName: leader.firstName,
+              lastName: leader.lastName,
+              email: leader.email
+            };
+          }
+        }
+      }
+    }
+    
+    console.log('Found skill stations:', skillStations.length);
+    res.json(skillStations);
+  } catch (error) {
+    console.error('Get skill stations API error:', error);
+    res.status(500).json({ error: 'Failed to fetch skill stations' });
+  }
+});
+
+app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { skillStations } = req.body;
+    const userId = req.user._id;
+
+    console.log('Updating skill stations for event ID:', eventId);
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    
+    // Find the event
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: eventId },
+        { id: parseInt(eventId) },
+        { _id: ObjectId.isValid(eventId) ? new ObjectId(eventId) : null }
+      ].filter(Boolean)
+    });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Check if user is the organizer
+    const organizerId = typeof event.organizer === 'string' 
+      ? event.organizer 
+      : event.organizer.toString();
+    
+    if (userId !== organizerId) {
+      return res.status(403).json({ error: 'Only the event organizer can manage skill stations' });
+    }
+
+    // Update or create skill stations
+    const updatedSkillStations = [];
+    for (const stationData of skillStations) {
+      if (stationData._id && stationData._id.startsWith('temp_')) {
+        // Create new skill station
+        const { _id, ...stationFields } = stationData;
+        const newStation = {
+          ...stationFields,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        const result = await db.collection('skillstations').insertOne(newStation);
+        updatedSkillStations.push(result.insertedId);
+      } else if (stationData._id) {
+        // Update existing skill station
+        const updateFields = {
+          ...stationData,
+          updatedAt: new Date()
+        };
+        const result = await db.collection('skillstations').updateOne(
+          { _id: new ObjectId(stationData._id) },
+          { $set: updateFields }
+        );
+        if (result.matchedCount > 0) {
+          updatedSkillStations.push(new ObjectId(stationData._id));
+        }
+      }
+    }
+
+    // Update event with new skill station references
+    await db.collection('events').updateOne(
+      { _id: event._id },
+      { $set: { skillStations: updatedSkillStations } }
+    );
+
+    // Return updated skill stations with populated leader data
+    const populatedStations = await db.collection('skillstations').find({
+      _id: { $in: updatedSkillStations }
+    }).toArray();
+    
+    // Populate leader data
+    for (let station of populatedStations) {
+      if (station.leader) {
+        const leader = await db.collection('users').findOne({
+          _id: new ObjectId(station.leader)
+        });
+        if (leader) {
+          station.leader = {
+            _id: leader._id,
+            firstName: leader.firstName,
+            lastName: leader.lastName,
+            email: leader.email
+          };
+        }
+      }
+    }
+
+    res.json({
+      message: 'Skill stations updated successfully',
+      skillStations: populatedStations
+    });
+  } catch (error) {
+    console.error('Update skill stations API error:', error);
+    res.status(500).json({ error: 'Failed to update skill stations' });
+  }
+});
+
 // Catch-all for undefined routes
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });

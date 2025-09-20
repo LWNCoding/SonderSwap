@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
@@ -7,7 +7,7 @@ import { useEventParticipants } from '../hooks/useEventParticipants';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import Icon from '../components/Icon';
-import { LAYOUT, GRADIENTS, ANIMATION, LOADING_STATES } from '../lib/constants';
+import { LAYOUT, GRADIENTS, ANIMATION, LOADING_STATES, CAROUSEL, SIZES } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/AuthModal';
 import { SkillStation, User } from '../types';
@@ -27,6 +27,11 @@ const EventDetail: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  
+  // Carousel state
+  const [currentPage, setCurrentPage] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Get participant count (public - no auth required)
   const { 
@@ -245,14 +250,98 @@ const EventDetail: React.FC = () => {
     </div>
   );
 
+  // Carousel utility functions
+  const getTotalPages = (stationsCount: number): number => {
+    return Math.ceil(stationsCount / CAROUSEL.CARDS_PER_PAGE);
+  };
+
+  const clearScrollTimeout = (): void => {
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+  };
+
+  const scrollToPage = (page: number): void => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    clearScrollTimeout();
+    
+    const scrollPosition = page * CAROUSEL.CARDS_PER_PAGE * (CAROUSEL.CARD_WIDTH + 16); // 16px for margin
+    container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+    
+    setCurrentPage(page);
+    
+    scrollTimeoutRef.current = setTimeout(() => {
+      scrollTimeoutRef.current = null;
+    }, CAROUSEL.SCROLL_TIMEOUT);
+  };
+
+  const handlePreviousPage = (): void => {
+    if (currentPage > 0) {
+      scrollToPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = (stationsLength: number): void => {
+    const totalPages = getTotalPages(stationsLength);
+    if (currentPage < totalPages - 1) {
+      scrollToPage(currentPage + 1);
+    }
+  };
+
+  const renderNavigationButton = (
+    direction: 'left' | 'right',
+    onClick: () => void,
+    disabled: boolean,
+    className: string
+  ): JSX.Element => {
+    const iconPath = direction === 'left' 
+      ? "M15 19l-7-7 7-7" 
+      : "M9 5l7 7-7 7";
+
+    return (
+      <button
+        className={`absolute ${className} z-20 ${CAROUSEL.BUTTON_SIZE} ${GRADIENTS.BUTTON_BACKGROUND} ${GRADIENTS.BUTTON_BACKGROUND_HOVER} shadow-lg rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all ${ANIMATION.TRANSITION_DURATION}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={iconPath} />
+        </svg>
+      </button>
+    );
+  };
+
+  const renderPageIndicator = (stationsLength: number): JSX.Element => {
+    const totalPages = getTotalPages(stationsLength);
+    if (totalPages <= 1) return <></>;
+
+    return (
+      <div className="flex justify-center space-x-2 mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => scrollToPage(index)}
+            className={`${CAROUSEL.INDICATOR_WIDTH} h-2 rounded-full transition-all ${ANIMATION.TRANSITION_DURATION} ${
+              currentPage === index 
+                ? 'bg-primary-600' 
+                : 'bg-gray-300 hover:bg-gray-400'
+            }`}
+          />
+        ))}
+      </div>
+    );
+  };
+
   const renderMainContent = (): JSX.Element => (
     <div className="lg:col-span-2">
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
           <button
             onClick={() => setIsHowItWorksOpen(true)}
-            className={`ml-3 w-6 h-6 ${GRADIENTS.PRIMARY_SECONDARY} hover:opacity-80 rounded-full flex items-center justify-center transition-all`}
+            className={`w-6 h-6 ${GRADIENTS.PRIMARY_SECONDARY} hover:opacity-80 rounded-full flex items-center justify-center transition-all`}
             title="How It Works"
           >
             <Icon name="info" size="sm" className="text-white" />
@@ -265,52 +354,78 @@ const EventDetail: React.FC = () => {
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue Skill Stations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {event.skillStations.map((station, index) => {
-            // Handle both populated objects and string IDs
-            const stationData = typeof station === 'string' ? null : station as SkillStation;
-            const stationName = stationData?.name || 'Skill Station';
-            const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
-            const stationLocation = stationData?.location || 'TBD';
-            const stationCapacity = stationData?.capacity;
-            const stationDuration = stationData?.duration;
-            const stationDifficulty = stationData?.difficulty;
+        
+        <div className="relative group">
+          {renderNavigationButton(
+            'left',
+            handlePreviousPage,
+            currentPage === 0,
+            'left-0 top-1/2 -translate-y-1/2'
+          )}
 
-            return (
-              <div key={index} className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
-                  {stationDifficulty && (
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                      stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                      stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {stationDifficulty}
-                    </span>
-                  )}
-                </div>
+          {renderNavigationButton(
+            'right',
+            () => handleNextPage(event.skillStations.length),
+            currentPage >= getTotalPages(event.skillStations.length) - 1,
+            'right-0 top-1/2 -translate-y-1/2'
+          )}
 
-                <div className="space-y-2">
-                  <p className={`${typography.small} text-gray-600`}>
-                    <strong>Skills:</strong> {stationSkills}
-                  </p>
-                  <p className={`${typography.small} text-gray-600`}>
-                    <strong>Location:</strong> {stationLocation}
-                  </p>
-                  <div className="flex gap-4 text-sm text-gray-600">
-                    {stationCapacity && (
-                      <span><strong>Capacity:</strong> {stationCapacity} people</span>
-                    )}
-                    {stationDuration && (
-                      <span><strong>Duration:</strong> {stationDuration} min</span>
-                    )}
+          <div
+            ref={containerRef}
+            className="flex overflow-x-auto pb-4 scroll-smooth w-full"
+          >
+            {event.skillStations.map((station, index) => {
+              // Handle both populated objects and string IDs
+              const stationData = typeof station === 'string' ? null : station as SkillStation;
+              const stationName = stationData?.name || 'Skill Station';
+              const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
+              const stationLocation = stationData?.location || 'TBD';
+              const stationCapacity = stationData?.capacity;
+              const stationDuration = stationData?.duration;
+              const stationDifficulty = stationData?.difficulty;
+
+              return (
+                <div key={index} className={`flex-shrink-0 ${SIZES.CARD_WIDTH} cursor-pointer relative`} style={{margin: '0 8px'}}>
+                  <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300">
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
+                        {stationDifficulty && (
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                            stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                            stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {stationDifficulty}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className={`${typography.small} text-gray-600`}>
+                          <strong>Skills:</strong> {stationSkills}
+                        </p>
+                        <p className={`${typography.small} text-gray-600`}>
+                          <strong>Location:</strong> {stationLocation}
+                        </p>
+                        <div className="flex gap-4 text-sm text-gray-600">
+                          {stationCapacity && (
+                            <span><strong>Capacity:</strong> {stationCapacity} people</span>
+                          )}
+                          {stationDuration && (
+                            <span><strong>Duration:</strong> {stationDuration} min</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          
+          {renderPageIndicator(event.skillStations.length)}
         </div>
       </div>
 

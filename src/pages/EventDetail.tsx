@@ -176,12 +176,18 @@ const EventDetail: React.FC = () => {
                 }
               </div>
               <div>
-                <span className={`${typography.bodySmall} text-gray-600`}>
-                  Organizer: {typeof event.organizer === 'string' 
-                    ? event.organizer 
-                    : `${(event.organizer as User).firstName || 'Unknown'} ${(event.organizer as User).lastName || 'User'}`
-                  }
-                </span>
+                {typeof event.organizer === 'string' ? (
+                  <span className={`${typography.bodySmall} text-gray-600`}>
+                    {event.organizer}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/user/${(event.organizer as User)._id}`)}
+                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                  >
+                    {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -239,8 +245,8 @@ const EventDetail: React.FC = () => {
   );
 
   const renderMainContent = (): JSX.Element => (
-    <div className="lg:col-span-1">
-      <div className="bg-white rounded-lg shadow-lg p-6 h-full">
+    <div className="lg:col-span-2">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill-Sharing Event Overview</h2>
         <p className={`${typography.body} text-gray-600 leading-relaxed`}>
           {event.description}
@@ -252,14 +258,79 @@ const EventDetail: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue Skill Stations</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {event.skillStations.map((station, index) => {
+            // Handle both populated objects and string IDs
+            const stationData = typeof station === 'string' ? null : station as SkillStation;
+            const stationName = stationData?.name || 'Skill Station';
+            const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
+            const stationLocation = stationData?.location || 'TBD';
+            const stationCapacity = stationData?.capacity;
+            const stationDuration = stationData?.duration;
+            const stationDifficulty = stationData?.difficulty;
+
+            return (
+              <div key={index} className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
+                  {stationDifficulty && (
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                      stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                      stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {stationDifficulty}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <p className={`${typography.small} text-gray-600`}>
+                    <strong>Skills:</strong> {stationSkills}
+                  </p>
+                  <p className={`${typography.small} text-gray-600`}>
+                    <strong>Location:</strong> {stationLocation}
+                  </p>
+                  <div className="flex gap-4 text-sm text-gray-600">
+                    {stationCapacity && (
+                      <span><strong>Capacity:</strong> {stationCapacity} people</span>
+                    )}
+                    {stationDuration && (
+                      <span><strong>Duration:</strong> {stationDuration} min</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
+        <div className="space-y-3">
+          {event.agenda.map((item, index) => (
+            <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                {index + 1}
+              </div>
+              <span className={`${typography.bodySmall} text-gray-700`}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 
   const renderSidebar = (): JSX.Element => (
-    <div className="lg:col-span-1">
-      <div className="bg-white rounded-lg shadow-lg p-6 h-full">
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Details</h2>
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3">
           {[
             { label: 'Venue', value: event.venue },
             { label: 'Capacity', value: event.capacity },
@@ -271,76 +342,98 @@ const EventDetail: React.FC = () => {
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className={`${typography.h3} text-gray-900 mb-4`}>Event Schedule</h3>
-          <div className="space-y-3">
-            {event.agenda.map((item, index) => (
-              <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
-                <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                  {index + 1}
-                </div>
-                <span className={`${typography.bodySmall} text-gray-700`}>{item}</span>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Organizer(s)</h2>
+        <div className="space-y-3">
+          {!event.organizer ? (
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                ?
               </div>
-            ))}
+              <span className={`${typography.bodySmall} text-gray-500`}>Organizer information not available</span>
+            </div>
+          ) : typeof event.organizer === 'string' ? (
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                {event.organizer.charAt(0).toUpperCase()}
+              </div>
+              <span className={`${typography.bodySmall} text-gray-700`}>{event.organizer}</span>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                {(event.organizer as User).firstName?.charAt(0) || 'U'}{(event.organizer as User).lastName?.charAt(0) || 'U'}
+              </div>
+              <button
+                onClick={() => navigate(`/user/${(event.organizer as User)._id}`)}
+                className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+              >
+                {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Station Leaders</h2>
+        <div className="space-y-3">
+          {event.speakers.map((speaker, index) => {
+            // Handle both populated user objects and string names
+            const speakerName = typeof speaker === 'string' ? speaker : `${(speaker as any).firstName} ${(speaker as any).lastName}`;
+            const speakerId = typeof speaker === 'string' ? null : (speaker as any)._id;
+            const speakerInitials = typeof speaker === 'string' 
+              ? speaker.split(' ')[0][0] 
+              : (speaker as any).firstName.charAt(0);
+            
+            return (
+              <div key={index} className="flex items-center">
+                <div className="w-10 h-10 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                  {speakerInitials}
+                </div>
+                {speakerId ? (
+                  <button
+                    onClick={() => navigate(`/user/${speakerId}`)}
+                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                  >
+                    {speakerName}
+                  </button>
+                ) : (
+                  <span className={`${typography.bodySmall} text-gray-700`}>{speakerName}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Quick Stats</h2>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+            <span className={`${typography.small} text-gray-600`}>Skill Stations</span>
+            <span className={`${typography.bodySmall} font-semibold text-primary-600`}>{event.skillStations.length}</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+            <span className={`${typography.small} text-gray-600`}>Current Participants</span>
+              <span className={`${typography.bodySmall} font-semibold text-primary-600`}>{participantCount}</span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+            <span className={`${typography.small} text-gray-600`}>Skill Categories</span>
+            <span className={`${typography.bodySmall} font-semibold text-primary-600`}>
+              {event.skillStations.reduce((total, station) => {
+                if (typeof station === 'string') return total;
+                return total + ((station as SkillStation).skills?.length || 0);
+              }, 0)}+
+            </span>
           </div>
         </div>
       </div>
     </div>
   );
 
-  const renderVenueSkillStations = (): JSX.Element => (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue Skill Stations</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {event.skillStations.map((station, index) => {
-          // Handle both populated objects and string IDs
-          const stationData = typeof station === 'string' ? null : station as SkillStation;
-          const stationName = stationData?.name || 'Skill Station';
-          const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
-          const stationLocation = stationData?.location || 'TBD';
-          const stationCapacity = stationData?.capacity;
-          const stationDuration = stationData?.duration;
-          const stationDifficulty = stationData?.difficulty;
-
-          return (
-            <div key={index} className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
-                {stationDifficulty && (
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                    stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                    stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {stationDifficulty}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <p className={`${typography.small} text-gray-600`}>
-                  <strong>Skills:</strong> {stationSkills}
-                </p>
-                <p className={`${typography.small} text-gray-600`}>
-                  <strong>Location:</strong> {stationLocation}
-                </p>
-                <div className="flex gap-4 text-sm text-gray-600">
-                  {stationCapacity && (
-                    <span><strong>Capacity:</strong> {stationCapacity} people</span>
-                  )}
-                  {stationDuration && (
-                    <span><strong>Duration:</strong> {stationDuration} min</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 
   return (
     <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
@@ -362,13 +455,10 @@ const EventDetail: React.FC = () => {
 
       {/* Event Details */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.CONTENT_PADDING}`}>
-        <div className={`grid ${DETAIL_PAGE_LAYOUT.GRID_COLS} gap-8 mb-8`}>
+        <div className={`grid ${DETAIL_PAGE_LAYOUT.GRID_COLS_3} gap-8`}>
           {renderMainContent()}
           {renderSidebar()}
         </div>
-        
-        {/* Venue Skill Stations - Full Width */}
-        {renderVenueSkillStations()}
       </div>
 
       {/* Auth Modal */}

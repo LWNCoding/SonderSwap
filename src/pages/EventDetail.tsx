@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
@@ -32,12 +32,33 @@ const EventDetail: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [cardHeight, setCardHeight] = useState<number>(384); // Default height
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   
   // Get participant count (public - no auth required)
   const { 
     participantCount,
     updateCount
   } = useEventParticipants(eventId);
+
+  // Calculate maximum card height for uniformity
+  useEffect(() => {
+    if (event?.skillStations && cardRefs.current.length > 0) {
+      // Small delay to ensure cards are fully rendered
+      const timeoutId = setTimeout(() => {
+        const heights = cardRefs.current
+          .filter(ref => ref !== null)
+          .map(ref => ref!.offsetHeight);
+        
+        if (heights.length > 0) {
+          const maxHeight = Math.max(...heights);
+          setCardHeight(maxHeight);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [event?.skillStations]);
   
   // Debug participant count
   console.log('EventDetail: Current participantCount:', participantCount);
@@ -389,7 +410,15 @@ const EventDetail: React.FC = () => {
               const stationDifficulty = stationData?.difficulty;
 
               return (
-                <div key={index} className="flex-shrink-0 w-80 h-96 cursor-pointer relative" style={{margin: '0 8px'}}>
+                <div 
+                  key={index} 
+                  ref={(el) => { cardRefs.current[index] = el; }}
+                  className="flex-shrink-0 w-80 cursor-pointer relative" 
+                  style={{
+                    margin: '0 8px',
+                    height: cardHeight
+                  }}
+                >
                   <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
                     <div className="p-6 h-full flex flex-col">
                       {/* Header with title and difficulty */}

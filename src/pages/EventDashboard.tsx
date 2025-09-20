@@ -8,6 +8,7 @@ import Icon from '../components/Icon';
 import ParticipantsList from '../components/ParticipantsList';
 import ManageParticipantsModal from '../components/ManageParticipantsModal';
 import EditEventModal from '../components/EditEventModal';
+import SkillStationModal from '../components/SkillStationModal';
 import { LAYOUT, GRADIENTS, LOADING_STATES } from '../lib/constants';
 import { getEventParticipants, updateEvent } from '../lib/api';
 import { authService } from '../lib/authService';
@@ -21,6 +22,7 @@ const EventDashboard: React.FC = () => {
   const [participants, setParticipants] = useState<any[]>([]);
   const [isManageParticipantsOpen, setIsManageParticipantsOpen] = useState(false);
   const [isEditEventOpen, setIsEditEventOpen] = useState(false);
+  const [isSkillStationModalOpen, setIsSkillStationModalOpen] = useState(false);
 
   // Fetch participant count and participants list
   const fetchParticipantCount = async () => {
@@ -306,10 +308,7 @@ const EventDashboard: React.FC = () => {
                   </div>
                 </button>
                 <button 
-                  onClick={() => {
-                    // TODO: Implement skill station management
-                    console.log('Edit Event Stations clicked - feature coming soon');
-                  }}
+                  onClick={() => setIsSkillStationModalOpen(true)}
                   className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
@@ -379,6 +378,17 @@ const EventDashboard: React.FC = () => {
         onClose={() => setIsEditEventOpen(false)}
         event={event}
         onSave={handleUpdateEvent}
+      />
+
+      {/* Skill Station Modal */}
+      <SkillStationModal
+        isOpen={isSkillStationModalOpen}
+        onClose={() => setIsSkillStationModalOpen(false)}
+        eventId={eventId || ''}
+        onSave={async (updatedStations) => {
+          // TODO: Implement API call to save skill stations
+          console.log('Saving skill stations:', updatedStations);
+        }}
       />
     </div>
   );

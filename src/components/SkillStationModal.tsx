@@ -66,7 +66,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       console.log('Loading available users for leader assignment');
       const response = await fetch('/api/users', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
       console.log('Users response status:', response.status);
@@ -176,7 +176,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
         body: JSON.stringify({ skillStations: stations })
       });

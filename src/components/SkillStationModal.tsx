@@ -26,6 +26,8 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [editingStation, setEditingStation] = useState<SkillStationWithLeader | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<SkillStationWithLeader>>({});
 
   // Mock data for demonstration - in real app, this would come from API
   useEffect(() => {
@@ -153,8 +155,51 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
   };
 
   const handleEditStation = (station: SkillStationWithLeader) => {
-    // TODO: Implement detailed station editing
-    console.log('Edit station:', station);
+    setEditingStation(station);
+    setEditFormData({
+      name: station.name,
+      description: station.description,
+      location: station.location,
+      capacity: station.capacity,
+      duration: station.duration,
+      difficulty: station.difficulty,
+      skills: [...station.skills],
+      equipment: [...(station.equipment || [])],
+      requirements: [...(station.requirements || [])],
+      isActive: station.isActive,
+      leaderId: station.leaderId
+    });
+  };
+
+  const handleEditFormChange = (field: keyof SkillStationWithLeader, value: any) => {
+    setEditFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveStation = () => {
+    if (!editingStation) return;
+
+    const updatedStation: SkillStationWithLeader = {
+      ...editingStation,
+      ...editFormData,
+      leader: editFormData.leaderId ? availableUsers.find(u => u._id === editFormData.leaderId) : undefined
+    };
+
+    setStations(prev => 
+      prev.map(station => 
+        station._id === editingStation._id ? updatedStation : station
+      )
+    );
+
+    setEditingStation(null);
+    setEditFormData({});
+  };
+
+  const handleCancelEdit = () => {
+    setEditingStation(null);
+    setEditFormData({});
   };
 
   const handleLeaderChange = (stationId: string, leaderId: string) => {
@@ -264,101 +309,243 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                 {/* Station Details (Collapsible) */}
                 {expandedStation === station._id && (
                   <div className="border-t border-gray-200 p-4 bg-gray-50">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Station Info */}
-                      <div className="space-y-4">
-                        <div>
-                          <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                            Description
-                          </label>
-                          <p className={`${typography.bodySmall} text-gray-600`}>{station.description}</p>
-                        </div>
-                        
-                        <div>
-                          <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                            Skills
-                          </label>
-                          <div className="flex flex-wrap gap-1">
-                            {station.skills.map((skill, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded-full"
+                    {editingStation && editingStation._id === station._id ? (
+                      /* Editing Form */
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-4">
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Station Name
+                              </label>
+                              <input
+                                type="text"
+                                value={editFormData.name || ''}
+                                onChange={(e) => handleEditFormChange('name', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Description
+                              </label>
+                              <textarea
+                                value={editFormData.description || ''}
+                                onChange={(e) => handleEditFormChange('description', e.target.value)}
+                                rows={3}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Location
+                              </label>
+                              <input
+                                type="text"
+                                value={editFormData.location || ''}
+                                onChange={(e) => handleEditFormChange('location', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                  Capacity
+                                </label>
+                                <input
+                                  type="number"
+                                  value={editFormData.capacity || ''}
+                                  onChange={(e) => handleEditFormChange('capacity', parseInt(e.target.value) || 0)}
+                                  min="1"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                />
+                              </div>
+                              <div>
+                                <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                  Duration (min)
+                                </label>
+                                <input
+                                  type="number"
+                                  value={editFormData.duration || ''}
+                                  onChange={(e) => handleEditFormChange('duration', parseInt(e.target.value) || 0)}
+                                  min="1"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Difficulty
+                              </label>
+                              <select
+                                value={editFormData.difficulty || 'All Levels'}
+                                onChange={(e) => handleEditFormChange('difficulty', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                               >
-                                {skill}
-                              </span>
-                            ))}
+                                <option value="All Levels">All Levels</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                              </select>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
-                              Capacity
-                            </label>
-                            <p className={`${typography.bodySmall} text-gray-600`}>{station.capacity} people</p>
-                          </div>
-                          <div>
-                            <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
-                              Duration
-                            </label>
-                            <p className={`${typography.bodySmall} text-gray-600`}>{station.duration} min</p>
+                          <div className="space-y-4">
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Station Leader
+                              </label>
+                              <select
+                                value={editFormData.leaderId || ''}
+                                onChange={(e) => handleEditFormChange('leaderId', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              >
+                                <option value="">Select a leader</option>
+                                {availableUsers.map((user) => (
+                                  <option key={user._id} value={user._id}>
+                                    {user.firstName} {user.lastName}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Status
+                              </label>
+                              <select
+                                value={editFormData.isActive ? 'active' : 'inactive'}
+                                onChange={(e) => handleEditFormChange('isActive', e.target.value === 'active')}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                              >
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                              </select>
+                            </div>
+
+                            <div className="flex space-x-2">
+                              <Button
+                                onClick={handleSaveStation}
+                                variant="primary"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                <Icon name="check" size="sm" className="mr-2" />
+                                Save
+                              </Button>
+                              <Button
+                                onClick={handleCancelEdit}
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                              >
+                                <Icon name="close" size="sm" className="mr-2" />
+                                Cancel
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    ) : (
+                      /* View Mode */
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div>
+                            <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                              Description
+                            </label>
+                            <p className={`${typography.bodySmall} text-gray-600`}>{station.description}</p>
+                          </div>
+                          
+                          <div>
+                            <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                              Skills
+                            </label>
+                            <div className="flex flex-wrap gap-1">
+                              {station.skills.map((skill, index) => (
+                                <span
+                                  key={index}
+                                  className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded-full"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
 
-                      {/* Leader Assignment */}
-                      <div className="space-y-4">
-                        <div>
-                          <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                            Station Leader
-                          </label>
-                          <select
-                            value={station.leaderId || ''}
-                            onChange={(e) => handleLeaderChange(station._id, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                          >
-                            <option value="">Select a leader</option>
-                            {availableUsers.map((user) => (
-                              <option key={user._id} value={user._id}>
-                                {user.firstName} {user.lastName}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                                Capacity
+                              </label>
+                              <p className={`${typography.bodySmall} text-gray-600`}>{station.capacity} people</p>
+                            </div>
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                                Duration
+                              </label>
+                              <p className={`${typography.bodySmall} text-gray-600`}>{station.duration} min</p>
+                            </div>
+                          </div>
                         </div>
 
-                        <div>
-                          <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                            Status
-                          </label>
-                          <select
-                            value={station.isActive ? 'active' : 'inactive'}
-                            onChange={(e) => {
-                              setStations(prev => 
-                                prev.map(s => 
-                                  s._id === station._id 
-                                    ? { ...s, isActive: e.target.value === 'active' }
-                                    : s
-                                )
-                              );
-                            }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                          >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                          </select>
-                        </div>
+                        <div className="space-y-4">
+                          <div>
+                            <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                              Station Leader
+                            </label>
+                            <select
+                              value={station.leaderId || ''}
+                              onChange={(e) => handleLeaderChange(station._id, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                              <option value="">Select a leader</option>
+                              {availableUsers.map((user) => (
+                                <option key={user._id} value={user._id}>
+                                  {user.firstName} {user.lastName}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
 
-                        <Button
-                          onClick={() => handleEditStation(station)}
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                        >
-                          <Icon name="edit" size="sm" className="mr-2" />
-                          Edit Details
-                        </Button>
+                          <div>
+                            <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                              Status
+                            </label>
+                            <select
+                              value={station.isActive ? 'active' : 'inactive'}
+                              onChange={(e) => {
+                                setStations(prev => 
+                                  prev.map(s => 
+                                    s._id === station._id 
+                                      ? { ...s, isActive: e.target.value === 'active' }
+                                      : s
+                                  )
+                                );
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            >
+                              <option value="active">Active</option>
+                              <option value="inactive">Inactive</option>
+                            </select>
+                          </div>
+
+                          <Button
+                            onClick={() => handleEditStation(station)}
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
+                            <Icon name="edit" size="sm" className="mr-2" />
+                            Edit Details
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
               </div>

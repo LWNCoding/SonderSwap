@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { User } from '../types';
 import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
@@ -13,6 +13,7 @@ import Badge from '../components/Badge';
 const UserProfile: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -251,11 +252,19 @@ const UserProfile: React.FC = () => {
     <div>
       {/* Header */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.HEADER_PADDING}`}>
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
             <button
-              onClick={() => navigate(-1)}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+              onClick={() => {
+                const urlParams = new URLSearchParams(location.search);
+                const returnTo = urlParams.get('returnTo');
+                if (returnTo) {
+                  navigate(returnTo);
+                } else {
+                  navigate(-1);
+                }
+              }}
+              className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />
               <span className={typography.body}>Back</span>

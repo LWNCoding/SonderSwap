@@ -1183,6 +1183,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
 app.get('/api/users', verifyToken, async (req, res) => {
   try {
     console.log('Fetching users for skill station leader selection');
+    console.log('User ID from token:', req.user._id);
     const { db } = await connectToDatabase();
     const users = await db.collection('users').find({}).project({ password: 0, email: 0 }).limit(100).toArray();
     console.log('Found users:', users.length);
@@ -1256,6 +1257,8 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
     const userId = req.user._id;
 
     console.log('Updating skill stations for event ID:', eventId);
+    console.log('User ID from token:', userId);
+    console.log('User ID type:', typeof userId);
     const { db } = await connectToDatabase();
     const ObjectId = require('mongodb').ObjectId;
     

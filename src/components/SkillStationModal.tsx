@@ -42,11 +42,16 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
     setLoading(true);
     setError(null);
     try {
+      console.log('Loading skill stations for event ID:', eventId);
       const response = await fetch(`/api/events/${eventId}/skill-stations`);
+      console.log('Skill stations response status:', response.status);
       if (!response.ok) {
-        throw new Error('Failed to load skill stations');
+        const errorText = await response.text();
+        console.error('Skill stations API error:', errorText);
+        throw new Error(`Failed to load skill stations: ${response.status}`);
       }
       const data = await response.json();
+      console.log('Skill stations data:', data);
       setStations(data);
     } catch (err) {
       console.error('Error loading skill stations:', err);
@@ -58,15 +63,20 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
   const loadAvailableUsers = async () => {
     try {
+      console.log('Loading available users for leader assignment');
       const response = await fetch('/api/users', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      console.log('Users response status:', response.status);
       if (!response.ok) {
-        throw new Error('Failed to load users');
+        const errorText = await response.text();
+        console.error('Users API error:', errorText);
+        throw new Error(`Failed to load users: ${response.status}`);
       }
       const data = await response.json();
+      console.log('Users data:', data);
       setAvailableUsers(data.users || []);
     } catch (err) {
       console.error('Error loading users:', err);

@@ -219,7 +219,9 @@ app.get('/api/users/:userId', asyncHandler(async (req, res) => {
 
 // Get all users (for skill station leader selection)
 app.get('/api/users', authenticateToken, asyncHandler(async (req, res) => {
+  console.log('Fetching users for skill station leader selection');
   const users = await User.find({}).select('-password -email').limit(100);
+  console.log('Found users:', users.length);
   res.json({ users });
 }));
 
@@ -348,14 +350,18 @@ app.post('/api/skill-stations', authenticateToken, asyncHandler(async (req, res)
 
 // Event Skill Station Management Routes
 app.get('/api/events/:id/skill-stations', asyncHandler(async (req, res) => {
+  console.log('Fetching skill stations for event ID:', req.params.id);
   const event = await Event.findOne({ id: req.params.id });
   if (!event) {
+    console.log('Event not found for ID:', req.params.id);
     return res.status(404).json({ error: 'Event not found' });
   }
 
+  console.log('Event found, skillStations array:', event.skillStations);
   const skillStations = await SkillStation.find({ _id: { $in: event.skillStations } })
     .populate('leader', 'firstName lastName email');
   
+  console.log('Found skill stations:', skillStations.length);
   res.json(skillStations);
 }));
 

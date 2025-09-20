@@ -389,9 +389,10 @@ const EventDetail: React.FC = () => {
               const stationDifficulty = stationData?.difficulty;
 
               return (
-                <div key={index} className="flex-shrink-0 w-80 h-80 cursor-pointer relative" style={{margin: '0 8px'}}>
+                <div key={index} className="flex-shrink-0 w-80 h-96 cursor-pointer relative" style={{margin: '0 8px'}}>
                   <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
                     <div className="p-6 h-full flex flex-col">
+                      {/* Header with title and difficulty */}
                       <div className="flex items-start justify-between mb-4">
                         <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
                         {stationDifficulty && (
@@ -406,6 +407,7 @@ const EventDetail: React.FC = () => {
                         )}
                       </div>
 
+                      {/* Main content area - takes up available space */}
                       <div className="space-y-3 flex-1">
                         <p className={`${typography.body} text-gray-600`}>
                           <strong>Skills:</strong> {stationSkills}
@@ -413,19 +415,23 @@ const EventDetail: React.FC = () => {
                         <p className={`${typography.body} text-gray-600`}>
                           <strong>Location:</strong> {stationLocation}
                         </p>
-                        <div className="flex gap-4 text-sm text-gray-600">
+                        <div className="space-y-1">
                           {stationCapacity && (
-                            <span><strong>Capacity:</strong> {stationCapacity} people</span>
+                            <p className={`${typography.small} text-gray-600`}>
+                              <strong>Capacity:</strong> {stationCapacity} people
+                            </p>
                           )}
                           {stationDuration && (
-                            <span><strong>Duration:</strong> {stationDuration} min</span>
+                            <p className={`${typography.small} text-gray-600`}>
+                              <strong>Duration:</strong> {stationDuration} min
+                            </p>
                           )}
                         </div>
                       </div>
 
-                      {/* Leader Information */}
-                      {stationData?.leader && (
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                      {/* Leader Information - always at bottom */}
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        {stationData?.leader ? (
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                               {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
@@ -440,8 +446,18 @@ const EventDetail: React.FC = () => {
                               </button>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                              ?
+                            </div>
+                            <div className="flex-1">
+                              <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                              <p className={`${typography.bodySmall} text-gray-400`}>No leader assigned</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

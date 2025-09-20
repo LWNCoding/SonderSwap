@@ -14,7 +14,6 @@ const skillStationSchema = new mongoose.Schema({
     default: 'All Levels'
   },
   duration: { type: Number, required: true }, // in minutes
-  leader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   isActive: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

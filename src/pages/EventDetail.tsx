@@ -239,57 +239,12 @@ const EventDetail: React.FC = () => {
             const stationName = stationData?.name || 'Skill Station';
             const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
             const stationLocation = stationData?.location || 'TBD';
-            const stationLeader = stationData?.leader;
-            const stationCapacity = stationData?.capacity;
-            const stationDuration = stationData?.duration;
-            const stationDifficulty = stationData?.difficulty;
             
             return (
               <div key={index} className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className={`${typography.h4} text-gray-900`}>{stationName}</h3>
-                  {stationDifficulty && (
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                      stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                      stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {stationDifficulty}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="space-y-2 mb-3">
-                  <p className={`${typography.small} text-gray-600`}>
-                    <strong>Skills:</strong> {stationSkills}
-                  </p>
-                  <p className={`${typography.small} text-gray-600`}>
-                    <strong>Location:</strong> {stationLocation}
-                  </p>
-                  <div className="flex gap-4 text-sm text-gray-600">
-                    {stationCapacity && (
-                      <span><strong>Capacity:</strong> {stationCapacity} people</span>
-                    )}
-                    {stationDuration && (
-                      <span><strong>Duration:</strong> {stationDuration} min</span>
-                    )}
-                  </div>
-                </div>
-
-                {stationLeader && (
-                  <div className="flex items-center pt-2 border-t border-gray-100">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-xs mr-3">
-                      {`${stationLeader.firstName?.charAt(0) || 'U'}${stationLeader.lastName?.charAt(0) || 'U'}`.toUpperCase()}
-                    </div>
-                    <div>
-                      <p className={`${typography.small} font-medium text-gray-900`}>
-                        {stationLeader.firstName} {stationLeader.lastName}
-                      </p>
-                      <p className={`${typography.caption} text-gray-500`}>Station Leader</p>
-                    </div>
-                  </div>
-                )}
+                <h3 className={`${typography.h4} text-gray-900 mb-2`}>{stationName}</h3>
+                <p className={`${typography.small} text-gray-600 mb-1`}><strong>Skills:</strong> {stationSkills}</p>
+                <p className={`${typography.small} text-gray-600`}><strong>Location:</strong> {stationLocation}</p>
               </div>
             );
           })}

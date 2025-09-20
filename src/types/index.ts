@@ -81,7 +81,6 @@ export interface SkillStation {
   requirements?: string[];
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
   duration: number; // in minutes
-  leader?: User;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

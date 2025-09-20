@@ -1341,8 +1341,13 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
     // Populate leader data
     for (let station of populatedStations) {
       if (station.leader) {
+        // Handle both ObjectId instances and string IDs for leader
+        const leaderId = typeof station.leader === 'string' 
+          ? new ObjectId(station.leader) 
+          : station.leader;
+        
         const leader = await db.collection('users').findOne({
-          _id: new ObjectId(station.leader)
+          _id: leaderId
         });
         if (leader) {
           station.leader = {

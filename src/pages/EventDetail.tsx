@@ -252,10 +252,10 @@ const EventDetail: React.FC = () => {
           <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
           <button
             onClick={() => setIsHowItWorksOpen(true)}
-            className="ml-3 p-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+            className="ml-3 w-6 h-6 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center transition-colors"
             title="How It Works"
           >
-            <Icon name="alertCircle" size="md" />
+            <Icon name="info" size="sm" className="text-white" />
           </button>
         </div>
         <p className={`${typography.body} text-gray-600 leading-relaxed`}>

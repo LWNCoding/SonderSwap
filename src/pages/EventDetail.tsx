@@ -444,14 +444,14 @@ const EventDetail: React.FC = () => {
                         <p className={`${typography.body} text-gray-600`}>
                           <strong>Location:</strong> {stationLocation}
                         </p>
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           {stationCapacity && (
-                            <p className={`${typography.small} text-gray-600`}>
+                            <p className={`${typography.body} text-gray-600`}>
                               <strong>Capacity:</strong> {stationCapacity} people
                             </p>
                           )}
                           {stationDuration && (
-                            <p className={`${typography.small} text-gray-600`}>
+                            <p className={`${typography.body} text-gray-600`}>
                               <strong>Duration:</strong> {stationDuration} min
                             </p>
                           )}

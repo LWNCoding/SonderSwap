@@ -498,19 +498,6 @@ const EventDetail: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
-        <div className="space-y-3">
-          {event.agenda.map((item, index) => (
-            <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                {index + 1}
-              </div>
-              <span className={`${typography.bodySmall} text-gray-700`}>{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 
@@ -534,25 +521,16 @@ const EventDetail: React.FC = () => {
 
 
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Quick Stats</h2>
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
         <div className="space-y-3">
-          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span className={`${typography.small} text-gray-600`}>Skill Stations</span>
-            <span className={`${typography.bodySmall} font-semibold text-primary-600`}>{event.skillStations.length}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span className={`${typography.small} text-gray-600`}>Current Participants</span>
-              <span className={`${typography.bodySmall} font-semibold text-primary-600`}>{participantCount}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span className={`${typography.small} text-gray-600`}>Skill Categories</span>
-            <span className={`${typography.bodySmall} font-semibold text-primary-600`}>
-              {event.skillStations.reduce((total, station) => {
-                if (typeof station === 'string') return total;
-                return total + ((station as SkillStation).skills?.length || 0);
-              }, 0)}+
-            </span>
-          </div>
+          {event.agenda.map((item, index) => (
+            <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                {index + 1}
+              </div>
+              <span className={`${typography.bodySmall} text-gray-700`}>{item}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

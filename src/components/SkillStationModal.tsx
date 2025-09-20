@@ -7,6 +7,7 @@ import { SkillStation, User } from '../types';
 interface SkillStationWithLeader extends SkillStation {
   leader?: User;
   leaderId?: string;
+  leaderEmail?: string;
 }
 
 interface SkillStationModalProps {
@@ -30,6 +31,19 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
   const [editingStation, setEditingStation] = useState<SkillStationWithLeader | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<SkillStationWithLeader>>({});
   const [deleteConfirmStation, setDeleteConfirmStation] = useState<SkillStationWithLeader | null>(null);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [newStationData, setNewStationData] = useState<Partial<SkillStationWithLeader>>({
+    name: '',
+    description: '',
+    skills: [],
+    location: '',
+    capacity: 10,
+    duration: 60,
+    difficulty: 'Beginner' as const,
+    leaderId: '',
+    leaderEmail: ''
+  });
+  const [leaderLookupError, setLeaderLookupError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -155,6 +169,109 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
   const cancelDeleteStation = () => {
     setDeleteConfirmStation(null);
+  };
+
+  const handleCreateNew = () => {
+    setIsCreatingNew(true);
+    setNewStationData({
+      name: '',
+      description: '',
+      skills: [],
+      location: '',
+      capacity: 10,
+      duration: 60,
+      difficulty: 'Beginner' as const,
+      leaderId: '',
+      leaderEmail: ''
+    });
+    setLeaderLookupError(null);
+  };
+
+  const handleCancelCreate = () => {
+    setIsCreatingNew(false);
+    setNewStationData({
+      name: '',
+      description: '',
+      skills: [],
+      location: '',
+      capacity: 10,
+      duration: 60,
+      difficulty: 'Beginner' as const,
+      leaderId: '',
+      leaderEmail: ''
+    });
+    setLeaderLookupError(null);
+  };
+
+  const handleNewStationChange = (field: string, value: any) => {
+    setNewStationData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    setLeaderLookupError(null);
+  };
+
+  const handleLeaderEmailLookup = async (email: string) => {
+    if (!email) {
+      setNewStationData(prev => ({ ...prev, leaderId: '', leader: undefined }));
+      setLeaderLookupError(null);
+      return;
+    }
+
+    try {
+      const user = availableUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (user) {
+        setNewStationData(prev => ({
+          ...prev,
+          leaderId: user._id,
+          leader: user
+        }));
+        setLeaderLookupError(null);
+      } else {
+        setNewStationData(prev => ({ ...prev, leaderId: '', leader: undefined }));
+        setLeaderLookupError('No user found with this email address');
+      }
+    } catch (err) {
+      setLeaderLookupError('Error looking up user');
+    }
+  };
+
+  const handleCreateStation = () => {
+    if (!newStationData.name || !newStationData.description || !newStationData.location) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    const newStation: SkillStationWithLeader = {
+      _id: `temp_${Date.now()}`,
+      name: newStationData.name!,
+      description: newStationData.description!,
+      skills: newStationData.skills || [],
+      location: newStationData.location!,
+      capacity: newStationData.capacity || 10,
+      duration: newStationData.duration || 60,
+      difficulty: newStationData.difficulty || 'Beginner',
+      leaderId: newStationData.leaderId,
+      leader: newStationData.leader,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    setStations(prev => [...prev, newStation]);
+    setIsCreatingNew(false);
+    setNewStationData({
+      name: '',
+      description: '',
+      skills: [],
+      location: '',
+      capacity: 10,
+      duration: 60,
+      difficulty: 'Beginner' as const,
+      leaderId: '',
+      leaderEmail: ''
+    });
+    setLeaderLookupError(null);
   };
 
   const handleLeaderChange = (stationId: string, leaderId: string) => {
@@ -548,6 +665,176 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
             ))}
           </div>
 
+          {/* Add New Station Button */}
+          <div className="mb-6">
+            <Button
+              onClick={handleCreateNew}
+              variant="outline"
+              className="w-full border-dashed border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 text-gray-600 hover:text-primary-600"
+            >
+              <Icon name="plus" size="sm" className="mr-2" />
+              Add New Skill Station
+            </Button>
+          </div>
+
+          {/* New Station Creation Form */}
+          {isCreatingNew && (
+            <div className="mb-6 p-4 border border-primary-200 rounded-lg bg-primary-50">
+              <h3 className={`${typography.h4} text-gray-900 mb-4`}>Create New Skill Station</h3>
+              
+              <div className="space-y-4">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                      Station Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={newStationData.name || ''}
+                      onChange={(e) => handleNewStationChange('name', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Enter station name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                      Location *
+                    </label>
+                    <input
+                      type="text"
+                      value={newStationData.location || ''}
+                      onChange={(e) => handleNewStationChange('location', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="e.g., Lab A, Room 101"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                    Description *
+                  </label>
+                  <textarea
+                    value={newStationData.description || ''}
+                    onChange={(e) => handleNewStationChange('description', e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Describe what participants will learn at this station"
+                  />
+                </div>
+
+                <div>
+                  <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                    Skills (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={newStationData.skills?.join(', ') || ''}
+                    onChange={(e) => handleNewStationChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="e.g., JavaScript, React, Node.js"
+                  />
+                </div>
+
+                {/* Station Details */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                      Capacity
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={newStationData.capacity || 10}
+                      onChange={(e) => handleNewStationChange('capacity', parseInt(e.target.value) || 10)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                      Duration (min)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={newStationData.duration || 60}
+                      onChange={(e) => handleNewStationChange('duration', parseInt(e.target.value) || 60)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                      Difficulty
+                    </label>
+                    <select
+                      value={newStationData.difficulty || 'Beginner'}
+                      onChange={(e) => handleNewStationChange('difficulty', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    >
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                      <option value="All Levels">All Levels</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Leader Assignment */}
+                <div>
+                  <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                    Station Leader (Email)
+                  </label>
+                  <input
+                    type="email"
+                    value={newStationData.leaderEmail || ''}
+                    onChange={(e) => {
+                      const email = e.target.value;
+                      handleNewStationChange('leaderEmail', email);
+                      handleLeaderEmailLookup(email);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Enter leader's email address"
+                  />
+                  {leaderLookupError && (
+                    <p className="text-red-600 text-sm mt-1">{leaderLookupError}</p>
+                  )}
+                  {newStationData.leader && (
+                    <div className="mt-2 flex items-center space-x-2 text-green-600">
+                      <Icon name="check" size="sm" />
+                      <span className="text-sm">
+                        {newStationData.leader.firstName} {newStationData.leader.lastName}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-3 pt-4">
+                  <Button
+                    onClick={handleCancelCreate}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Icon name="close" size="sm" className="mr-2" />
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateStation}
+                    variant="primary"
+                    size="sm"
+                  >
+                    <Icon name="plus" size="sm" className="mr-2" />
+                    Create Station
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
             <Button
@@ -575,7 +862,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                  <Icon name="alertTriangle" size="md" className="text-red-600" />
+                     <Icon name="alertCircle" size="md" className="text-red-600" />
                 </div>
                 <h3 className={`${typography.h3} text-gray-900`}>Delete Skill Station</h3>
               </div>

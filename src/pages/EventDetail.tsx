@@ -26,6 +26,7 @@ const EventDetail: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   
   // Get participant count (public - no auth required)
   const { 
@@ -247,16 +248,19 @@ const EventDetail: React.FC = () => {
   const renderMainContent = (): JSX.Element => (
     <div className="lg:col-span-2">
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill-Sharing Event Overview</h2>
+        <div className="flex items-center mb-4">
+          <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
+          <button
+            onClick={() => setIsHowItWorksOpen(true)}
+            className="ml-3 p-1 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full transition-colors"
+            title="How It Works"
+          >
+            <Icon name="alertCircle" size="md" />
+          </button>
+        </div>
         <p className={`${typography.body} text-gray-600 leading-relaxed`}>
           {event.description}
         </p>
-        <div className="mt-6 p-4 bg-primary-50 rounded-lg">
-          <h3 className={`${typography.h3} text-primary-800 mb-2`}>How It Works</h3>
-          <p className={`${typography.bodySmall} text-primary-700`}>
-            {event.howItWorks}
-          </p>
-        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -402,6 +406,40 @@ const EventDetail: React.FC = () => {
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)} 
       />
+
+      {/* How It Works Modal */}
+      {isHowItWorksOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={`${typography.h3} text-gray-900`}>How It Works</h3>
+                <button
+                  onClick={() => setIsHowItWorksOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Icon name="close" size="md" />
+                </button>
+              </div>
+              
+              <div className="p-4 bg-purple-50 rounded-lg">
+                <p className={`${typography.body} text-purple-800 leading-relaxed`}>
+                  {event.howItWorks}
+                </p>
+              </div>
+              
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => setIsHowItWorksOpen(false)}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

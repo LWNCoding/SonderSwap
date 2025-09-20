@@ -491,6 +491,20 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               <p className={`${typography.bodySmall} text-gray-600`}>{station.duration} min</p>
                             </div>
                           </div>
+
+                          <div>
+                            <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                              Difficulty
+                            </label>
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              station.difficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                              station.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                              station.difficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {station.difficulty}
+                            </span>
+                          </div>
                         </div>
 
                         <div className="space-y-4">

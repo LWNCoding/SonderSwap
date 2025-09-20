@@ -317,18 +317,6 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                         {station.isActive ? 'Active' : 'Inactive'}
                       </span>
                       
-                      {/* Delete Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteStation(station);
-                        }}
-                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete station"
-                      >
-                        <Icon name="trash" size="sm" />
-                      </button>
-                      
                       {/* Expand/Collapse Icon */}
                       <Icon 
                         name={expandedStation === station._id ? "chevronUp" : "chevronDown"} 
@@ -579,15 +567,26 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                             </select>
                           </div>
 
-                          <Button
-                            onClick={() => handleEditStation(station)}
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                          >
-                            <Icon name="edit" size="sm" className="mr-2" />
-                            Edit Details
-                          </Button>
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={() => handleEditStation(station)}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                            >
+                              <Icon name="edit" size="sm" className="mr-2" />
+                              Edit Details
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteStation(station)}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+                            >
+                              <Icon name="trash" size="sm" className="mr-2" />
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     )}

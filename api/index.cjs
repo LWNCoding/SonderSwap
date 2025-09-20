@@ -739,6 +739,50 @@ app.get('/api/events/:id', async (req, res) => {
       eventId: event._id
     });
     
+    // Get skill stations data if skillStations exist
+    let skillStationsData = [];
+    if (event.skillStations && event.skillStations.length > 0) {
+      try {
+        const ObjectId = require('mongodb').ObjectId;
+        
+        // Handle both ObjectId instances and string IDs
+        const skillStationIds = event.skillStations.map(id => {
+          if (typeof id === 'string') {
+            return new ObjectId(id);
+          }
+          return id; // Already an ObjectId
+        });
+        
+        skillStationsData = await db.collection('skillstations').find({
+          _id: { $in: skillStationIds }
+        }).toArray();
+        
+        // Populate leader data for each skill station
+        for (let station of skillStationsData) {
+          if (station.leader) {
+            // Handle both ObjectId instances and string IDs for leader
+            const leaderId = typeof station.leader === 'string' 
+              ? new ObjectId(station.leader) 
+              : station.leader;
+            
+            const leader = await db.collection('users').findOne({
+              _id: leaderId
+            });
+            if (leader) {
+              station.leader = {
+                _id: leader._id,
+                firstName: leader.firstName,
+                lastName: leader.lastName,
+                email: leader.email
+              };
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch skill stations data:', error.message);
+      }
+    }
+    
     // Format event for frontend
     const formattedEvent = {
       id: event.id || event._id.toString(),
@@ -768,7 +812,7 @@ app.get('/api/events/:id', async (req, res) => {
         email: speaker.email || ''
       })),
       agenda: event.agenda || [],
-      skillStations: event.skillStations || []
+      skillStations: skillStationsData
     };
     
     console.log(`Returning event: ${formattedEvent.name}`);

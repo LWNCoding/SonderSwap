@@ -183,7 +183,7 @@ const EventDetail: React.FC = () => {
                   </span>
                 ) : (
                   <button
-                    onClick={() => navigate(`/user/${(event.organizer as User)._id}`)}
+                    onClick={() => navigate(`/user/${(event.organizer as User)._id}?returnTo=/event/${eventId}`)}
                     className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
                   >
                     {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
@@ -252,7 +252,7 @@ const EventDetail: React.FC = () => {
           <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
           <button
             onClick={() => setIsHowItWorksOpen(true)}
-            className="ml-3 w-6 h-6 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center transition-colors"
+            className={`ml-3 w-6 h-6 ${GRADIENTS.PRIMARY_SECONDARY} hover:opacity-80 rounded-full flex items-center justify-center transition-all`}
             title="How It Works"
           >
             <Icon name="info" size="sm" className="text-white" />

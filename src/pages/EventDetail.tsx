@@ -7,7 +7,7 @@ import { useEventParticipants } from '../hooks/useEventParticipants';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import Icon from '../components/Icon';
-import { LAYOUT, GRADIENTS, ANIMATION, LOADING_STATES, CAROUSEL, SIZES } from '../lib/constants';
+import { LAYOUT, GRADIENTS, ANIMATION, LOADING_STATES, CAROUSEL } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/AuthModal';
 import { SkillStation, User } from '../types';
@@ -251,8 +251,10 @@ const EventDetail: React.FC = () => {
   );
 
   // Carousel utility functions
+  const SKILL_STATIONS_PER_PAGE = 1; // Show one skill station per page for better readability
+  
   const getTotalPages = (stationsCount: number): number => {
-    return Math.ceil(stationsCount / CAROUSEL.CARDS_PER_PAGE);
+    return Math.ceil(stationsCount / SKILL_STATIONS_PER_PAGE);
   };
 
   const clearScrollTimeout = (): void => {
@@ -267,7 +269,9 @@ const EventDetail: React.FC = () => {
 
     clearScrollTimeout();
     
-    const scrollPosition = page * CAROUSEL.CARDS_PER_PAGE * (CAROUSEL.CARD_WIDTH + 16); // 16px for margin
+    // Calculate scroll position for one card per page with proper spacing
+    const cardWidth = container.offsetWidth - 16; // Account for margins
+    const scrollPosition = page * cardWidth;
     container.scrollTo({ left: scrollPosition, behavior: 'smooth' });
     
     setCurrentPage(page);
@@ -385,7 +389,7 @@ const EventDetail: React.FC = () => {
               const stationDifficulty = stationData?.difficulty;
 
               return (
-                <div key={index} className={`flex-shrink-0 ${SIZES.CARD_WIDTH} cursor-pointer relative`} style={{margin: '0 8px'}}>
+                <div key={index} className="flex-shrink-0 w-full max-w-md cursor-pointer relative" style={{margin: '0 8px'}}>
                   <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300">
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">

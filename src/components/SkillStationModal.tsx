@@ -350,7 +350,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                               <div>
                                 <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
                                   Capacity
@@ -375,22 +375,21 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 />
                               </div>
-                            </div>
-
-                            <div>
-                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                                Difficulty
-                              </label>
-                              <select
-                                value={editFormData.difficulty || 'All Levels'}
-                                onChange={(e) => handleEditFormChange('difficulty', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              >
-                                <option value="All Levels">All Levels</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Advanced">Advanced</option>
-                              </select>
+                              <div>
+                                <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                  Difficulty
+                                </label>
+                                <select
+                                  value={editFormData.difficulty || 'All Levels'}
+                                  onChange={(e) => handleEditFormChange('difficulty', e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                >
+                                  <option value="All Levels">All Levels</option>
+                                  <option value="Beginner">Beginner</option>
+                                  <option value="Intermediate">Intermediate</option>
+                                  <option value="Advanced">Advanced</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
 
@@ -477,7 +476,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-3 gap-4">
                             <div>
                               <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
                                 Capacity
@@ -490,20 +489,19 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               </label>
                               <p className={`${typography.bodySmall} text-gray-600`}>{station.duration} min</p>
                             </div>
-                          </div>
-
-                          <div>
-                            <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
-                              Difficulty
-                            </label>
-                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                              station.difficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                              station.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                              station.difficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {station.difficulty}
-                            </span>
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
+                                Difficulty
+                              </label>
+                              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                station.difficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                                station.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                                station.difficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {station.difficulty}
+                              </span>
+                            </div>
                           </div>
                         </div>
 

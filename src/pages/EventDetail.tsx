@@ -185,6 +185,7 @@ const EventDetail: React.FC = () => {
           { icon: "location", text: event.address },
           { icon: "calendar", text: event.date },
           { icon: "clock", text: event.time },
+          { icon: "user", text: event.ageRestriction },
         ].map((item, index) => (
           <div key={index} className="flex items-center text-gray-600">
             <Icon name={item.icon} size="md" className="mr-3 text-primary-600" />
@@ -516,10 +517,6 @@ const EventDetail: React.FC = () => {
               {event.address}
             </button>
           </div>
-          <div>
-            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Age:</span>
-            <p className={`${typography.bodySmall} text-gray-700`}>{event.ageRestriction}</p>
-          </div>
         </div>
       </div>
 
@@ -624,20 +621,26 @@ const EventDetail: React.FC = () => {
                  </div>
                  
                  <div className="p-4">
-                   <div className="w-full h-80 bg-gray-100 rounded-lg flex items-center justify-center">
-                     <div className="text-center">
-                       <Icon name="mapPin" size="lg" className="text-gray-400 mb-2 mx-auto" />
-                       <p className={`${typography.body} text-gray-600 mb-4`}>Interactive Map</p>
-                       <a
-                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className={`inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors ${typography.button}`}
-                       >
-                         <Icon name="globe" size="sm" className="mr-2" />
-                         Open in Google Maps
-                       </a>
-                     </div>
+                   <iframe
+                     src={`https://maps.google.com/maps?q=${encodeURIComponent(event.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                     width="100%"
+                     height="400"
+                     style={{ border: 0 }}
+                     allowFullScreen
+                     loading="lazy"
+                     referrerPolicy="no-referrer-when-downgrade"
+                     className="rounded-lg"
+                   />
+                   <div className="mt-4 text-center">
+                     <a
+                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className={`inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors ${typography.button}`}
+                     >
+                       <Icon name="globe" size="sm" className="mr-2" />
+                       Open in Google Maps
+                     </a>
                    </div>
                  </div>
                </div>

@@ -31,6 +31,13 @@ export const useBackNavigation = () => {
   }, [location.pathname, location.search]);
 
   const goBack = () => {
+    // First, try to use browser history if available
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    
+    // Fallback to our tracked history
     if (navigationHistory.length > 1) {
       const previousState = navigationHistory[navigationHistory.length - 2];
       const searchParams = new URLSearchParams(previousState.search || '');
@@ -43,12 +50,12 @@ export const useBackNavigation = () => {
       
       navigate(previousUrl);
     } else {
-      // Fallback to browser back if no history
-      window.history.back();
+      // Final fallback - go to home page
+      navigate('/');
     }
   };
 
-  const canGoBack = navigationHistory.length > 1;
+  const canGoBack = navigationHistory.length > 1 || window.history.length > 1;
 
   return {
     goBack,

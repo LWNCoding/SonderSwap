@@ -261,8 +261,10 @@ const UserProfile: React.FC = () => {
                 const urlParams = new URLSearchParams(location.search);
                 const returnTo = urlParams.get('returnTo');
                 if (returnTo) {
-                  navigate(returnTo);
+                  // If returnTo parameter exists, use it directly
+                  navigate(decodeURIComponent(returnTo));
                 } else {
+                  // Otherwise, use the back navigation hook
                   goBack();
                 }
               }}

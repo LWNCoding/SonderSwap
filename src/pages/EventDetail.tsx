@@ -182,7 +182,6 @@ const EventDetail: React.FC = () => {
       
       <div className="space-y-3 mb-6">
         {[
-          { icon: "location", text: event.address },
           { icon: "calendar", text: event.date },
           { icon: "clock", text: event.time },
           { icon: "user", text: event.ageRestriction },
@@ -607,8 +606,8 @@ const EventDetail: React.FC = () => {
            {/* Google Map Modal */}
            {isMapOpen && (
              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-               <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full h-96">
-                 <div className="p-4 border-b border-gray-200">
+               <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
+                 <div className="p-4 border-b border-gray-200 flex-shrink-0">
                    <div className="flex items-center justify-between">
                      <h3 className={`${typography.h3} text-gray-900`}>Venue Location</h3>
                      <button
@@ -620,17 +619,18 @@ const EventDetail: React.FC = () => {
                    </div>
                  </div>
                  
-                 <div className="p-4">
-                   <iframe
-                     src={`https://maps.google.com/maps?q=${encodeURIComponent(event.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                     width="100%"
-                     height="400"
-                     style={{ border: 0 }}
-                     allowFullScreen
-                     loading="lazy"
-                     referrerPolicy="no-referrer-when-downgrade"
-                     className="rounded-lg"
-                   />
+                 <div className="p-4 flex-1 overflow-hidden">
+                   <div className="w-full h-96 rounded-lg overflow-hidden">
+                     <iframe
+                       src={`https://maps.google.com/maps?q=${encodeURIComponent(event.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                       width="100%"
+                       height="100%"
+                       style={{ border: 0 }}
+                       allowFullScreen
+                       loading="lazy"
+                       referrerPolicy="no-referrer-when-downgrade"
+                     />
+                   </div>
                    <div className="mt-4 text-center">
                      <a
                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}

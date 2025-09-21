@@ -261,7 +261,7 @@ const createEvents = async (users, skillStations, categories) => {
       duration,
       capacity,
       expectedParticipants: Math.floor(parseInt(capacity) * (0.6 + Math.random() * 0.3)).toString(),
-      ageRestriction: ['N/A', '13+', '18+', '21+'][Math.floor(Math.random() * 4)],
+      ageRestriction: ['All ages welcome', '13+', '18+', '21+'][Math.floor(Math.random() * 4)],
       organizer: organizer._id,
       venue: `${city.split(',')[0]} Convention Center`,
       speakers,

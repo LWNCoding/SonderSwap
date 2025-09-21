@@ -327,7 +327,7 @@ const EventDetail: React.FC = () => {
 
     return (
       <button
-        className={`absolute ${className} z-20 ${CAROUSEL.BUTTON_SIZE} ${GRADIENTS.BUTTON_BACKGROUND} ${GRADIENTS.BUTTON_BACKGROUND_HOVER} shadow-lg rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all ${ANIMATION.TRANSITION_DURATION}`}
+        className={`absolute ${className} z-20 ${CAROUSEL.BUTTON_SIZE} ${GRADIENTS.BUTTON_BACKGROUND} ${GRADIENTS.BUTTON_BACKGROUND_HOVER} shadow-lg rounded-full flex items-center justify-center opacity-30 group-hover:opacity-80 transition-all ${ANIMATION.TRANSITION_DURATION}`}
         onClick={onClick}
         disabled={disabled}
       >
@@ -508,12 +508,11 @@ const EventDetail: React.FC = () => {
         <div className="space-y-3">
           {[
             { label: 'Venue', value: event.venue },
-            { label: 'Capacity', value: event.capacity },
             { label: 'Age', value: event.ageRestriction },
           ].map((detail, index) => (
             <div key={index}>
               <span className={`${typography.bodySmall} font-medium text-gray-500`}>{detail.label}:</span>
-              <p className={`${typography.bodySmall} text-gray-700`}>{detail.label === 'Capacity' ? `${detail.value} people` : detail.value}</p>
+              <p className={`${typography.bodySmall} text-gray-700`}>{detail.value}</p>
             </div>
           ))}
         </div>

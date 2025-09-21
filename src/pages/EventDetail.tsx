@@ -327,7 +327,7 @@ const EventDetail: React.FC = () => {
 
     return (
       <button
-        className={`absolute ${className} z-20 ${CAROUSEL.BUTTON_SIZE} ${GRADIENTS.BUTTON_BACKGROUND} ${GRADIENTS.BUTTON_BACKGROUND_HOVER} shadow-lg rounded-full flex items-center justify-center opacity-30 group-hover:opacity-80 transition-all ${ANIMATION.TRANSITION_DURATION}`}
+        className={`absolute ${className} z-20 ${CAROUSEL.BUTTON_SIZE} ${GRADIENTS.BUTTON_BACKGROUND} ${GRADIENTS.BUTTON_BACKGROUND_HOVER} shadow-lg rounded-full flex items-center justify-center opacity-0 group-hover:opacity-60 transition-all ${ANIMATION.TRANSITION_DURATION}`}
         onClick={onClick}
         disabled={disabled}
       >

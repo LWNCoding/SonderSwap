@@ -23,19 +23,19 @@ const UserPublicProfile: React.FC = () => {
   const isOwnProfile = currentUser && userId === currentUser._id;
 
   useEffect(() => {
-    // If viewing own profile, redirect to /profile but preserve returnTo parameter
+    // If viewing own profile, redirect to /profile but preserve returnTo state
     if (isOwnProfile) {
-      const urlParams = new URLSearchParams(location.search);
-      const returnTo = urlParams.get('returnTo');
-      const profileUrl = returnTo ? `/profile?returnTo=${encodeURIComponent(returnTo)}` : '/profile';
-      navigate(profileUrl);
+      const returnTo = location.state?.returnTo;
+      navigate('/profile', { 
+        state: returnTo ? { returnTo } : undefined 
+      });
       return;
     }
     
     if (userId) {
       fetchUserProfile();
     }
-  }, [userId, isOwnProfile, navigate, location.search]);
+  }, [userId, isOwnProfile, navigate, location.state]);
 
   const fetchUserProfile = async () => {
     try {

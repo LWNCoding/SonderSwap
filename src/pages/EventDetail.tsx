@@ -218,7 +218,9 @@ const EventDetail: React.FC = () => {
                   </span>
                 ) : (
                   <button
-                    onClick={() => navigate(`/user/${(event.organizer as User)._id}?returnTo=/event/${eventId}`)}
+                    onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
+                      state: { returnTo: `/event/${eventId}` } 
+                    })}
                     className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
                   >
                     {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}

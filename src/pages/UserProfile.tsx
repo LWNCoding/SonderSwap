@@ -258,11 +258,10 @@ const UserProfile: React.FC = () => {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => {
-                const urlParams = new URLSearchParams(location.search);
-                const returnTo = urlParams.get('returnTo');
+                const returnTo = location.state?.returnTo;
                 if (returnTo) {
-                  // If returnTo parameter exists, use it directly
-                  navigate(decodeURIComponent(returnTo));
+                  // If returnTo state exists, use it directly
+                  navigate(returnTo);
                 } else {
                   // Otherwise, use the back navigation hook
                   goBack();

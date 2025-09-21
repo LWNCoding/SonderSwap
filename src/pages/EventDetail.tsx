@@ -27,6 +27,7 @@ const EventDetail: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   
   // Carousel state
   const [currentPage, setCurrentPage] = useState(0);
@@ -504,17 +505,21 @@ const EventDetail: React.FC = () => {
   const renderSidebar = (): JSX.Element => (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Details</h2>
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
         <div className="space-y-3">
-          {[
-            { label: 'Venue', value: event.venue },
-            { label: 'Age', value: event.ageRestriction },
-          ].map((detail, index) => (
-            <div key={index}>
-              <span className={`${typography.bodySmall} font-medium text-gray-500`}>{detail.label}:</span>
-              <p className={`${typography.bodySmall} text-gray-700`}>{detail.value}</p>
-            </div>
-          ))}
+          <div>
+            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
+            <button
+              onClick={() => setIsMapOpen(true)}
+              className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
+            >
+              {event.address}
+            </button>
+          </div>
+          <div>
+            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Age:</span>
+            <p className={`${typography.bodySmall} text-gray-700`}>{event.ageRestriction}</p>
+          </div>
         </div>
       </div>
 
@@ -568,39 +573,76 @@ const EventDetail: React.FC = () => {
         onClose={() => setIsAuthModalOpen(false)} 
       />
 
-      {/* How It Works Modal */}
-      {isHowItWorksOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`${typography.h3} text-gray-900`}>How It Works</h3>
-                <button
-                  onClick={() => setIsHowItWorksOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <Icon name="close" size="md" />
-                </button>
-              </div>
-              
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <p className={`${typography.body} text-purple-800 leading-relaxed`}>
-                  {event.howItWorks}
-                </p>
-              </div>
-              
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => setIsHowItWorksOpen(false)}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  Got it
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+           {/* How It Works Modal */}
+           {isHowItWorksOpen && (
+             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+               <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                 <div className="p-6">
+                   <div className="flex items-center justify-between mb-4">
+                     <h3 className={`${typography.h3} text-gray-900`}>How It Works</h3>
+                     <button
+                       onClick={() => setIsHowItWorksOpen(false)}
+                       className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                     >
+                       <Icon name="close" size="md" />
+                     </button>
+                   </div>
+                   
+                   <div className="p-4 bg-purple-50 rounded-lg">
+                     <p className={`${typography.body} text-purple-800 leading-relaxed`}>
+                       {event.howItWorks}
+                     </p>
+                   </div>
+                   
+                   <div className="flex justify-end mt-6">
+                     <button
+                       onClick={() => setIsHowItWorksOpen(false)}
+                       className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                     >
+                       Got it
+                     </button>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           )}
+
+           {/* Google Map Modal */}
+           {isMapOpen && (
+             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+               <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full h-96">
+                 <div className="p-4 border-b border-gray-200">
+                   <div className="flex items-center justify-between">
+                     <h3 className={`${typography.h3} text-gray-900`}>Venue Location</h3>
+                     <button
+                       onClick={() => setIsMapOpen(false)}
+                       className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                     >
+                       <Icon name="close" size="md" />
+                     </button>
+                   </div>
+                 </div>
+                 
+                 <div className="p-4">
+                   <div className="w-full h-80 bg-gray-100 rounded-lg flex items-center justify-center">
+                     <div className="text-center">
+                       <Icon name="mapPin" size="lg" className="text-gray-400 mb-2 mx-auto" />
+                       <p className={`${typography.body} text-gray-600 mb-4`}>Interactive Map</p>
+                       <a
+                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}`}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className={`inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors ${typography.button}`}
+                       >
+                         <Icon name="globe" size="sm" className="mr-2" />
+                         Open in Google Maps
+                       </a>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           )}
     </div>
   );
 };

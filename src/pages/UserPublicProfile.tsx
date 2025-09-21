@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
 import { typography } from '../lib/typography';
+import { useBackNavigation } from '../hooks/useBackNavigation';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/Button';
 import Icon from '../components/Icon';
@@ -13,6 +14,7 @@ const UserPublicProfile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const { goBack } = useBackNavigation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +101,7 @@ const UserPublicProfile: React.FC = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate(-1)}
+              onClick={goBack}
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />

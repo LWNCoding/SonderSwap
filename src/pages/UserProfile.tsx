@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { User } from '../types';
 import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
 import { typography } from '../lib/typography';
 import { authService } from '../lib/authService';
+import { useBackNavigation } from '../hooks/useBackNavigation';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/Button';
 import Icon from '../components/Icon';
@@ -13,7 +14,7 @@ import Badge from '../components/Badge';
 const UserProfile: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { goBack } = useBackNavigation();
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -255,15 +256,7 @@ const UserProfile: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => {
-                const urlParams = new URLSearchParams(location.search);
-                const returnTo = urlParams.get('returnTo');
-                if (returnTo) {
-                  navigate(returnTo);
-                } else {
-                  navigate(-1);
-                }
-              }}
+              onClick={goBack}
               className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />

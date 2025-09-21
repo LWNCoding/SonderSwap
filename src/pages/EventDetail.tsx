@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { typography } from '../lib/typography';
 import { useEvent } from '../hooks/useEvent';
 import { useEventParticipation } from '../hooks/useEventParticipation';
 import { useEventParticipants } from '../hooks/useEventParticipants';
+import { useBackNavigation } from '../hooks/useBackNavigation';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import Badge from '../components/Badge';
 import Icon from '../components/Icon';
@@ -24,6 +25,7 @@ const EventDetail: React.FC = () => {
   const navigate = useNavigate();
   const { event, loading, error } = useEvent(eventId);
   const { isAuthenticated, user } = useAuth();
+  const { goBack } = useBackNavigation();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
@@ -131,15 +133,15 @@ const EventDetail: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
           <p className="text-gray-600 mb-6">{error || 'The event you are looking for does not exist.'}</p>
-          <Link 
-            to="/current-events" 
+          <button 
+            onClick={goBack}
             className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Events
-          </Link>
+            Back
+          </button>
         </div>
       </div>
     );
@@ -147,13 +149,13 @@ const EventDetail: React.FC = () => {
 
   // Render helpers
   const renderBackButton = (): JSX.Element => (
-    <Link 
-      to="/current-events" 
+    <button 
+      onClick={goBack}
       className={`inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors ${typography.navLink}`}
     >
       <Icon name="arrowLeft" size="md" className="mr-2" />
-      Back to Events
-    </Link>
+      Back
+    </button>
   );
 
   const renderEventImage = (): JSX.Element => (

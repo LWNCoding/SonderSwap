@@ -6,6 +6,7 @@ export interface LayoutProps {
 export interface NavItem {
   label: string;
   href: string;
+  requiresAuth?: boolean;
 }
 
 // Event Types

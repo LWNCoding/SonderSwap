@@ -56,15 +56,22 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`text-gray-700 hover:text-primary-600 px-3 py-2 ${typography.navLink} transition-colors duration-200`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {items.map((item) => {
+              // Skip auth-required items if user is not authenticated
+              if (item.requiresAuth && !isAuthenticated) {
+                return null;
+              }
+              
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`text-gray-700 hover:text-primary-600 px-3 py-2 ${typography.navLink} transition-colors duration-200`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             
             {/* Auth Section */}
             {isAuthenticated ? (
@@ -133,16 +140,23 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`text-gray-700 hover:text-primary-600 block px-3 py-2 ${typography.navLinkMobile} transition-colors duration-200`}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {items.map((item) => {
+              // Skip auth-required items if user is not authenticated
+              if (item.requiresAuth && !isAuthenticated) {
+                return null;
+              }
+              
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`text-gray-700 hover:text-primary-600 block px-3 py-2 ${typography.navLinkMobile} transition-colors duration-200`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             
             {/* Mobile Auth Section */}
             {isAuthenticated ? (

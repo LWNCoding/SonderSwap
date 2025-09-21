@@ -479,7 +479,9 @@ const EventDetail: React.FC = () => {
                             <div className="flex-1">
                               <p className={`${typography.small} text-gray-500`}>Station Leader</p>
                               <button
-                                onClick={() => navigate(`/user/${stationData.leader?._id}?returnTo=/event/${eventId}`)}
+                                onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
+                                  state: { returnTo: `/event/${eventId}` } 
+                                })}
                                 className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
                               >
                                 {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}

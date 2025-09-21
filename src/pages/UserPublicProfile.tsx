@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User } from '../types';
 import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
 import { typography } from '../lib/typography';
@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 const UserPublicProfile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user: currentUser } = useAuth();
   const { goBack } = useBackNavigation();
   const [user, setUser] = useState<User | null>(null);
@@ -22,16 +23,19 @@ const UserPublicProfile: React.FC = () => {
   const isOwnProfile = currentUser && userId === currentUser._id;
 
   useEffect(() => {
-    // If viewing own profile, redirect to /profile
+    // If viewing own profile, redirect to /profile but preserve returnTo parameter
     if (isOwnProfile) {
-      navigate('/profile');
+      const urlParams = new URLSearchParams(location.search);
+      const returnTo = urlParams.get('returnTo');
+      const profileUrl = returnTo ? `/profile?returnTo=${encodeURIComponent(returnTo)}` : '/profile';
+      navigate(profileUrl);
       return;
     }
     
     if (userId) {
       fetchUserProfile();
     }
-  }, [userId, isOwnProfile, navigate]);
+  }, [userId, isOwnProfile, navigate, location.search]);
 
   const fetchUserProfile = async () => {
     try {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User } from '../types';
-import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
+import { ERROR_MESSAGES, API_CONFIG, LAYOUT, GRADIENTS } from '../lib/constants';
 import { typography } from '../lib/typography';
 import { useBackNavigation } from '../hooks/useBackNavigation';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -106,7 +106,7 @@ const UserPublicProfile: React.FC = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={goBack}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
             >
               <Icon name="arrowLeft" className="w-5 h-5" />
               <span className={typography.body}>Back</span>

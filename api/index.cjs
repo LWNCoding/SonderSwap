@@ -692,8 +692,9 @@ app.get('/api/events', async (req, res) => {
 // Get user's participating events
 app.get('/api/events/participating', verifyToken, async (req, res) => {
   try {
-    const userId = new ObjectId(req.user._id);
     const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.user._id);
     
     // Find events where user is a participant
     const events = await db.collection('events').find({
@@ -713,8 +714,9 @@ app.get('/api/events/participating', verifyToken, async (req, res) => {
 // Get user's organizing events
 app.get('/api/events/organizing', verifyToken, async (req, res) => {
   try {
-    const userId = new ObjectId(req.user._id);
     const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.user._id);
     
     // Find events where user is the organizer
     const events = await db.collection('events').find({

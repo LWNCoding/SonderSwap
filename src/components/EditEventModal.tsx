@@ -75,7 +75,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         capacity: event.capacity || '',
         eventType: event.eventType || '',
         ageRestriction: event.ageRestriction || '',
-        howItWorks: event.howItWorks || '',
+        howItWorks: event.howItWorks || 'Explore different stations and sessions throughout the event. Share what you know, discover new techniques, and practice alongside others in a supportive environment. Each space focuses on a unique aspect of learning and creation, giving you the chance to participate, teach, or simply enjoy the experience.',
         agenda: event.agenda || []
       };
       
@@ -519,9 +519,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <textarea
                 name="howItWorks"
                 value={formData.howItWorks || ''}
-                readOnly
+                onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Describe how the event works"
               />
             </div>

@@ -166,13 +166,19 @@ const EventDetail: React.FC = () => {
     </div>
   );
 
-  const renderEventTags = (): JSX.Element => (
-    <div className="flex flex-wrap gap-4">
-      <Badge label={event.eventType} variant="primary" />
-      <Badge label={event.price} variant="success" />
-      <Badge label={event.duration} variant="info" />
-    </div>
-  );
+  const renderEventTags = (): JSX.Element => {
+    const capitalizeFirstLetter = (str: string) => {
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
+
+    return (
+      <div className="flex flex-wrap gap-4">
+        {event.eventType && <Badge label={capitalizeFirstLetter(event.eventType)} variant="primary" />}
+        {event.price && <Badge label={event.price} variant="success" />}
+        {event.duration && <Badge label={event.duration} variant="info" />}
+      </div>
+    );
+  };
 
   const renderEventInfo = (): JSX.Element => (
     <div className="order-1 lg:order-2">

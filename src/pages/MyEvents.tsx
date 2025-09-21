@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import { typography } from '../lib/typography';
 import { LAYOUT, GRADIENTS } from '../lib/constants';
 import { EventDetailData } from '../types';
+import { authService } from '../lib/authService';
 
 const MyEvents: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const MyEvents: React.FC = () => {
   const [organizingEvents, setOrganizingEvents] = useState<EventDetailData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showLeaveConfirmation, setShowLeaveConfirmation] = useState(false);
+  const [eventToLeave, setEventToLeave] = useState<EventDetailData | null>(null);
+  const [leavingEvent, setLeavingEvent] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -68,6 +72,53 @@ const MyEvents: React.FC = () => {
     fetchUserEvents();
   }, [isAuthenticated, user]);
 
+  // Handle leaving an event
+  const handleLeaveEvent = async (event: EventDetailData) => {
+    setEventToLeave(event);
+    setShowLeaveConfirmation(true);
+  };
+
+  const confirmLeaveEvent = async () => {
+    if (!eventToLeave) return;
+
+    try {
+      setLeavingEvent(true);
+      const token = authService.getToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`/api/events/${eventToLeave.id}/leave`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to leave event');
+      }
+
+      // Remove event from participating events
+      setParticipatingEvents(prev => prev.filter(e => e.id !== eventToLeave.id));
+      
+      setShowLeaveConfirmation(false);
+      setEventToLeave(null);
+    } catch (err) {
+      console.error('Failed to leave event:', err);
+      setError('Failed to leave event. Please try again.');
+    } finally {
+      setLeavingEvent(false);
+    }
+  };
+
+  const cancelLeaveEvent = () => {
+    setShowLeaveConfirmation(false);
+    setEventToLeave(null);
+  };
+
   // Show loading spinner while checking auth
   if (authLoading || loading) {
     return (
@@ -99,61 +150,87 @@ const MyEvents: React.FC = () => {
   }
 
   const renderEventCard = (event: EventDetailData, isOrganizing: boolean = false) => (
-    <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className={`${typography.h3} text-gray-900 mb-2`}>{event.name}</h3>
-            <p className={`${typography.bodySmall} text-gray-600 mb-3`}>{event.description}</p>
-          </div>
-          {isOrganizing && (
-            <span className="px-3 py-1 bg-primary-100 text-primary-800 text-sm font-semibold rounded-full">
+    <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      {/* Event Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={event.thumbnail}
+          alt={event.name}
+          className="w-full h-full object-cover"
+        />
+        {isOrganizing && (
+          <div className="absolute top-4 right-4">
+            <span className="px-3 py-1 bg-primary-600 text-white text-sm font-semibold rounded-full shadow-lg">
               Organizing
             </span>
-          )}
+          </div>
+        )}
+      </div>
+
+      {/* Event Content */}
+      <div className="p-6">
+        <div className="mb-4">
+          <h3 className={`${typography.h3} text-gray-900 mb-2 line-clamp-2`}>{event.name}</h3>
+          <p className={`${typography.bodySmall} text-gray-600 line-clamp-2`}>{event.description}</p>
         </div>
 
+        {/* Event Details */}
         <div className="space-y-2 mb-4">
           <div className="flex items-center text-gray-600">
-            <Icon name="calendar" size="sm" className="mr-2 text-primary-600" />
-            <span className={`${typography.small}`}>{event.date}</span>
+            <Icon name="calendar" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
+            <span className={`${typography.small} truncate`}>{event.date}</span>
           </div>
           <div className="flex items-center text-gray-600">
-            <Icon name="clock" size="sm" className="mr-2 text-primary-600" />
-            <span className={`${typography.small}`}>{event.time}</span>
+            <Icon name="clock" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
+            <span className={`${typography.small} truncate`}>{event.time}</span>
           </div>
           <div className="flex items-center text-gray-600">
-            <Icon name="location" size="sm" className="mr-2 text-primary-600" />
-            <span className={`${typography.small}`}>{event.address}</span>
+            <Icon name="location" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
+            <span className={`${typography.small} truncate`}>{event.address}</span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
-              {event.eventType}
-            </span>
-            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-              {event.price}
-            </span>
-          </div>
-          <div className="flex space-x-2">
+        {/* Event Tags */}
+        <div className="flex items-center space-x-2 mb-4">
+          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
+            {event.eventType}
+          </span>
+          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
+            {event.price}
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/event/${event.id}`)}
+            className="flex-1"
+          >
+            <Icon name="eye" size="sm" className="mr-1" />
+            View Details
+          </Button>
+          {isOrganizing ? (
+            <Button
+              size="sm"
+              onClick={() => navigate(`/event/${event.id}/dashboard`)}
+              className="flex-1"
+            >
+              <Icon name="settings" size="sm" className="mr-1" />
+              Manage
+            </Button>
+          ) : (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate(`/event/${event.id}`)}
+              onClick={() => handleLeaveEvent(event)}
+              className="flex-1 text-red-600 border-red-300 hover:bg-red-50"
             >
-              View Details
+              <Icon name="close" size="sm" className="mr-1" />
+              Leave Event
             </Button>
-            {isOrganizing && (
-              <Button
-                size="sm"
-                onClick={() => navigate(`/event/${event.id}/dashboard`)}
-              >
-                Manage
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -238,6 +315,58 @@ const MyEvents: React.FC = () => {
           </section>
         </div>
       </div>
+
+      {/* Leave Event Confirmation Modal */}
+      {showLeaveConfirmation && eventToLeave && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                  <Icon name="alert" size="lg" className="text-red-600" />
+                </div>
+                <div>
+                  <h3 className={`${typography.h3} text-gray-900`}>Leave Event</h3>
+                  <p className={`${typography.bodySmall} text-gray-600`}>Are you sure you want to leave this event?</p>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 className={`${typography.body} font-semibold text-gray-900 mb-1`}>{eventToLeave.name}</h4>
+                <p className={`${typography.small} text-gray-600`}>{eventToLeave.date} • {eventToLeave.time}</p>
+              </div>
+
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={cancelLeaveEvent}
+                  disabled={leavingEvent}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmLeaveEvent}
+                  disabled={leavingEvent}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {leavingEvent ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Leaving...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="close" size="sm" className="mr-1" />
+                      Leave Event
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

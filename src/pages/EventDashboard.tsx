@@ -144,7 +144,7 @@ const EventDashboard: React.FC = () => {
           <p className="text-gray-600 mb-6">{error || 'The event you are looking for does not exist.'}</p>
           <Link 
             to="/current-events" 
-            className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
+            className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors"
           >
             <Icon name="arrowLeft" size="md" className="mr-2" />
             Back to Events
@@ -164,7 +164,7 @@ const EventDashboard: React.FC = () => {
           <div className="mb-6">
             <Link 
               to={`/event/${eventId}`} 
-              className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg ${typography.navLink}`}
+              className={`inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors ${typography.navLink}`}
             >
               <Icon name="arrowLeft" size="md" className="mr-2" />
               Back to Event

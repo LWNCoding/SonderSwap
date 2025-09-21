@@ -135,7 +135,7 @@ const EventDetail: React.FC = () => {
           <p className="text-gray-600 mb-6">{error || 'The event you are looking for does not exist.'}</p>
           <button 
             onClick={goBack}
-            className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
+            className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -151,7 +151,7 @@ const EventDetail: React.FC = () => {
   const renderBackButton = (): JSX.Element => (
     <button 
       onClick={goBack}
-      className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg ${typography.navLink}`}
+      className={`inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors ${typography.navLink}`}
     >
       <Icon name="arrowLeft" size="md" className="mr-2" />
       Back

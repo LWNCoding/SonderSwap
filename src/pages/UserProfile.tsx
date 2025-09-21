@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { User } from '../types';
-import { ERROR_MESSAGES, API_CONFIG, LAYOUT, GRADIENTS } from '../lib/constants';
+import { ERROR_MESSAGES, API_CONFIG, LAYOUT } from '../lib/constants';
 import { typography } from '../lib/typography';
 import { authService } from '../lib/authService';
 import { useBackNavigation } from '../hooks/useBackNavigation';
@@ -267,7 +267,7 @@ const UserProfile: React.FC = () => {
                   goBack();
                 }
               }}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
+              className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />
               <span className={typography.body}>Back</span>

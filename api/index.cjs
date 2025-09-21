@@ -689,6 +689,46 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
+// Get user's participating events
+app.get('/api/events/participating', verifyToken, async (req, res) => {
+  try {
+    const userId = new ObjectId(req.user._id);
+    
+    // Find events where user is a participant
+    const events = await db.collection('events').find({
+      participants: userId
+    }).toArray();
+
+    res.json({
+      message: 'Participating events fetched successfully',
+      events: events
+    });
+  } catch (error) {
+    console.error('Get participating events API error:', error);
+    res.status(500).json({ error: 'Failed to fetch participating events' });
+  }
+});
+
+// Get user's organizing events
+app.get('/api/events/organizing', verifyToken, async (req, res) => {
+  try {
+    const userId = new ObjectId(req.user._id);
+    
+    // Find events where user is the organizer
+    const events = await db.collection('events').find({
+      organizer: userId
+    }).toArray();
+
+    res.json({
+      message: 'Organizing events fetched successfully',
+      events: events
+    });
+  } catch (error) {
+    console.error('Get organizing events API error:', error);
+    res.status(500).json({ error: 'Failed to fetch organizing events' });
+  }
+});
+
 // Single event endpoint - fetch by ID
 app.get('/api/events/:id', async (req, res) => {
   try {
@@ -1411,46 +1451,6 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Update skill stations API error:', error);
     res.status(500).json({ error: 'Failed to update skill stations' });
-  }
-});
-
-// Get user's participating events
-app.get('/api/events/participating', verifyToken, async (req, res) => {
-  try {
-    const userId = new ObjectId(req.user._id);
-    
-    // Find events where user is a participant
-    const events = await db.collection('events').find({
-      participants: userId
-    }).toArray();
-
-    res.json({
-      message: 'Participating events fetched successfully',
-      events: events
-    });
-  } catch (error) {
-    console.error('Get participating events API error:', error);
-    res.status(500).json({ error: 'Failed to fetch participating events' });
-  }
-});
-
-// Get user's organizing events
-app.get('/api/events/organizing', verifyToken, async (req, res) => {
-  try {
-    const userId = new ObjectId(req.user._id);
-    
-    // Find events where user is the organizer
-    const events = await db.collection('events').find({
-      organizer: userId
-    }).toArray();
-
-    res.json({
-      message: 'Organizing events fetched successfully',
-      events: events
-    });
-  } catch (error) {
-    console.error('Get organizing events API error:', error);
-    res.status(500).json({ error: 'Failed to fetch organizing events' });
   }
 });
 

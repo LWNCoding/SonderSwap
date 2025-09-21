@@ -40,7 +40,7 @@ async function testEventInsert() {
     duration: '6 hours',
     capacity: '100',
     expectedParticipants: '75',
-    ageRestriction: 'All ages welcome',
+    ageRestriction: 'N/A',
     organizer: user._id,
     venue: 'Test Convention Center',
     speakers: [user._id],

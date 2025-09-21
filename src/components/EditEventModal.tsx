@@ -497,14 +497,18 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
                 Age Restriction *
               </label>
-              <input
-                type="text"
+              <select
                 name="ageRestriction"
                 value={formData.ageRestriction || ''}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="e.g., 18+, All ages, 21+"
-              />
+              >
+                <option value="">Select age restriction</option>
+                <option value="N/A">N/A</option>
+                <option value="13+">13+</option>
+                <option value="18+">18+</option>
+                <option value="21+">21+</option>
+              </select>
             </div>
 
             {/* How It Works */}

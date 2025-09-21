@@ -379,7 +379,7 @@ const EventDetail: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue Skill Stations</h2>
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
         
         <div className="relative group">
           {renderNavigationButton(

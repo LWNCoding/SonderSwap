@@ -704,9 +704,10 @@ app.get('/api/events/participating', verifyToken, async (req, res) => {
     // Get event IDs from participations
     const eventIds = participations.map(p => p.eventId);
     
-    // Find events that user is participating in
+    // Find events that user is participating in (but not organizing)
     const events = await db.collection('events').find({
-      _id: { $in: eventIds }
+      _id: { $in: eventIds },
+      organizer: { $ne: userId } // Exclude events where user is the organizer
     }).toArray();
 
     res.json({
@@ -1469,22 +1470,30 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
 // Leave an event
 app.post('/api/events/:eventId/leave', verifyToken, async (req, res) => {
   try {
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
     const { eventId } = req.params;
     const userId = new ObjectId(req.user._id);
 
     // Find the event
-    const event = await db.collection('events').findOne({ id: eventId });
+    const event = await db.collection('events').findOne({ 
+      $or: [
+        { id: eventId },
+        { id: parseInt(eventId) },
+        { _id: eventId }
+      ]
+    });
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    // Remove user from participants array
-    const result = await db.collection('events').updateOne(
-      { id: eventId },
-      { $pull: { participants: userId } }
-    );
+    // Remove user from participants collection
+    const result = await db.collection('participants').deleteOne({
+      eventId: event._id,
+      userId: userId
+    });
 
-    if (result.modifiedCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(400).json({ error: 'User is not participating in this event' });
     }
 

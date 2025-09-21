@@ -208,7 +208,7 @@ const MyEvents: React.FC = () => {
             onClick={() => navigate(`/event/${event.id}`)}
             className="flex-1"
           >
-            <Icon name="eye" size="sm" className="mr-1" />
+            <Icon name="user" size="sm" className="mr-1" />
             View Details
           </Button>
           {isOrganizing ? (

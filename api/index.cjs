@@ -696,9 +696,17 @@ app.get('/api/events/participating', verifyToken, async (req, res) => {
     const ObjectId = require('mongodb').ObjectId;
     const userId = new ObjectId(req.user._id);
     
-    // Find events where user is a participant
+    // Find participation records for this user
+    const participations = await db.collection('participants').find({
+      userId: userId
+    }).toArray();
+
+    // Get event IDs from participations
+    const eventIds = participations.map(p => p.eventId);
+    
+    // Find events that user is participating in
     const events = await db.collection('events').find({
-      participants: userId
+      _id: { $in: eventIds }
     }).toArray();
 
     res.json({

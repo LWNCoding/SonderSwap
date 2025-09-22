@@ -29,7 +29,16 @@ const CreateEvent: React.FC = () => {
     capacity: '',
     ageRestriction: 'All ages welcome',
     agenda: [''],
-    howItWorks: 'Explore different stations and sessions throughout the event. Share what you know, discover new techniques, and practice alongside others in a supportive environment. Each space focuses on a unique aspect of learning and creation, giving you the chance to participate, teach, or simply enjoy the experience.'
+    howItWorks: 'Explore different stations and sessions throughout the event. Share what you know, discover new techniques, and practice alongside others in a supportive environment. Each space focuses on a unique aspect of learning and creation, giving you the chance to participate, teach, or simply enjoy the experience.',
+    skillStations: [] as Array<{
+      name: string;
+      description: string;
+      location: string;
+      skills: string[];
+      capacity: number;
+      duration: number;
+      difficulty: string;
+    }>
   });
 
   const [timeErrors, setTimeErrors] = useState<{startTime?: string; endTime?: string}>({});
@@ -120,6 +129,37 @@ const CreateEvent: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       agenda: prev.agenda.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addSkillStation = () => {
+    setFormData(prev => ({
+      ...prev,
+      skillStations: [...prev.skillStations, {
+        name: '',
+        description: '',
+        location: '',
+        skills: [],
+        capacity: 10,
+        duration: 60,
+        difficulty: 'All Levels'
+      }]
+    }));
+  };
+
+  const removeSkillStation = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      skillStations: prev.skillStations.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSkillStationChange = (index: number, field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      skillStations: prev.skillStations.map((station, i) => 
+        i === index ? { ...station, [field]: value } : station
+      )
     }));
   };
 
@@ -483,6 +523,128 @@ const CreateEvent: React.FC = () => {
                     className="text-primary-600 hover:text-primary-800 text-sm font-medium"
                   >
                     + Add agenda item
+                  </button>
+                </div>
+              </div>
+
+              {/* Skill Stations */}
+              <div className="md:col-span-2">
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Skill Stations (Optional)
+                </label>
+                <div className="space-y-4">
+                  {formData.skillStations?.map((station, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Station Name
+                          </label>
+                          <input
+                            type="text"
+                            value={station.name || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'name', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="e.g., Web Development"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Location
+                          </label>
+                          <input
+                            type="text"
+                            value={station.location || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'location', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="e.g., Room A, Lab 1"
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Description
+                          </label>
+                          <textarea
+                            value={station.description || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'description', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            rows={2}
+                            placeholder="Describe what participants will learn or do"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Skills (comma-separated)
+                          </label>
+                          <input
+                            type="text"
+                            value={station.skills?.join(', ') || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="e.g., JavaScript, React, Node.js"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Capacity
+                          </label>
+                          <input
+                            type="number"
+                            value={station.capacity || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'capacity', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            min="1"
+                            placeholder="10"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Duration (minutes)
+                          </label>
+                          <input
+                            type="number"
+                            value={station.duration || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'duration', parseInt(e.target.value) || 0)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            min="1"
+                            placeholder="60"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Difficulty
+                          </label>
+                          <select
+                            value={station.difficulty || 'All Levels'}
+                            onChange={(e) => handleSkillStationChange(index, 'difficulty', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          >
+                            <option value="All Levels">All Levels</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-2 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => removeSkillStation(index)}
+                            className="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+                          >
+                            <Icon name="trash" className="w-4 h-4 inline mr-1" />
+                            Remove Station
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addSkillStation}
+                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary-500 hover:text-primary-600 transition-colors"
+                  >
+                    <Icon name="plus" className="w-5 h-5 inline mr-2" />
+                    Add Skill Station
                   </button>
                 </div>
               </div>

@@ -440,6 +440,19 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               />
                             </div>
 
+                            <div>
+                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
+                                Skills (comma-separated)
+                              </label>
+                              <input
+                                type="text"
+                                value={editFormData.skills?.join(', ') || ''}
+                                onChange={(e) => handleEditFormChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                placeholder="e.g., JavaScript, React, Node.js"
+                              />
+                            </div>
+
                             <div className="grid grid-cols-3 gap-4">
                               <div>
                                 <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
@@ -732,7 +745,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                   <input
                     type="text"
                     value={newStationData.skills?.join(', ') || ''}
-                    onChange={(e) => handleNewStationChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s))}
+                    onChange={(e) => handleNewStationChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="e.g., JavaScript, React, Node.js"
                   />

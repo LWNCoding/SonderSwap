@@ -476,11 +476,6 @@ const EventDetail: React.FC = () => {
 
   const renderSidebar = (): JSX.Element => (
     <div className="space-y-6">
-      {/* Action buttons - desktop only */}
-      <div className="hidden lg:block">
-        {renderActionButtons()}
-      </div>
-
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
         <div className="space-y-3">
@@ -572,8 +567,8 @@ const EventDetail: React.FC = () => {
             </div>
           </div>
           
-          {/* Action buttons - mobile only */}
-          <div className="lg:hidden mt-6">
+          {/* Action buttons - always visible */}
+          <div className="mt-6">
             {renderActionButtons()}
           </div>
         </div>

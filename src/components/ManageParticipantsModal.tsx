@@ -180,7 +180,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
           <p className={`${typography.caption} text-gray-500 dark:text-gray-400`}>
             {participants.length} participant{participants.length !== 1 ? 's' : ''} registered
           </p>

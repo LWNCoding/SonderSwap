@@ -64,15 +64,15 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
       onClick={handleOutsideClick}
     >
       {participants.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <Icon name="users" size="lg" className="mx-auto mb-2 text-gray-300" />
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">
+          <Icon name="users" size="lg" className="mx-auto mb-2 text-gray-300 dark:text-gray-600" />
           <p className={typography.small}>No participants yet</p>
         </div>
       ) : (
         participants.map((participant) => (
           <div
             key={participant.userId}
-            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           >
             <div className="flex items-center space-x-3">
               {/* Profile Picture */}
@@ -94,13 +94,13 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
 
               {/* Participant Info */}
               <div className="flex-1 min-w-0">
-                <h4 className={`${typography.bodySmall} font-semibold text-gray-900 truncate`}>
+                <h4 className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white truncate`}>
                   {participant.firstName} {participant.lastName}
                 </h4>
-                <p className={`${typography.caption} text-gray-500 truncate`}>
+                <p className={`${typography.caption} text-gray-500 dark:text-gray-400 dark:text-gray-500 truncate`}>
                   {participant.email}
                 </p>
-                <p className={`${typography.caption} text-gray-400`}>
+                <p className={`${typography.caption} text-gray-400 dark:text-gray-500`}>
                   Joined {formatJoinedDate(participant.joinedAt)}
                 </p>
               </div>
@@ -111,7 +111,7 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
               <div className="relative">
                 <button
                   onClick={(e) => handleEditClick(participant, e)}
-                  className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900 rounded-lg transition-colors"
                   title="Manage participant"
                 >
                   <Icon name="edit" size="sm" />
@@ -119,13 +119,13 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
                 
                 {/* Dropdown Menu */}
                 {openDropdown === participant.userId && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg dark:shadow-gray-700/20 z-10">
                     <div className="py-1">
                       {onRemove && (
                         <button
                           onClick={() => handleRemoveClick(participant)}
                           disabled={removing === participant.userId}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {removing === participant.userId ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>

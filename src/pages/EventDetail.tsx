@@ -1017,10 +1017,10 @@ const EventDetail: React.FC = () => {
       {/* How It Works Modal */}
       {isHowItWorksOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`${typography.h3} text-gray-900`}>How It Works</h3>
+                <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>How It Works</h3>
                 <button
                   onClick={() => setIsHowItWorksOpen(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -1029,8 +1029,8 @@ const EventDetail: React.FC = () => {
                 </button>
               </div>
               
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <p className={`${typography.body} text-purple-800 leading-relaxed`}>
+              <div className="p-4 bg-purple-50 dark:bg-purple-900 rounded-lg">
+                <p className={`${typography.body} text-purple-800 dark:text-purple-200 leading-relaxed`}>
                   {event.howItWorks}
                 </p>
               </div>
@@ -1051,10 +1051,10 @@ const EventDetail: React.FC = () => {
       {/* Google Map Modal */}
       {isMapOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-5xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <h3 className={`${typography.h3} text-gray-900`}>Venue Location</h3>
+                <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>Venue Location</h3>
                 <button
                   onClick={() => setIsMapOpen(false)}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"

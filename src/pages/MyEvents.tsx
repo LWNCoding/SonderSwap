@@ -121,11 +121,11 @@ const MyEvents: React.FC = () => {
 
   // Show loading spinner while checking auth
   if (authLoading || loading) {
-    return (
-      <div className={`min-h-screen ${GRADIENTS.BACKGROUND} flex items-center justify-center`}>
-        <LoadingSpinner />
-      </div>
-    );
+  return (
+    <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900 flex items-center justify-center`}>
+      <LoadingSpinner />
+    </div>
+  );
   }
 
   // Redirect if not authenticated (this should not be reached due to useEffect, but just in case)
@@ -136,11 +136,11 @@ const MyEvents: React.FC = () => {
   // Show error state
   if (error) {
     return (
-      <div className={`min-h-screen ${GRADIENTS.BACKGROUND} flex items-center justify-center`}>
+      <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900 flex items-center justify-center`}>
         <div className="text-center">
           <Icon name="alert" size="lg" className="text-red-500 mx-auto mb-4" />
-          <h1 className={`${typography.h1} text-gray-900 mb-4`}>Error Loading Events</h1>
-          <p className={`${typography.body} text-gray-600 mb-6`}>{error}</p>
+          <h1 className={`${typography.h1} text-gray-900 dark:text-white dark:text-white mb-4`}>Error Loading Events</h1>
+          <p className={`${typography.body} text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-6`}>{error}</p>
           <Button onClick={() => window.location.reload()}>
             Try Again
           </Button>
@@ -150,7 +150,7 @@ const MyEvents: React.FC = () => {
   }
 
   const renderEventCard = (event: EventDetailData, isOrganizing: boolean = false) => (
-    <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
+    <div key={event.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 overflow-hidden hover:shadow-xl dark:hover:shadow-gray-700/30 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden">
         <img
@@ -171,25 +171,25 @@ const MyEvents: React.FC = () => {
       <div className="p-6 flex flex-col flex-grow">
         {/* Title */}
         <div className="mb-2">
-          <h3 className={`${typography.h3} text-gray-900 line-clamp-2`}>{event.name}</h3>
+          <h3 className={`${typography.h3} text-gray-900 dark:text-white line-clamp-2`}>{event.name}</h3>
         </div>
 
         {/* Description - fills available space */}
         <div className="flex-grow mb-4">
-          <p className={`${typography.bodySmall} text-gray-600 line-clamp-4`}>{event.description}</p>
+          <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300 line-clamp-4`}>{event.description}</p>
         </div>
 
         {/* Event Details */}
         <div className="space-y-2 mb-3">
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600 dark:text-gray-300">
             <Icon name="calendar" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
             <span className={`${typography.small} truncate`}>{event.date}</span>
           </div>
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600 dark:text-gray-300">
             <Icon name="clock" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
             <span className={`${typography.small} truncate`}>{event.time}</span>
           </div>
-          <div className="flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600 dark:text-gray-300">
             <Icon name="location" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
             <span className={`${typography.small} truncate`}>{event.address}</span>
           </div>
@@ -244,8 +244,8 @@ const MyEvents: React.FC = () => {
   const renderEmptyState = (title: string, description: string, buttonText: string, buttonAction: () => void) => (
     <div className="text-center py-12">
       <Icon name="calendar" size="lg" className="text-gray-400 mx-auto mb-4" />
-      <h3 className={`${typography.h3} text-gray-900 mb-2`}>{title}</h3>
-      <p className={`${typography.body} text-gray-600 mb-6`}>{description}</p>
+      <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-2`}>{title}</h3>
+      <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-6`}>{description}</p>
       <Button onClick={buttonAction}>
         {buttonText}
       </Button>
@@ -253,13 +253,13 @@ const MyEvents: React.FC = () => {
   );
 
   return (
-    <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
+    <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900`}>
       {/* Header */}
-      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 ${LAYOUT.HEADER_PADDING}`}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
           <div className="text-center">
-            <h1 className={`${typography.h1} text-gray-900 mb-4`}>My Events</h1>
-            <p className={`${typography.body} text-gray-600`}>
+            <h1 className={`${typography.h1} text-gray-900 dark:text-white mb-4`}>My Events</h1>
+            <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
               Manage your participating and organizing events
             </p>
           </div>
@@ -272,7 +272,7 @@ const MyEvents: React.FC = () => {
           {/* Participating Events */}
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className={`${typography.h2} text-gray-900`}>Events I'm Participating In</h2>
+              <h2 className={`${typography.h2} text-gray-900 dark:text-white`}>Events I'm Participating In</h2>
               <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
                 {participatingEvents.length}
               </span>
@@ -283,7 +283,7 @@ const MyEvents: React.FC = () => {
                 {participatingEvents.map(event => renderEventCard(event, false))}
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-8">
                 {renderEmptyState(
                   "No Participating Events",
                   "You're not currently participating in any events. Discover amazing skill-sharing opportunities!",
@@ -297,7 +297,7 @@ const MyEvents: React.FC = () => {
           {/* Organizing Events */}
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className={`${typography.h2} text-gray-900`}>Events I'm Organizing</h2>
+              <h2 className={`${typography.h2} text-gray-900 dark:text-white`}>Events I'm Organizing</h2>
               <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-semibold rounded-full">
                 {organizingEvents.length}
               </span>
@@ -308,7 +308,7 @@ const MyEvents: React.FC = () => {
                 {organizingEvents.map(event => renderEventCard(event, true))}
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-8">
                 {renderEmptyState(
                   "No Organizing Events",
                   "You haven't created any events yet. Share your skills and knowledge with the community!",
@@ -324,21 +324,21 @@ const MyEvents: React.FC = () => {
       {/* Leave Event Confirmation Modal */}
       {showLeaveConfirmation && eventToLeave && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
                   <Icon name="alert" size="lg" className="text-red-600" />
                 </div>
                 <div>
-                  <h3 className={`${typography.h3} text-gray-900`}>Leave Event</h3>
-                  <p className={`${typography.bodySmall} text-gray-600`}>Are you sure you want to leave this event?</p>
+                  <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>Leave Event</h3>
+                  <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300`}>Are you sure you want to leave this event?</p>
                 </div>
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h4 className={`${typography.body} font-semibold text-gray-900 mb-1`}>{eventToLeave.name}</h4>
-                <p className={`${typography.small} text-gray-600`}>{eventToLeave.date} • {eventToLeave.time}</p>
+                <h4 className={`${typography.body} font-semibold text-gray-900 dark:text-white mb-1`}>{eventToLeave.name}</h4>
+                <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>{eventToLeave.date} • {eventToLeave.time}</p>
               </div>
 
               <div className="flex space-x-3">

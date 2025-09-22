@@ -396,8 +396,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="startTime"
                   value={(formData as any).startTime || ''}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                    timeErrors.startTime ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                    timeErrors.startTime ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 />
                 {timeErrors.startTime && (
@@ -414,8 +414,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   name="endTime"
                   value={(formData as any).endTime || ''}
                   onChange={handleInputChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                    timeErrors.endTime ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                    timeErrors.endTime ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 />
                 {timeErrors.endTime && (
@@ -519,21 +519,21 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               <div className="space-y-3">
                 {formData.agenda && formData.agenda.length > 0 ? (
                   formData.agenda.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="flex-shrink-0 w-6 h-6 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                    <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                      <div className="flex-shrink-0 w-6 h-6 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center text-xs font-semibold">
                         {index + 1}
                       </div>
                       <input
                         type="text"
                         value={item}
                         onChange={(e) => handleAgendaChange(index, e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                         placeholder={`Agenda item ${index + 1}`}
                       />
                       <button
                         type="button"
                         onClick={() => removeAgendaItem(index)}
-                        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
                         title="Remove agenda item"
                       >
                         <Icon name="trash" size="sm" />
@@ -551,7 +551,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 <button
                   type="button"
                   onClick={addAgendaItem}
-                  className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 rounded-lg transition-colors bg-white dark:bg-gray-800"
                 >
                   <Icon name="plus" size="sm" className="mr-2" />
                   <span className={`${typography.small} font-medium`}>Add agenda item</span>
@@ -561,7 +561,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
           </div>
 
           {/* Email Notification Option */}
-          <div className="border-t border-gray-200 pt-6">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
@@ -569,9 +569,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                   id="emailNotification"
                   checked={sendEmailNotification}
                   onChange={(e) => setSendEmailNotification(e.target.checked)}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
                 />
-                <label htmlFor="emailNotification" className={`ml-2 ${typography.small} text-gray-700`}>
+                <label htmlFor="emailNotification" className={`ml-2 ${typography.small} text-gray-700 dark:text-gray-300`}>
                   Send email notification to all participants about these changes
                 </label>
               </div>
@@ -579,7 +579,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 <button
                   type="button"
                   onClick={handleEmailNotification}
-                  className="flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                  className="flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
                 >
                   <Icon name="mail" size="sm" className="mr-1" />
                   <span className={`${typography.small}`}>Send Now</span>
@@ -590,7 +590,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
           <Button
             onClick={onClose}
             variant="outline"

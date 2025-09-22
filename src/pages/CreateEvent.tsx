@@ -17,6 +17,7 @@ const CreateEvent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [leaderLookupErrors, setLeaderLookupErrors] = useState<{[key: number]: string}>({});
 
   const [formData, setFormData] = useState({
     name: '',
@@ -192,6 +193,42 @@ const CreateEvent: React.FC = () => {
         i === index ? { ...station, [field]: value } : station
       )
     }));
+  };
+
+  const handleLeaderEmailLookup = async (index: number, email: string) => {
+    if (!email) {
+      handleSkillStationChange(index, 'leaderId', '');
+      setLeaderLookupErrors(prev => ({ ...prev, [index]: '' }));
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const user = data.users.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
+        
+        if (user) {
+          handleSkillStationChange(index, 'leaderId', user._id);
+          setLeaderLookupErrors(prev => ({ ...prev, [index]: '' }));
+        } else {
+          handleSkillStationChange(index, 'leaderId', '');
+          setLeaderLookupErrors(prev => ({ ...prev, [index]: 'User not found with this email' }));
+        }
+      }
+    } catch (err) {
+      console.error('Error looking up user:', err);
+      handleSkillStationChange(index, 'leaderId', '');
+      setLeaderLookupErrors(prev => ({ ...prev, [index]: 'Error looking up user' }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -662,20 +699,32 @@ const CreateEvent: React.FC = () => {
                         </div>
                         <div>
                           <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
-                            Station Leader (Optional)
+                            Station Leader Email (Optional)
                           </label>
-                          <select
-                            value={station.leaderId || ''}
-                            onChange={(e) => handleSkillStationChange(index, 'leaderId', e.target.value)}
+                          <input
+                            type="email"
+                            value={station.leaderEmail || ''}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              handleSkillStationChange(index, 'leaderEmail', value);
+                              // Debounce the lookup
+                              setTimeout(() => {
+                                handleLeaderEmailLookup(index, value);
+                              }, 500);
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          >
-                            <option value="">Select a leader</option>
-                            {availableUsers.map((user) => (
-                              <option key={user._id} value={user._id}>
-                                {user.firstName} {user.lastName}
-                              </option>
-                            ))}
-                          </select>
+                            placeholder="Enter leader's email address"
+                          />
+                          {station.leaderId && (
+                            <div className="mt-1 text-sm text-green-600">
+                              ✓ Leader found: {availableUsers.find(u => u._id === station.leaderId)?.firstName} {availableUsers.find(u => u._id === station.leaderId)?.lastName}
+                            </div>
+                          )}
+                          {leaderLookupErrors[index] && (
+                            <div className="mt-1 text-sm text-red-600">
+                              {leaderLookupErrors[index]}
+                            </div>
+                          )}
                         </div>
                         <div className="md:col-span-2 flex justify-end">
                           <button

@@ -669,51 +669,51 @@ const EventDetail: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Join/Leave button - in the content area */}
-              <div className="mb-6">
-                {isOrganizer() ? (
-                  // Show dashboard button for organizers
-                  <button 
-                    onClick={() => navigate(`/event/${event.id}/dashboard`)}
-                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-                  >
-                    <div className="flex items-center justify-center">
-                      <Icon name="settings" size="md" className="mr-2" />
-                      Event View Dashboard
-                    </div>
-                  </button>
-                ) : (
-                  // Show join/leave button for participants
-                  <button 
-                    onClick={handleJoinEvent}
-                    disabled={isJoining}
-                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                      isParticipating 
-                        ? 'bg-red-600 hover:bg-red-700 text-white' 
-                        : isAuthenticated 
-                          ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                          : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {isJoining ? (
+                {/* Join/Leave button - in the content area */}
+                <div className="mb-6">
+                  {isOrganizer() ? (
+                    // Show dashboard button for organizers
+                    <button 
+                      onClick={() => navigate(`/event/${event.id}/dashboard`)}
+                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
+                    >
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        {isParticipating ? 'Leaving...' : 'Joining...'}
+                        <Icon name="settings" size="md" className="mr-2" />
+                        Event View Dashboard
                       </div>
-                    ) : isParticipating ? (
-                      <div className="flex items-center justify-center">
-                        <Icon name="close" size="md" className="mr-2" />
-                        Leave Event
-                      </div>
-                    ) : isAuthenticated ? (
-                      'Join Skill-Sharing Event'
-                    ) : (
-                      'Login to Join Event'
-                    )}
-                  </button>
-                )}
+                    </button>
+                  ) : (
+                    // Show join/leave button for participants
+                    <button 
+                      onClick={handleJoinEvent}
+                      disabled={isJoining}
+                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
+                        isParticipating 
+                          ? 'bg-red-600 hover:bg-red-700 text-white' 
+                          : isAuthenticated 
+                            ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                            : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      {isJoining ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          {isParticipating ? 'Leaving...' : 'Joining...'}
+                        </div>
+                      ) : isParticipating ? (
+                        <div className="flex items-center justify-center">
+                          <Icon name="close" size="md" className="mr-2" />
+                          Leave Event
+                        </div>
+                      ) : isAuthenticated ? (
+                        'Join Skill-Sharing Event'
+                      ) : (
+                        'Login to Join Event'
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* View Interactive Venue Map button - bottom aligned with image */}

@@ -21,18 +21,68 @@ const CreateEvent: React.FC = () => {
     description: '',
     address: '',
     date: '',
-    time: '',
+    startTime: '',
+    endTime: '',
     thumbnail: '',
     eventType: '',
     price: '',
-    duration: '',
     capacity: '',
-    expectedParticipants: '',
     ageRestriction: 'All ages welcome',
     venue: '',
     agenda: [''],
     howItWorks: 'Explore different stations and sessions throughout the event. Share what you know, discover new techniques, and practice alongside others in a supportive environment. Each space focuses on a unique aspect of learning and creation, giving you the chance to participate, teach, or simply enjoy the experience.'
   });
+
+  const [timeErrors, setTimeErrors] = useState<{startTime?: string; endTime?: string}>({});
+
+  // Time validation functions
+  const isValidTimeFormat = (time: string): boolean => {
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeRegex.test(time);
+  };
+
+  const formatTo12Hour = (time24: string): string => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  };
+
+  const isEndTimeAfterStart = (startTime: string, endTime: string): boolean => {
+    if (!startTime || !endTime) return true; // Allow empty times
+    
+    const [startHour, startMin] = startTime.split(':').map(Number);
+    const [endHour, endMin] = endTime.split(':').map(Number);
+    
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+    
+    return endMinutes > startMinutes;
+  };
+
+  const validateTimeInput = (name: string, value: string) => {
+    if (!value) {
+      setTimeErrors(prev => ({ ...prev, [name]: undefined }));
+      return;
+    }
+    
+    if (!isValidTimeFormat(value)) {
+      setTimeErrors(prev => ({ ...prev, [name]: 'Invalid time format' }));
+      return;
+    }
+    
+    // Check if end time is after start time
+    if (name === 'endTime' && formData.startTime) {
+      if (!isEndTimeAfterStart(formData.startTime, value)) {
+        setTimeErrors(prev => ({ ...prev, [name]: 'End time must be after start time' }));
+        return;
+      }
+    }
+    
+    setTimeErrors(prev => ({ ...prev, [name]: undefined }));
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -46,6 +96,11 @@ const CreateEvent: React.FC = () => {
       ...prev,
       [field]: value
     }));
+    
+    // Validate time inputs
+    if (field === 'startTime' || field === 'endTime') {
+      validateTimeInput(field, value);
+    }
   };
 
   const handleAgendaChange = (index: number, value: string) => {
@@ -80,15 +135,55 @@ const CreateEvent: React.FC = () => {
         throw new Error('No authentication token found');
       }
 
+      // Validate time formats
+      const startTime = formData.startTime;
+      const endTime = formData.endTime;
+      
+      if (startTime && !isValidTimeFormat(startTime)) {
+        setError('Start time must be in valid 24-hour format (e.g., 08:00)');
+        return;
+      }
+      
+      if (endTime && !isValidTimeFormat(endTime)) {
+        setError('End time must be in valid 24-hour format (e.g., 18:00)');
+        return;
+      }
+      
+      // Check if end time is after start time
+      if (startTime && endTime && !isEndTimeAfterStart(startTime, endTime)) {
+        setError('End time must be after start time');
+        return;
+      }
+      
+      // Check for any time validation errors
+      if (timeErrors.startTime || timeErrors.endTime) {
+        setError('Please fix time validation errors before saving');
+        return;
+      }
+
+      // Convert 24-hour times to 12-hour format for storage
+      const formattedStartTime = formatTo12Hour(startTime);
+      const formattedEndTime = formatTo12Hour(endTime);
+      
+      // Combine start time and end time into the expected format
+      const timeRange = formattedStartTime && formattedEndTime 
+        ? `${formattedStartTime} - ${formattedEndTime}`
+        : '';
+
       // Filter out empty agenda items
       const filteredAgenda = formData.agenda.filter(item => item.trim() !== '');
 
       const eventData = {
         ...formData,
+        time: timeRange,
         agenda: filteredAgenda,
         // Generate a simple ID for now (in production, this would be handled by the backend)
         id: Date.now().toString()
       };
+
+      // Remove startTime and endTime from the data sent to API
+      delete (eventData as any).startTime;
+      delete (eventData as any).endTime;
 
       const response = await fetch(`${API_CONFIG.BASE_URL}/events`, {
         method: 'POST',
@@ -212,31 +307,55 @@ const CreateEvent: React.FC = () => {
                   />
                 </div>
 
-                {/* Date and Time */}
+                {/* Date */}
+                <div>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => handleInputChange('date', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                {/* Start and End Time */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => handleInputChange('date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Time *
+                      Start Time *
                     </label>
                     <input
                       type="time"
-                      value={formData.time}
-                      onChange={(e) => handleInputChange('time', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      value={formData.startTime}
+                      onChange={(e) => handleInputChange('startTime', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        timeErrors.startTime ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       required
                     />
+                    {timeErrors.startTime && (
+                      <p className="text-red-500 text-xs mt-1">{timeErrors.startTime}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                      End Time *
+                    </label>
+                    <input
+                      type="time"
+                      value={formData.endTime}
+                      onChange={(e) => handleInputChange('endTime', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                        timeErrors.endTime ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      required
+                    />
+                    {timeErrors.endTime && (
+                      <p className="text-red-500 text-xs mt-1">{timeErrors.endTime}</p>
+                    )}
                   </div>
                 </div>
 
@@ -275,34 +394,19 @@ const CreateEvent: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Duration and Capacity */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Duration (minutes) *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.duration}
-                      onChange={(e) => handleInputChange('duration', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="120"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Capacity *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.capacity}
-                      onChange={(e) => handleInputChange('capacity', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="50"
-                      required
-                    />
-                  </div>
+                {/* Capacity */}
+                <div>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                    Capacity *
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.capacity}
+                    onChange={(e) => handleInputChange('capacity', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="50"
+                    required
+                  />
                 </div>
 
                 {/* Age Restriction */}
@@ -354,19 +458,6 @@ const CreateEvent: React.FC = () => {
                   />
                 </div>
 
-                {/* Expected Participants */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Expected Participants
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.expectedParticipants}
-                    onChange={(e) => handleInputChange('expectedParticipants', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="25"
-                  />
-                </div>
 
                 {/* How It Works */}
                 <div>

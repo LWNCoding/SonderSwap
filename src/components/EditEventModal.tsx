@@ -69,7 +69,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
         date: convertDateForInput(event.date || ''),
         startTime: startTime,
         endTime: endTime,
-        venue: event.venue || '',
         address: event.address || '',
         price: event.price || '',
         capacity: event.capacity || '',
@@ -327,8 +326,8 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
 
           {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Event Name */}
-            <div className="md:col-span-2">
+            {/* Event Name and Address */}
+            <div>
               <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
                 Event Name *
               </label>
@@ -342,6 +341,20 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               />
               {/* Debug: Show actual value */}
               <div className="text-xs text-gray-500 mt-1">Debug: {formData.name || 'EMPTY'}</div>
+            </div>
+
+            <div>
+              <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
+                Address *
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address || ''}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Enter full address"
+              />
             </div>
 
             {/* Description */}
@@ -412,34 +425,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
             </div>
 
 
-            {/* Venue and Address */}
-            <div>
-              <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
-                Venue *
-              </label>
-              <input
-                type="text"
-                name="venue"
-                value={formData.venue || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Enter venue name"
-              />
-            </div>
-
-            <div>
-              <label className={`block ${typography.small} font-medium text-gray-700 mb-2`}>
-                Address *
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Enter full address"
-              />
-            </div>
 
             {/* Price and Capacity */}
             <div>

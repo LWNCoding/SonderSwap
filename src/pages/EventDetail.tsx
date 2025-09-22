@@ -174,58 +174,6 @@ const EventDetail: React.FC = () => {
   };
 
 
-  const renderActionButtons = (): JSX.Element => (
-    <div className="space-y-4 mb-6">
-      {isOrganizer() ? (
-        // Show dashboard button for organizers
-        <button 
-          onClick={() => navigate(`/event/${event.id}/dashboard`)}
-          className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-        >
-          <div className="flex items-center justify-center">
-            <Icon name="settings" size="md" className="mr-2" />
-            Event View Dashboard
-          </div>
-        </button>
-      ) : (
-        // Show join/leave button for participants
-        <button 
-          onClick={handleJoinEvent}
-          disabled={isJoining}
-          className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-            isParticipating 
-              ? 'bg-red-600 hover:bg-red-700 text-white' 
-              : isAuthenticated 
-                ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {isJoining ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              {isParticipating ? 'Leaving...' : 'Joining...'}
-            </div>
-          ) : isParticipating ? (
-            <div className="flex items-center justify-center">
-              <Icon name="close" size="md" className="mr-2" />
-              Leave Event
-            </div>
-          ) : isAuthenticated ? (
-            'Join Skill-Sharing Event'
-          ) : (
-            'Login to Join Event'
-          )}
-        </button>
-      )}
-      
-      <button 
-        onClick={() => setIsMapOpen(true)}
-        className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
-      >
-        View Interactive Venue Map
-      </button>
-    </div>
-  );
 
   // Carousel utility functions
   const SKILL_STATIONS_PER_PAGE = 1; // Show one skill station per page for better readability
@@ -496,7 +444,7 @@ const EventDetail: React.FC = () => {
   return (
     <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
       {/* Header */}
-      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 pt-4 sm:pt-8 lg:pt-16 pb-6`}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
           {/* Back button and tags row - always at top */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -555,6 +503,58 @@ const EventDetail: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Action buttons - back in event info section */}
+              <div className="space-y-4 mb-6">
+                {isOrganizer() ? (
+                  // Show dashboard button for organizers
+                  <button 
+                    onClick={() => navigate(`/event/${event.id}/dashboard`)}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Icon name="settings" size="md" className="mr-2" />
+                      Event View Dashboard
+                    </div>
+                  </button>
+                ) : (
+                  // Show join/leave button for participants
+                  <button 
+                    onClick={handleJoinEvent}
+                    disabled={isJoining}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
+                      isParticipating 
+                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                        : isAuthenticated 
+                          ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                          : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isJoining ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        {isParticipating ? 'Leaving...' : 'Joining...'}
+                      </div>
+                    ) : isParticipating ? (
+                      <div className="flex items-center justify-center">
+                        <Icon name="close" size="md" className="mr-2" />
+                        Leave Event
+                      </div>
+                    ) : isAuthenticated ? (
+                      'Join Skill-Sharing Event'
+                    ) : (
+                      'Login to Join Event'
+                    )}
+                  </button>
+                )}
+                
+                <button 
+                  onClick={() => setIsMapOpen(true)}
+                  className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
+                >
+                  View Interactive Venue Map
+                </button>
+              </div>
             </div>
 
             {/* Event image - second on mobile, right on desktop */}
@@ -567,10 +567,6 @@ const EventDetail: React.FC = () => {
             </div>
           </div>
           
-          {/* Action buttons - always visible */}
-          <div className="mt-6">
-            {renderActionButtons()}
-          </div>
         </div>
       </div>
 

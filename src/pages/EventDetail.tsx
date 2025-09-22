@@ -615,12 +615,15 @@ const EventDetail: React.FC = () => {
 
             {/* Event info - right side */}
             <div className="flex flex-col h-full">
-              <div>
+              {/* Stretch container to match image */}
+              <div className="flex flex-col flex-1">
+                {/* Title at top */}
                 <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                   {event.name}
                 </h1>
-                
-                <div className="space-y-2 mb-6">
+
+                {/* Details spaced evenly in remaining space */}
+                <div className="flex flex-col justify-evenly flex-1 mb-6">
                   {[
                     { icon: "calendar", text: event.date },
                     { icon: "clock", text: event.time },
@@ -631,13 +634,13 @@ const EventDetail: React.FC = () => {
                       <span className={`${typography.body} text-gray-600`}>{item.text}</span>
                     </div>
                   ))}
-                  
+
                   {/* Age Restriction */}
                   <div className="flex items-center text-gray-600">
                     <Icon name="user" size="md" className="mr-4 text-primary-600" />
                     <span className={`${typography.body} text-gray-600`}>{event.ageRestriction}</span>
                   </div>
-                  
+
                   {/* Organizer Information */}
                   {event.organizer && (
                     <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
@@ -671,16 +674,12 @@ const EventDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Spacer to push buttons to bottom */}
-              <div className="flex-grow"></div>
-
-              {/* Action buttons - bottom aligned with image */}
-              <div className="space-y-4">
+              {/* Buttons at bottom */}
+              <div className="mt-auto space-y-4">
                 {/* Join/Leave button */}
                 <div>
                   {isOrganizer() ? (
-                    // Show dashboard button for organizers
-                    <button 
+                    <button
                       onClick={() => navigate(`/event/${event.id}/dashboard`)}
                       className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
                     >
@@ -690,13 +689,12 @@ const EventDetail: React.FC = () => {
                       </div>
                     </button>
                   ) : (
-                    // Show join/leave button for participants
-                    <button 
+                    <button
                       onClick={handleJoinEvent}
                       disabled={isJoining}
                       className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                        isParticipating 
-                          ? 'bg-red-600 hover:bg-red-700 text-white' 
+                        isParticipating
+                          ? "bg-red-600 hover:bg-red-700 text-white"
                           : isAuthenticated 
                             ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
                             : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
@@ -721,9 +719,9 @@ const EventDetail: React.FC = () => {
                   )}
                 </div>
 
-                {/* View Interactive Venue Map button - bottom aligned with image */}
+                {/* Interactive Venue Map button aligned at bottom */}
                 <div>
-                  <button 
+                  <button
                     onClick={() => setIsMapOpen(true)}
                     className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
                   >

@@ -159,7 +159,7 @@ const EventDetail: React.FC = () => {
   );
 
   const renderEventImage = (): JSX.Element => (
-    <div className="order-2 lg:order-1">
+    <div className="order-3 lg:order-1">
       <img
         src={event.thumbnail}
         alt={event.name}
@@ -570,8 +570,8 @@ const EventDetail: React.FC = () => {
           </div>
           
           <div className={`grid ${DETAIL_PAGE_LAYOUT.GRID_COLS} gap-8`}>
-            {renderEventImage()}
             {renderEventInfo()}
+            {renderEventImage()}
           </div>
           
           {/* Action buttons - mobile only */}

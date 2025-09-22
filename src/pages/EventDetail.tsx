@@ -604,8 +604,8 @@ const EventDetail: React.FC = () => {
 
           {/* Desktop: Side by side layout */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-stretch">
-            {/* Left - Image */}
-            <div className="flex">
+            {/* Left - Event image */}
+            <div>
               <img
                 src={event.thumbnail}
                 alt={event.name}
@@ -613,14 +613,14 @@ const EventDetail: React.FC = () => {
               />
             </div>
 
-            {/* Right - Info */}
-            <div className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-6">
-              {/* Title at top */}
+            {/* Right - Event Info aligned with image */}
+            <div className="flex flex-col h-full">
+              {/* Top aligned Title */}
               <h1 className={`${typography.h1} text-gray-900`}>
                 {event.name}
               </h1>
 
-              {/* Middle details spaced evenly */}
+              {/* Middle details with dynamic spacing */}
               <div className="flex flex-col justify-evenly flex-1 my-6">
                 {[
                   { icon: "calendar", text: event.date },
@@ -672,8 +672,8 @@ const EventDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Buttons pinned to bottom */}
-              <div className="space-y-4">
+              {/* Bottom aligned buttons */}
+              <div className="mt-auto space-y-4">
                 {isOrganizer() ? (
                   <button
                     onClick={() => navigate(`/event/${event.id}/dashboard`)}

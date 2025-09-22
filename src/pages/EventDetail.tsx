@@ -151,7 +151,7 @@ const EventDetail: React.FC = () => {
   const renderBackButton = (): JSX.Element => (
     <button 
       onClick={goBack}
-      className={`inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors ${typography.navLink}`}
+      className={`inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors ${typography.navLink}`}
     >
       <Icon name="arrowLeft" size="md" className="mr-2" />
       Back
@@ -170,7 +170,7 @@ const EventDetail: React.FC = () => {
 
   const renderMobileEventDetails = (): JSX.Element => (
     <div className="lg:hidden">
-      <h1 className={`${typography.h1} text-gray-900 mb-4`}>
+      <h1 className={`${typography.h1} text-gray-900 dark:text-white mb-4`}>
         {event.name}
       </h1>
       
@@ -180,22 +180,22 @@ const EventDetail: React.FC = () => {
           { icon: "clock", text: event.time },
           { icon: "location", text: event.address },
         ].map((item, index) => (
-          <div key={index} className="flex items-center text-gray-600">
-            <Icon name={item.icon} size="md" className="mr-3 text-primary-600" />
-            <span className={`${typography.bodySmall} text-gray-600`}>{item.text}</span>
+          <div key={index} className="flex items-center text-gray-600 dark:text-gray-400">
+            <Icon name={item.icon} size="md" className="mr-3 text-primary-600 dark:text-primary-400" />
+            <span className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>{item.text}</span>
           </div>
         ))}
         
         {/* Age Restriction */}
-        <div className="flex items-center text-gray-600">
-          <Icon name="user" size="md" className="mr-3 text-primary-600" />
-          <span className={`${typography.bodySmall} text-gray-600`}>{event.ageRestriction}</span>
+        <div className="flex items-center text-gray-600 dark:text-gray-400">
+          <Icon name="user" size="md" className="mr-3 text-primary-600 dark:text-primary-400" />
+          <span className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>{event.ageRestriction}</span>
         </div>
         
         {/* Organizer Information */}
         {event.organizer && (
-          <div className="flex items-center text-gray-600 pt-2 border-t border-gray-200">
-            <Icon name="user" size="md" className="mr-3 text-primary-600" />
+          <div className="flex items-center text-gray-600 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
+            <Icon name="user" size="md" className="mr-3 text-primary-600 dark:text-primary-400" />
             <div className="flex items-center">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                 {typeof event.organizer === 'string' 
@@ -205,7 +205,7 @@ const EventDetail: React.FC = () => {
               </div>
               <div>
                 {typeof event.organizer === 'string' ? (
-                  <span className={`${typography.bodySmall} text-gray-600`}>
+                  <span className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>
                     {event.organizer}
                   </span>
                 ) : (
@@ -213,7 +213,7 @@ const EventDetail: React.FC = () => {
                     onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
                       state: { returnTo: `/event/${eventId}` } 
                     })}
-                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                    className={`${typography.bodySmall} text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 hover:underline transition-colors`}
                   >
                     {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
                   </button>
@@ -280,14 +280,14 @@ const EventDetail: React.FC = () => {
   );
 
   const renderMobileVenue = (): JSX.Element => (
-    <div className="lg:hidden bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
+    <div className="lg:hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 mb-6">
+      <h2 className={`${typography.h2} text-gray-900 dark:text-white mb-4`}>Venue</h2>
       <div className="space-y-3">
         <div>
-          <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
+          <span className={`${typography.bodySmall} font-medium text-gray-500 dark:text-gray-400`}>Location:</span>
           <button
             onClick={() => setIsMapOpen(true)}
-            className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
+            className={`${typography.bodySmall} text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 hover:underline transition-colors block mt-1`}
           >
             {event.address}
           </button>
@@ -297,9 +297,9 @@ const EventDetail: React.FC = () => {
   );
 
   const renderMobileOverview = (): JSX.Element => (
-    <div className="lg:hidden bg-white rounded-lg shadow-lg p-6 mb-6">
+    <div className="lg:hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
+        <h2 className={`${typography.h2} text-gray-900 dark:text-white`}>Skill-Sharing Event Overview</h2>
         <button
           onClick={() => setIsHowItWorksOpen(true)}
           className={`w-6 h-6 ${GRADIENTS.PRIMARY_SECONDARY} hover:opacity-80 rounded-full flex items-center justify-center transition-all`}
@@ -308,15 +308,15 @@ const EventDetail: React.FC = () => {
           <Icon name="info" size="sm" className="text-white" />
         </button>
       </div>
-      <p className={`${typography.body} text-gray-600 leading-relaxed`}>
+      <p className={`${typography.body} text-gray-600 dark:text-gray-300 leading-relaxed`}>
         {event.description}
       </p>
     </div>
   );
 
   const renderMobileSkillStations = (): JSX.Element => (
-    <div className="lg:hidden bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
+    <div className="lg:hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 mb-6">
+      <h2 className={`${typography.h2} text-gray-900 dark:text-white mb-4`}>Skill Stations</h2>
       <div className="space-y-4">
         {event.skillStations.map((station, index) => {
           // Handle both populated objects and string IDs
@@ -329,15 +329,15 @@ const EventDetail: React.FC = () => {
           const stationDifficulty = stationData?.difficulty;
 
           return (
-            <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
               <div className="flex items-start justify-between mb-3">
-                <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
+                <h3 className={`${typography.h3} text-gray-900 dark:text-white flex-1`}>{stationName}</h3>
                 {stationDifficulty && (
                   <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
-                    stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                    stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                    stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                    'bg-gray-100 text-gray-800'
+                    stationDifficulty === 'Beginner' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
+                    stationDifficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                    stationDifficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                    'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
                   }`}>
                     {stationDifficulty}
                   </span>
@@ -345,38 +345,38 @@ const EventDetail: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <p className={`${typography.body} text-gray-600`}>
+                <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                   <strong>Skills:</strong> {stationSkills}
                 </p>
-                <p className={`${typography.body} text-gray-600`}>
+                <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                   <strong>Location:</strong> {stationLocation}
                 </p>
                 {stationCapacity && (
-                  <p className={`${typography.body} text-gray-600`}>
+                  <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                     <strong>Capacity:</strong> {stationCapacity} people
                   </p>
                 )}
                 {stationDuration && (
-                  <p className={`${typography.body} text-gray-600`}>
+                  <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                     <strong>Duration:</strong> {stationDuration} min
                   </p>
                 )}
               </div>
 
               {/* Leader Information */}
-              <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                 {stationData?.leader ? (
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                       {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
                     </div>
                     <div className="flex-1">
-                      <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                      <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>Station Leader</p>
                       <button
                         onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
                           state: { returnTo: `/event/${eventId}` } 
                         })}
-                        className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                        className={`${typography.bodySmall} text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 hover:underline transition-colors`}
                       >
                         {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
                       </button>
@@ -384,12 +384,12 @@ const EventDetail: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex items-center">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                       ?
                     </div>
                     <div className="flex-1">
-                      <p className={`${typography.small} text-gray-500`}>Station Leader</p>
-                      <p className={`${typography.bodySmall} text-gray-400`}>No leader assigned</p>
+                      <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>Station Leader</p>
+                      <p className={`${typography.bodySmall} text-gray-400 dark:text-gray-500`}>No leader assigned</p>
                     </div>
                   </div>
                 )}
@@ -402,15 +402,15 @@ const EventDetail: React.FC = () => {
   );
 
   const renderMobileAgenda = (): JSX.Element => (
-    <div className="lg:hidden bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 className={`${typography.h2} text-gray-900 mb-4`}>Agenda</h2>
+    <div className="lg:hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 mb-6">
+      <h2 className={`${typography.h2} text-gray-900 dark:text-white mb-4`}>Agenda</h2>
       <div className="space-y-3">
         {event.agenda.map((item, index) => (
-          <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
-            <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+          <div key={index} className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
               {index + 1}
             </div>
-            <span className={`${typography.bodySmall} text-gray-700`}>{item}</span>
+            <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>{item}</span>
           </div>
         ))}
       </div>
@@ -944,10 +944,10 @@ const EventDetail: React.FC = () => {
   );
 
   return (
-    <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
+    <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900`}>
       {/* Mobile: Single column layout */}
       <div className="lg:hidden">
-        <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+        <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 ${LAYOUT.HEADER_PADDING}`}>
           <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
             {/* Back button */}
             <div className="mb-6">
@@ -984,7 +984,7 @@ const EventDetail: React.FC = () => {
       {/* Desktop: Original layout */}
       <div className="hidden lg:block">
         {/* Header */}
-        <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+        <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 ${LAYOUT.HEADER_PADDING}`}>
           <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
             {/* Back button and tags row */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

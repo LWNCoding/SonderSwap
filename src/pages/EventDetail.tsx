@@ -614,16 +614,13 @@ const EventDetail: React.FC = () => {
             </div>
 
             {/* Event info - right side, aligned with image */}
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col justify-between h-full">
               {/* Top section - title aligned with image top */}
-              <div className="flex-shrink-0">
+              <div>
                 <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                   {event.name}
                 </h1>
-              </div>
-              
-              {/* Middle section - event details with adaptive spacing */}
-              <div className="flex-grow flex flex-col justify-center">
+                
                 <div className="space-y-4">
                   {[
                     { icon: "calendar", text: event.date },
@@ -676,7 +673,7 @@ const EventDetail: React.FC = () => {
               </div>
 
               {/* Bottom section - buttons aligned with image bottom */}
-              <div className="flex-shrink-0 space-y-4">
+              <div className="space-y-4 mt-8">
                 {/* Join/Leave button */}
                 <div>
                   {isOrganizer() ? (

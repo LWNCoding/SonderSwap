@@ -670,7 +670,7 @@ const EventDetail: React.FC = () => {
               </div>
 
               {/* Action buttons */}
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {/* Join/Leave button */}
                 <div>
                   {isOrganizer() ? (

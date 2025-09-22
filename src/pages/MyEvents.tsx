@@ -175,8 +175,8 @@ const MyEvents: React.FC = () => {
         </div>
 
         {/* Description - fills available space */}
-        <div className="flex-grow mb-4">
-          <p className={`${typography.bodySmall} text-gray-600 line-clamp-4`}>{event.description}</p>
+        <div className="flex-grow mb-4 flex flex-col">
+          <p className={`${typography.bodySmall} text-gray-600 flex-grow`}>{event.description}</p>
         </div>
 
         {/* Event Details */}

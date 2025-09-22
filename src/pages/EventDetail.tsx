@@ -62,6 +62,32 @@ const EventDetail: React.FC = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [event?.skillStations]);
+
+  // Handle carousel page changes
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const scrollToPage = (page: number) => {
+      const skillStations = event?.skillStations?.filter((station): station is SkillStation => typeof station === 'object') || [];
+      if (skillStations.length === 0) return;
+      
+      const totalPages = Math.ceil(skillStations.length / 1); // SKILL_STATIONS_PER_PAGE = 1
+      const targetPage = Math.max(0, Math.min(page, totalPages - 1));
+      
+      const scrollLeft = targetPage * container.clientWidth;
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+    };
+
+    // Reset to first page when skill stations change
+    if (event?.skillStations) {
+      setCurrentPage(0);
+      scrollToPage(0);
+    }
+  }, [event?.skillStations]);
   
   // Debug participant count
   console.log('EventDetail: Current participantCount:', participantCount);
@@ -560,6 +586,14 @@ const EventDetail: React.FC = () => {
                   )}
                 </button>
               )}
+              
+              {/* Interactive Venue Map button - beneath join/leave button on mobile */}
+              <button 
+                onClick={() => setIsMapOpen(true)}
+                className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
+              >
+                View Interactive Venue Map
+              </button>
             </div>
             
             {/* Venue card - right below image on mobile */}
@@ -820,14 +854,22 @@ const EventDetail: React.FC = () => {
                 {skillStations.length > 1 && (
                   <>
                     <button
-                      onClick={() => scrollToPage(currentPage - 1)}
+                      onClick={() => {
+                        const newPage = Math.max(0, currentPage - 1);
+                        setCurrentPage(newPage);
+                        scrollToPage(newPage);
+                      }}
                       disabled={currentPage === 0}
                       className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Icon name="chevronLeft" size="sm" />
                     </button>
                     <button
-                      onClick={() => scrollToPage(currentPage + 1)}
+                      onClick={() => {
+                        const newPage = Math.min(getTotalPages(skillStations.length) - 1, currentPage + 1);
+                        setCurrentPage(newPage);
+                        scrollToPage(newPage);
+                      }}
                       disabled={currentPage >= getTotalPages(skillStations.length) - 1}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -842,7 +884,10 @@ const EventDetail: React.FC = () => {
                     {Array.from({ length: getTotalPages(skillStations.length) }, (_, index) => (
                       <button
                         key={index}
-                        onClick={() => scrollToPage(index)}
+                        onClick={() => {
+                          setCurrentPage(index);
+                          scrollToPage(index);
+                        }}
                         className={`w-2 h-2 rounded-full transition-all duration-200 ${
                           currentPage === index 
                             ? 'bg-primary-600' 
@@ -865,27 +910,41 @@ const EventDetail: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event Start</p>
-                  <p className={`${typography.bodySmall} text-gray-600`}>{event.time}</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-secondary-600 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Skill Stations Open</p>
-                  <p className={`${typography.bodySmall} text-gray-600`}>Various stations available throughout the event</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event End</p>
-                  <p className={`${typography.bodySmall} text-gray-600`}>Wrap up and networking</p>
-                </div>
-              </div>
+              {event.agenda && event.agenda.length > 0 ? (
+                event.agenda.map((item, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className={`w-2 h-2 ${index % 2 === 0 ? 'bg-primary-600' : 'bg-secondary-600'} rounded-full mt-2 flex-shrink-0`}></div>
+                    <div>
+                      <p className={`${typography.bodySmall} font-medium text-gray-900`}>{item}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                // Default agenda if none provided
+                <>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event Start</p>
+                      <p className={`${typography.bodySmall} text-gray-600`}>{event.time}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-secondary-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className={`${typography.bodySmall} font-medium text-gray-900`}>Skill Stations Open</p>
+                      <p className={`${typography.bodySmall} text-gray-600`}>Various stations available throughout the event</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event End</p>
+                      <p className={`${typography.bodySmall} text-gray-600`}>Wrap up and networking</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

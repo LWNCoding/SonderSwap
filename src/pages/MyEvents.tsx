@@ -169,18 +169,13 @@ const MyEvents: React.FC = () => {
 
       {/* Event Content */}
       <div className="p-6 flex flex-col flex-grow">
-        {/* Title */}
-        <div className="mb-2">
-          <h3 className={`${typography.h3} text-gray-900 line-clamp-2`}>{event.name}</h3>
-        </div>
-
-        {/* Description - fills available space */}
-        <div className="flex-grow mb-4">
-          <p className={`${typography.bodySmall} text-gray-600 line-clamp-6`}>{event.description}</p>
+        <div className="mb-4">
+          <h3 className={`${typography.h3} text-gray-900 mb-2 line-clamp-2`}>{event.name}</h3>
+          <p className={`${typography.bodySmall} text-gray-600 line-clamp-2`}>{event.description}</p>
         </div>
 
         {/* Event Details */}
-        <div className="space-y-2 mb-3">
+        <div className="space-y-2 mb-4">
           <div className="flex items-center text-gray-600">
             <Icon name="calendar" size="sm" className="mr-2 text-primary-600 flex-shrink-0" />
             <span className={`${typography.small} truncate`}>{event.date}</span>
@@ -205,8 +200,11 @@ const MyEvents: React.FC = () => {
           </span>
         </div>
 
+        {/* Spacer to push buttons to bottom */}
+        <div className="flex-grow"></div>
+
         {/* Action Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-4">
           <Button
             variant="outline"
             size="sm"

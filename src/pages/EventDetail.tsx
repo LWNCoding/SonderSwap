@@ -755,141 +755,125 @@ const EventDetail: React.FC = () => {
           {/* Skill Stations */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
-            {(() => {
-              const skillStations = event?.skillStations?.filter((station): station is SkillStation => typeof station === 'object') || [];
-              return skillStations.length > 0 ? (
-              <div className="relative">
-                {/* Carousel Container */}
-                <div 
-                  ref={containerRef}
-                  className="overflow-hidden rounded-lg"
-                  style={{ scrollBehavior: 'smooth' }}
-                >
-                  <div className="flex">
-                    {skillStations.map((station: SkillStation, index: number) => (
-                      <div
-                        key={station._id || index}
-                        className="w-full flex-shrink-0 px-2"
-                        style={{ minHeight: cardHeight }}
-                        ref={(el) => (cardRefs.current[index] = el)}
-                      >
-                        <div className="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-lg p-6 h-full flex flex-col">
-                          <div className="flex-grow">
-                            <h3 className={`${typography.h3} text-gray-900 mb-2`}>
-                              {station.name}
-                            </h3>
-                            
-                            {/* Skills Tags */}
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {station.skills.map((skill: string, skillIndex: number) => (
-                                <span
-                                  key={skillIndex}
-                                  className="px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                            </div>
-                            
-                            <div className="space-y-2 text-sm text-gray-600">
-                              <div className="flex justify-between">
-                                <span className="font-medium">Location:</span>
-                                <span>{station.location}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Capacity:</span>
-                                <span>{station.capacity} people</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Duration:</span>
-                                <span>{station.duration} min</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="font-medium">Difficulty:</span>
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                  station.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
-                                  station.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {station.difficulty}
-                                </span>
-                              </div>
+            
+            <div className="relative group">
+              {renderNavigationButton(
+                'left',
+                handlePreviousPage,
+                currentPage === 0,
+                'left-0 top-1/2 -translate-y-1/2'
+              )}
+
+              {renderNavigationButton(
+                'right',
+                () => handleNextPage(event.skillStations.length),
+                currentPage >= getTotalPages(event.skillStations.length) - 1,
+                'right-0 top-1/2 -translate-y-1/2'
+              )}
+
+              <div
+                ref={containerRef}
+                className="flex overflow-x-auto pb-4 scroll-smooth w-full"
+              >
+                {event.skillStations.map((station, index) => {
+                  // Handle both populated objects and string IDs
+                  const stationData = typeof station === 'string' ? null : station as SkillStation;
+                  const stationName = stationData?.name || 'Skill Station';
+                  const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
+                  const stationLocation = stationData?.location || 'TBD';
+                  const stationCapacity = stationData?.capacity;
+                  const stationDuration = stationData?.duration;
+                  const stationDifficulty = stationData?.difficulty;
+
+                  return (
+                    <div 
+                      key={index} 
+                      ref={(el) => { cardRefs.current[index] = el; }}
+                      className="flex-shrink-0 w-80 cursor-pointer relative" 
+                      style={{
+                        margin: '0 8px',
+                        height: cardHeight
+                      }}
+                    >
+                      <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
+                        <div className="p-6 h-full flex flex-col">
+                          {/* Header with title and difficulty */}
+                          <div className="flex items-start justify-between mb-4">
+                            <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
+                            {stationDifficulty && (
+                              <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
+                                stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                                stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                                stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {stationDifficulty}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Main content area - takes up available space */}
+                          <div className="space-y-3 flex-1">
+                            <p className={`${typography.body} text-gray-600`}>
+                              <strong>Skills:</strong> {stationSkills}
+                            </p>
+                            <p className={`${typography.body} text-gray-600`}>
+                              <strong>Location:</strong> {stationLocation}
+                            </p>
+                            <div className="space-y-2">
+                              {stationCapacity && (
+                                <p className={`${typography.body} text-gray-600`}>
+                                  <strong>Capacity:</strong> {stationCapacity} people
+                                </p>
+                              )}
+                              {stationDuration && (
+                                <p className={`${typography.body} text-gray-600`}>
+                                  <strong>Duration:</strong> {stationDuration} min
+                                </p>
+                              )}
                             </div>
                           </div>
-                          
-                          {/* Leader Information */}
-                          {station.leader && (
-                            <div className="mt-4 pt-4 border-t border-gray-200">
+
+                          {/* Leader Information - always at bottom */}
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            {stationData?.leader ? (
                               <div className="flex items-center">
-                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                                  {`${station.leader.firstName?.charAt(0) || 'L'}${station.leader.lastName?.charAt(0) || 'L'}`}
+                                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                                  {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900">
-                                    {`${station.leader.firstName || 'Unknown'} ${station.leader.lastName || 'Leader'}`}
-                                  </p>
-                                  <p className="text-xs text-gray-500">Station Leader</p>
+                                <div className="flex-1">
+                                  <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                                  <button
+                                    onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
+                                      state: { returnTo: `/event/${eventId}` } 
+                                    })}
+                                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                                  >
+                                    {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
+                                  </button>
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            ) : (
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                                  ?
+                                </div>
+                                <div className="flex-1">
+                                  <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                                  <p className={`${typography.bodySmall} text-gray-400`}>No leader assigned</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Navigation Buttons */}
-                {skillStations.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => {
-                        if (currentPage > 0) {
-                          scrollToPage(currentPage - 1);
-                        }
-                      }}
-                      disabled={currentPage === 0}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Icon name="chevronLeft" size="sm" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (currentPage < getTotalPages(skillStations.length) - 1) {
-                          scrollToPage(currentPage + 1);
-                        }
-                      }}
-                      disabled={currentPage >= getTotalPages(skillStations.length) - 1}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Icon name="chevronRight" size="sm" />
-                    </button>
-                  </>
-                )}
-
-                {/* Page Indicators */}
-                {skillStations.length > 1 && (
-                  <div className="flex justify-center mt-4 space-x-2">
-                    {Array.from({ length: getTotalPages(skillStations.length) }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => scrollToPage(index)}
-                        className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                          currentPage === index 
-                            ? 'bg-primary-600' 
-                            : 'bg-gray-300 hover:bg-gray-400'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  );
+                })}
               </div>
-            ) : (
-              <p className={`${typography.body} text-gray-500 text-center py-8`}>
-                No skill stations available for this event.
-              </p>
-            );
-            })()}
+              
+              {renderPageIndicator(event.skillStations.length)}
+            </div>
           </div>
 
           {/* Agenda */}

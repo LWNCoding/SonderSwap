@@ -603,25 +603,23 @@ const EventDetail: React.FC = () => {
       </div>
 
           {/* Desktop: Side by side layout */}
-          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-stretch">
-            {/* Left - Event image */}
-            <div>
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
+            {/* Event image - left side */}
+            <div className="flex flex-col">
               <img
                 src={event.thumbnail}
                 alt={event.name}
-                className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg w-full`}
+                className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
               />
             </div>
 
-            {/* Right - Event Info aligned with image */}
-            <div className="flex flex-col h-full">
-              {/* Top aligned Title */}
-              <h1 className={`${typography.h1} text-gray-900`}>
+            {/* Event info - right side */}
+            <div className="flex flex-col">
+              <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                 {event.name}
               </h1>
-
-              {/* Middle details with dynamic spacing */}
-              <div className="flex flex-col justify-evenly flex-1 my-6">
+              
+              <div className="space-y-4 mb-6">
                 {[
                   { icon: "calendar", text: event.date },
                   { icon: "clock", text: event.time },
@@ -632,14 +630,13 @@ const EventDetail: React.FC = () => {
                     <span className={`${typography.body} text-gray-600`}>{item.text}</span>
                   </div>
                 ))}
-
+                
+                {/* Age Restriction */}
                 <div className="flex items-center text-gray-600">
                   <Icon name="user" size="md" className="mr-4 text-primary-600" />
-                  <span className={`${typography.body} text-gray-600`}>
-                    {event.ageRestriction}
-                  </span>
+                  <span className={`${typography.body} text-gray-600`}>{event.ageRestriction}</span>
                 </div>
-
+                
                 {/* Organizer Information */}
                 {event.organizer && (
                   <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
@@ -672,54 +669,62 @@ const EventDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Bottom aligned buttons */}
-              <div className="mt-auto space-y-4">
-                {isOrganizer() ? (
-                  <button
-                    onClick={() => navigate(`/event/${event.id}/dashboard`)}
-                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-                  >
-                    <div className="flex items-center justify-center">
-                      <Icon name="settings" size="md" className="mr-2" />
-                      Event View Dashboard
-                    </div>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleJoinEvent}
-                    disabled={isJoining}
-                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                      isParticipating
-                        ? "bg-red-600 hover:bg-red-700 text-white"
-                        : isAuthenticated 
-                          ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                          : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {isJoining ? (
+              {/* Action buttons */}
+              <div className="space-y-4">
+                {/* Join/Leave button */}
+                <div>
+                  {isOrganizer() ? (
+                    // Show dashboard button for organizers
+                    <button 
+                      onClick={() => navigate(`/event/${event.id}/dashboard`)}
+                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
+                    >
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        {isParticipating ? 'Leaving...' : 'Joining...'}
+                        <Icon name="settings" size="md" className="mr-2" />
+                        Event View Dashboard
                       </div>
-                    ) : isParticipating ? (
-                      <div className="flex items-center justify-center">
-                        <Icon name="close" size="md" className="mr-2" />
-                        Leave Event
-                      </div>
-                    ) : isAuthenticated ? (
-                      'Join Skill-Sharing Event'
-                    ) : (
-                      'Login to Join Event'
-                    )}
-                  </button>
-                )}
+                    </button>
+                  ) : (
+                    // Show join/leave button for participants
+                    <button 
+                      onClick={handleJoinEvent}
+                      disabled={isJoining}
+                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
+                        isParticipating 
+                          ? 'bg-red-600 hover:bg-red-700 text-white' 
+                          : isAuthenticated 
+                            ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                            : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      {isJoining ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          {isParticipating ? 'Leaving...' : 'Joining...'}
+                        </div>
+                      ) : isParticipating ? (
+                        <div className="flex items-center justify-center">
+                          <Icon name="close" size="md" className="mr-2" />
+                          Leave Event
+                        </div>
+                      ) : isAuthenticated ? (
+                        'Join Skill-Sharing Event'
+                      ) : (
+                        'Login to Join Event'
+                      )}
+                    </button>
+                  )}
+                </div>
 
-                <button
-                  onClick={() => setIsMapOpen(true)}
-                  className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
-                >
-                  View Interactive Venue Map
-                </button>
+                {/* View Interactive Venue Map button */}
+                <div>
+                  <button 
+                    onClick={() => setIsMapOpen(true)}
+                    className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
+                  >
+                    View Interactive Venue Map
+                  </button>
+                </div>
               </div>
             </div>
           </div>

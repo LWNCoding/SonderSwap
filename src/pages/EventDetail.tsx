@@ -453,29 +453,36 @@ const EventDetail: React.FC = () => {
           </div>
           
           {/* Event content - mobile: stacked, desktop: side by side */}
-          <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
+          <div className="flex flex-col space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-end">
             {/* Event info - first on mobile, left on desktop */}
             <div className="order-1 lg:order-2">
               <h1 className={`${typography.h1} text-gray-900 mb-4`}>
                 {event.name}
               </h1>
               
-              <div className="space-y-3 mb-6">
+              <div className="space-y-4 mb-6">
                 {[
                   { icon: "calendar", text: event.date },
                   { icon: "clock", text: event.time },
-                  { icon: "user", text: event.ageRestriction },
+                  { icon: "location", text: event.address },
+                  { icon: "dollarSign", text: event.price },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center text-gray-600">
-                    <Icon name={item.icon} size="md" className="mr-3 text-primary-600" />
-                    <span className={`${typography.bodySmall} text-gray-600`}>{item.text}</span>
+                    <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
+                    <span className={`${typography.body} text-gray-600`}>{item.text}</span>
                   </div>
                 ))}
                 
+                {/* Age Restriction */}
+                <div className="flex items-center text-gray-600">
+                  <Icon name="user" size="md" className="mr-4 text-primary-600" />
+                  <span className={`${typography.body} text-gray-600`}>{event.ageRestriction}</span>
+                </div>
+                
                 {/* Organizer Information */}
                 {event.organizer && (
-                  <div className="flex items-center text-gray-600 pt-2 border-t border-gray-200">
-                    <Icon name="user" size="md" className="mr-3 text-primary-600" />
+                  <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
+                    <Icon name="user" size="md" className="mr-4 text-primary-600" />
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                         {typeof event.organizer === 'string' 
@@ -485,7 +492,7 @@ const EventDetail: React.FC = () => {
                       </div>
                       <div>
                         {typeof event.organizer === 'string' ? (
-                          <span className={`${typography.bodySmall} text-gray-600`}>
+                          <span className={`${typography.body} text-gray-600`}>
                             {event.organizer}
                           </span>
                         ) : (
@@ -493,7 +500,7 @@ const EventDetail: React.FC = () => {
                             onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
                               state: { returnTo: `/event/${eventId}` } 
                             })}
-                            className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                            className={`${typography.body} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
                           >
                             {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
                           </button>
@@ -504,8 +511,8 @@ const EventDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Action buttons - back in event info section */}
-              <div className="space-y-4 mb-6">
+              {/* Action buttons - aligned with image bottom on desktop */}
+              <div className="space-y-4">
                 {isOrganizer() ? (
                   // Show dashboard button for organizers
                   <button 

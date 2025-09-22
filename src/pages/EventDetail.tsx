@@ -471,21 +471,21 @@ const EventDetail: React.FC = () => {
           <div className="lg:hidden space-y-6">
             {/* Event title */}
             <h1 className={`${typography.h1} text-gray-900`}>
-              {event.name}
-            </h1>
-            
+        {event.name}
+      </h1>
+      
             {/* Event details */}
             <div className="space-y-4">
-              {[
-                { icon: "calendar", text: event.date },
-                { icon: "clock", text: event.time },
+        {[
+          { icon: "calendar", text: event.date },
+          { icon: "clock", text: event.time },
                 { icon: "location", text: event.address },
-              ].map((item, index) => (
-                <div key={index} className="flex items-center text-gray-600">
+        ].map((item, index) => (
+          <div key={index} className="flex items-center text-gray-600">
                   <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
                   <span className={`${typography.body} text-gray-600`}>{item.text}</span>
-                </div>
-              ))}
+          </div>
+        ))}
               
               {/* Age Restriction */}
               <div className="flex items-center text-gray-600">
@@ -523,8 +523,8 @@ const EventDetail: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-            
+      </div>
+
             {/* Event image */}
             <img
               src={event.thumbnail}
@@ -534,56 +534,56 @@ const EventDetail: React.FC = () => {
             
             {/* Join/Leave button - right under thumbnail on mobile */}
             <div className="space-y-4">
-              {isOrganizer() ? (
-                // Show dashboard button for organizers
-                <button 
-                  onClick={() => navigate(`/event/${event.id}/dashboard`)}
-                  className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-                >
-                  <div className="flex items-center justify-center">
-                    <Icon name="settings" size="md" className="mr-2" />
-                    Event View Dashboard
-                  </div>
-                </button>
-              ) : (
-                // Show join/leave button for participants
-                <button 
-                  onClick={handleJoinEvent}
-                  disabled={isJoining}
-                  className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                    isParticipating 
-                      ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : isAuthenticated 
-                        ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                        : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isJoining ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      {isParticipating ? 'Leaving...' : 'Joining...'}
-                    </div>
-                  ) : isParticipating ? (
-                    <div className="flex items-center justify-center">
-                      <Icon name="close" size="md" className="mr-2" />
-                      Leave Event
-                    </div>
-                  ) : isAuthenticated ? (
-                    'Join Skill-Sharing Event'
-                  ) : (
-                    'Login to Join Event'
-                  )}
-                </button>
-              )}
-              
+        {isOrganizer() ? (
+          // Show dashboard button for organizers
+          <button 
+            onClick={() => navigate(`/event/${event.id}/dashboard`)}
+            className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
+          >
+            <div className="flex items-center justify-center">
+              <Icon name="settings" size="md" className="mr-2" />
+              Event View Dashboard
+            </div>
+          </button>
+        ) : (
+          // Show join/leave button for participants
+          <button 
+            onClick={handleJoinEvent}
+            disabled={isJoining}
+            className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
+              isParticipating 
+                ? 'bg-red-600 hover:bg-red-700 text-white' 
+                : isAuthenticated 
+                  ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                  : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {isJoining ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                {isParticipating ? 'Leaving...' : 'Joining...'}
+              </div>
+            ) : isParticipating ? (
+              <div className="flex items-center justify-center">
+                <Icon name="close" size="md" className="mr-2" />
+                Leave Event
+              </div>
+            ) : isAuthenticated ? (
+              'Join Skill-Sharing Event'
+            ) : (
+              'Login to Join Event'
+            )}
+          </button>
+        )}
+        
               {/* Interactive Venue Map button - beneath join/leave button on mobile */}
               <button 
                 onClick={() => setIsMapOpen(true)}
                 className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
               >
-                View Interactive Venue Map
-              </button>
-            </div>
+          View Interactive Venue Map
+        </button>
+      </div>
             
             {/* Venue card - right below image on mobile */}
             <div className="bg-white rounded-lg shadow-lg p-6">
@@ -599,8 +599,8 @@ const EventDetail: React.FC = () => {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
+        </div>
+      </div>
 
           {/* Desktop: Side by side layout */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
@@ -619,7 +619,7 @@ const EventDetail: React.FC = () => {
                 {event.name}
               </h1>
               
-              <div className="space-y-4 mb-6">
+              <div className="space-y-2 mb-6">
                 {[
                   { icon: "calendar", text: event.date },
                   { icon: "clock", text: event.time },
@@ -628,20 +628,20 @@ const EventDetail: React.FC = () => {
                   <div key={index} className="flex items-center text-gray-600">
                     <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
                     <span className={`${typography.body} text-gray-600`}>{item.text}</span>
-                  </div>
-                ))}
+            </div>
+          ))}
                 
                 {/* Age Restriction */}
                 <div className="flex items-center text-gray-600">
                   <Icon name="user" size="md" className="mr-4 text-primary-600" />
                   <span className={`${typography.body} text-gray-600`}>{event.ageRestriction}</span>
-                </div>
-                
+      </div>
+
                 {/* Organizer Information */}
                 {event.organizer && (
                   <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
                     <Icon name="user" size="md" className="mr-4 text-primary-600" />
-                    <div className="flex items-center">
+            <div className="flex items-center">
                       <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                         {typeof event.organizer === 'string' 
                           ? event.organizer.charAt(0).toUpperCase()
@@ -670,7 +670,7 @@ const EventDetail: React.FC = () => {
               </div>
 
               {/* Action buttons */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {/* Join/Leave button */}
                 <div>
                   {isOrganizer() ? (
@@ -724,13 +724,13 @@ const EventDetail: React.FC = () => {
                   >
                     View Interactive Venue Map
                   </button>
-                </div>
+            </div>
               </div>
             </div>
           </div>
           
         </div>
-      </div>
+              </div>
 
       {/* Event Details */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.CONTENT_PADDING}`}>
@@ -751,10 +751,10 @@ const EventDetail: React.FC = () => {
             <p className={`${typography.body} text-gray-600 leading-relaxed`}>
               {event.description}
             </p>
-          </div>
+      </div>
 
           {/* Skill Stations */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
             
             {event.skillStations && event.skillStations.length > 0 ? (
@@ -767,8 +767,8 @@ const EventDetail: React.FC = () => {
                   const stationCapacity = stationData?.capacity;
                   const stationDuration = stationData?.duration;
                   const stationDifficulty = stationData?.difficulty;
-
-                  return (
+            
+            return (
                     <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
@@ -808,29 +808,29 @@ const EventDetail: React.FC = () => {
                           <div className="flex items-center">
                             <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                               {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
-                            </div>
+                </div>
                             <div>
                               <p className={`${typography.small} text-gray-500`}>Station Leader</p>
-                              <button
+                  <button
                                 onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
                                   state: { returnTo: `/event/${eventId}` } 
                                 })}
-                                className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
-                              >
+                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                  >
                                 {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
-                              </button>
+                  </button>
                             </div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
+                )}
               </div>
+            );
+          })}
+        </div>
             ) : (
               <div className="text-center py-8">
                 <p className={`${typography.body} text-gray-500`}>No skill stations available for this event.</p>
-              </div>
+      </div>
             )}
           </div>
 
@@ -856,26 +856,26 @@ const EventDetail: React.FC = () => {
                       <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event Start</p>
                       <p className={`${typography.bodySmall} text-gray-600`}>{event.time}</p>
                     </div>
-                  </div>
+          </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-secondary-600 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
                       <p className={`${typography.bodySmall} font-medium text-gray-900`}>Skill Stations Open</p>
                       <p className={`${typography.bodySmall} text-gray-600`}>Various stations available throughout the event</p>
-                    </div>
-                  </div>
+          </div>
+        </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
                     <div>
                       <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event End</p>
                       <p className={`${typography.bodySmall} text-gray-600`}>Wrap up and networking</p>
-                    </div>
-                  </div>
+      </div>
+    </div>
                 </>
               )}
-            </div>
           </div>
         </div>
+      </div>
 
         {/* Desktop: Grid layout */}
         <div className={`hidden lg:grid ${DETAIL_PAGE_LAYOUT.GRID_COLS_3} gap-8`}>

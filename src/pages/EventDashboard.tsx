@@ -158,7 +158,7 @@ const EventDashboard: React.FC = () => {
   // Show loading while event is loading or auth is loading
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <LoadingSpinner message={LOADING_STATES.EVENT} />
       </div>
     );
@@ -167,7 +167,7 @@ const EventDashboard: React.FC = () => {
   // If not authenticated, show loading (redirect will happen in useEffect)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <LoadingSpinner message={LOADING_STATES.EVENT} />
       </div>
     );
@@ -176,13 +176,13 @@ const EventDashboard: React.FC = () => {
   // Show error if event not found
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-          <p className="text-gray-600 mb-6">{error || 'The event you are looking for does not exist.'}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white mb-4">Event Not Found</h1>
+          <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-6">{error || 'The event you are looking for does not exist.'}</p>
           <Link 
             to="/current-events" 
-            className="inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors"
+            className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
           >
             <Icon name="arrowLeft" size="md" className="mr-2" />
             Back to Events
@@ -194,15 +194,15 @@ const EventDashboard: React.FC = () => {
 
 
   return (
-    <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
+    <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900`}>
       {/* Header */}
-      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 ${LAYOUT.HEADER_PADDING}`}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
           {/* Back button */}
           <div className="mb-6">
             <Link 
               to={`/event/${eventId}`} 
-              className={`inline-flex items-center text-primary-600 hover:text-primary-700 transition-colors ${typography.navLink}`}
+              className={`inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors ${typography.navLink}`}
             >
               <Icon name="arrowLeft" size="md" className="mr-2" />
               Back to Event
@@ -210,13 +210,13 @@ const EventDashboard: React.FC = () => {
           </div>
           
           <div className="text-center">
-            <h1 className={`${typography.h1} text-gray-900 mb-4`}>
+            <h1 className={`${typography.h1} text-gray-900 dark:text-white dark:text-white mb-4`}>
               Event Dashboard
             </h1>
-            <h2 className={`${typography.h2} text-gray-700 mb-2`}>
+            <h2 className={`${typography.h2} text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-2`}>
               {event.name}
             </h2>
-            <p className={`${typography.body} text-gray-600`}>
+            <p className={`${typography.body} text-gray-600 dark:text-gray-300 dark:text-gray-300`}>
               Manage your event, track participants, and monitor activity
             </p>
           </div>
@@ -229,15 +229,15 @@ const EventDashboard: React.FC = () => {
           {/* Main Dashboard Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Event Overview */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Event Overview</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
+              <h3 className={`${typography.h3} text-gray-900 dark:text-white dark:text-white mb-4`}>Event Overview</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-primary-50 rounded-lg">
                   <div className="flex items-center">
                     <Icon name="calendar" size="md" className="text-primary-600 mr-3" />
                     <div>
-                      <p className={`${typography.small} text-gray-600`}>Date & Time</p>
-                      <p className={`${typography.bodySmall} font-semibold text-gray-900`}>
+                      <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>Date & Time</p>
+                      <p className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white`}>
                         {event.date} at {event.time}
                       </p>
                     </div>
@@ -247,8 +247,8 @@ const EventDashboard: React.FC = () => {
                   <div className="flex items-center">
                     <Icon name="location" size="md" className="text-primary-600 mr-3" />
                     <div>
-                      <p className={`${typography.small} text-gray-600`}>Address</p>
-                      <p className={`${typography.bodySmall} font-semibold text-gray-900`}>
+                      <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>Address</p>
+                      <p className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white`}>
                         {event.address}
                       </p>
                     </div>
@@ -258,8 +258,8 @@ const EventDashboard: React.FC = () => {
                   <div className="flex items-center">
                     <Icon name="users" size="md" className="text-primary-600 mr-3" />
                     <div>
-                      <p className={`${typography.small} text-gray-600`}>Capacity</p>
-                      <p className={`${typography.bodySmall} font-semibold text-gray-900`}>
+                      <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>Capacity</p>
+                      <p className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white`}>
                         {event.capacity} people
                       </p>
                     </div>
@@ -269,8 +269,8 @@ const EventDashboard: React.FC = () => {
                   <div className="flex items-center">
                     <Icon name="dollar" size="md" className="text-primary-600 mr-3" />
                     <div>
-                      <p className={`${typography.small} text-gray-600`}>Price</p>
-                      <p className={`${typography.bodySmall} font-semibold text-gray-900`}>
+                      <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>Price</p>
+                      <p className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white`}>
                         {event.price}
                       </p>
                     </div>
@@ -280,11 +280,11 @@ const EventDashboard: React.FC = () => {
             </div>
 
             {/* Participants Management */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className={`${typography.h3} text-gray-900`}>Participants</h3>
+                <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>Participants</h3>
                 <div className="flex items-center space-x-2">
-                  <span className={`${typography.small} text-gray-500`}>
+                  <span className={`${typography.small} text-gray-500 dark:text-gray-400`}>
                     {participantCount} registered
                   </span>
                   <button
@@ -307,14 +307,14 @@ const EventDashboard: React.FC = () => {
             </div>
 
             {/* Event Analytics */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Analytics</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
+              <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-4`}>Analytics</h3>
               <div className="text-center py-8">
                 <Icon name="chart" size="xl" className="text-gray-400 mx-auto mb-4" />
-                <p className={`${typography.body} text-gray-600 mb-4`}>
+                <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-4`}>
                   Event analytics coming soon
                 </p>
-                <p className={`${typography.small} text-gray-500`}>
+                <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>
                   Track attendance, engagement, and event performance metrics.
                 </p>
               </div>
@@ -324,8 +324,8 @@ const EventDashboard: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Quick Actions</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
+              <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-4`}>Quick Actions</h3>
               <div className="space-y-3">
                 <button 
                   onClick={() => setIsEditEventOpen(true)}
@@ -333,7 +333,7 @@ const EventDashboard: React.FC = () => {
                 >
                   <div className="flex items-center">
                     <Icon name="edit" size="md" className="text-primary-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Details</span>
+                    <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Edit Event Details</span>
                   </div>
                 </button>
                 <button 
@@ -342,7 +342,7 @@ const EventDashboard: React.FC = () => {
                 >
                   <div className="flex items-center">
                     <Icon name="users" size="md" className="text-primary-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>Manage Participants</span>
+                    <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Manage Participants</span>
                   </div>
                 </button>
                 <button 
@@ -351,42 +351,42 @@ const EventDashboard: React.FC = () => {
                 >
                   <div className="flex items-center">
                     <Icon name="settings" size="md" className="text-primary-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>Edit Event Stations</span>
+                    <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Edit Event Stations</span>
                   </div>
                 </button>
                 <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
                   <div className="flex items-center">
                     <Icon name="message" size="md" className="text-primary-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>Send Announcements</span>
+                    <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Send Announcements</span>
                   </div>
                 </button>
                 <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
                   <div className="flex items-center">
                     <Icon name="chart" size="md" className="text-primary-600 mr-3" />
-                    <span className={`${typography.bodySmall} text-gray-700`}>View Reports</span>
+                    <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>View Reports</span>
                   </div>
                 </button>
               </div>
             </div>
 
             {/* Event Status */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Event Status</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
+              <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-4`}>Event Status</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className={`${typography.small} text-gray-600`}>Status</span>
+                  <span className={`${typography.small} text-gray-600 dark:text-gray-300`}>Status</span>
                   <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                     Active
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`${typography.small} text-gray-600`}>Participants</span>
-                  <span className={`${typography.bodySmall} font-semibold text-gray-900`}>
+                  <span className={`${typography.small} text-gray-600 dark:text-gray-300`}>Participants</span>
+                  <span className={`${typography.bodySmall} font-semibold text-gray-900 dark:text-white`}>
                     {participantCount} / {event.capacity}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`${typography.small} text-gray-600`}>Registration</span>
+                  <span className={`${typography.small} text-gray-600 dark:text-gray-300`}>Registration</span>
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
                     Open
                   </span>
@@ -395,10 +395,10 @@ const EventDashboard: React.FC = () => {
             </div>
 
             {/* Delete Event */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-200">
-              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Danger Zone</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 border-l-4 border-red-200">
+              <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-4`}>Danger Zone</h3>
               <div className="space-y-3">
-                <p className={`${typography.small} text-gray-600`}>
+                <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>
                   Once you delete an event, there is no going back. Please be certain.
                 </p>
                 <button
@@ -461,17 +461,17 @@ const EventDashboard: React.FC = () => {
                   <Icon name="alertCircle" size="lg" className="text-red-600" />
                 </div>
                 <div className="ml-3">
-                  <h3 className={`${typography.h3} text-gray-900`}>
+                  <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>
                     Delete Event
                   </h3>
                 </div>
               </div>
               
               <div className="mb-6">
-                <p className={`${typography.body} text-gray-600 mb-2`}>
+                <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-2`}>
                   Are you sure you want to delete <strong>"{event?.name}"</strong>?
                 </p>
-                <p className={`${typography.small} text-gray-500`}>
+                <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>
                   This action cannot be undone. All event data, participants, and skill stations will be permanently deleted.
                 </p>
               </div>
@@ -480,7 +480,7 @@ const EventDashboard: React.FC = () => {
                 <button
                   onClick={() => setIsDeleteConfirmOpen(false)}
                   disabled={isDeleting}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>

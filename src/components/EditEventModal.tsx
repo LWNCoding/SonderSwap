@@ -291,13 +291,13 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className={`${typography.h2} text-gray-900`}>Edit Event Details</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className={`${typography.h2} text-gray-900 dark:text-white dark:text-white`}>Edit Event Details</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <Icon name="close" size="md" />
           </button>
@@ -336,11 +336,11 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="name"
                 value={formData.name || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Enter event name"
               />
               {/* Debug: Show actual value */}
-              <div className="text-xs text-gray-500 mt-1">Debug: {formData.name || 'EMPTY'}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Debug: {formData.name || 'EMPTY'}</div>
             </div>
 
             <div>
@@ -352,7 +352,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="address"
                 value={formData.address || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Enter full address"
               />
             </div>
@@ -367,7 +367,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 value={formData.description || ''}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Enter event description"
               />
             </div>
@@ -382,7 +382,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="date"
                 value={formData.date || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
@@ -436,7 +436,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="price"
                 value={formData.price || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="e.g., $25, Free, $50-75"
               />
             </div>
@@ -450,7 +450,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="capacity"
                 value={formData.capacity || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="e.g., 50, 100-200"
               />
             </div>
@@ -465,7 +465,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="eventType"
                 value={formData.eventType || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select event type</option>
                 <option value="workshop">Workshop</option>
@@ -486,7 +486,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 name="ageRestriction"
                 value={formData.ageRestriction || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">Select age restriction</option>
                 <option value="All ages welcome">All ages welcome</option>
@@ -506,7 +506,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 value={formData.howItWorks || ''}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 placeholder="Describe how the event works"
               />
             </div>
@@ -541,7 +541,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-6 text-gray-500">
+                  <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                     <Icon name="calendar" size="lg" className="mx-auto mb-2 text-gray-400" />
                     <p className={`${typography.small}`}>No agenda items yet</p>
                     <p className={`${typography.small} text-gray-400`}>Add items to create an event schedule</p>
@@ -551,7 +551,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
                 <button
                   type="button"
                   onClick={addAgendaItem}
-                  className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 text-gray-600 hover:border-primary-500 hover:text-primary-600 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center p-3 border-2 border-dashed border-gray-300 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 rounded-lg transition-colors"
                 >
                   <Icon name="plus" size="sm" className="mr-2" />
                   <span className={`${typography.small} font-medium`}>Add agenda item</span>

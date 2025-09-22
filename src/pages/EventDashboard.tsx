@@ -23,6 +23,8 @@ const EventDashboard: React.FC = () => {
   const [isManageParticipantsOpen, setIsManageParticipantsOpen] = useState(false);
   const [isEditEventOpen, setIsEditEventOpen] = useState(false);
   const [isSkillStationModalOpen, setIsSkillStationModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch participant count and participants list
   const fetchParticipantCount = async () => {
@@ -33,6 +35,42 @@ const EventDashboard: React.FC = () => {
       setParticipants(data.participants || []);
     } catch (error) {
       console.error('Failed to fetch participant count:', error);
+    }
+  };
+
+  // Handle event deletion
+  const handleDeleteEvent = async () => {
+    if (!eventId) return;
+    
+    setIsDeleting(true);
+    try {
+      const token = authService.getToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete event');
+      }
+
+      // Redirect to current events page after successful deletion
+      navigate('/current-events');
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      alert('Failed to delete event. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteConfirmOpen(false);
     }
   };
 
@@ -209,9 +247,9 @@ const EventDashboard: React.FC = () => {
                   <div className="flex items-center">
                     <Icon name="location" size="md" className="text-primary-600 mr-3" />
                     <div>
-                      <p className={`${typography.small} text-gray-600`}>Venue</p>
+                      <p className={`${typography.small} text-gray-600`}>Address</p>
                       <p className={`${typography.bodySmall} font-semibold text-gray-900`}>
-                        {event.venue}
+                        {event.address}
                       </p>
                     </div>
                   </div>
@@ -355,6 +393,28 @@ const EventDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Delete Event */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-200">
+              <h3 className={`${typography.h3} text-gray-900 mb-4`}>Danger Zone</h3>
+              <div className="space-y-3">
+                <p className={`${typography.small} text-gray-600`}>
+                  Once you delete an event, there is no going back. Please be certain.
+                </p>
+                <button
+                  onClick={() => setIsDeleteConfirmOpen(true)}
+                  disabled={isDeleting}
+                  className="w-full p-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="flex items-center justify-center">
+                    <Icon name="trash" size="md" className="text-red-600 mr-3" />
+                    <span className={`${typography.bodySmall} font-medium`}>
+                      {isDeleting ? 'Deleting...' : 'Delete Event'}
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -390,6 +450,52 @@ const EventDashboard: React.FC = () => {
           console.log('Saving skill stations:', updatedStations);
         }}
       />
+
+      {/* Delete Event Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="flex-shrink-0">
+                  <Icon name="alertTriangle" size="lg" className="text-red-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className={`${typography.h3} text-gray-900`}>
+                    Delete Event
+                  </h3>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <p className={`${typography.body} text-gray-600 mb-2`}>
+                  Are you sure you want to delete <strong>"{event?.name}"</strong>?
+                </p>
+                <p className={`${typography.small} text-gray-500`}>
+                  This action cannot be undone. All event data, participants, and skill stations will be permanently deleted.
+                </p>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setIsDeleteConfirmOpen(false)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteEvent}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Event'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

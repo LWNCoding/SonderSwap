@@ -1587,6 +1587,80 @@ app.put('/api/events/:id/skill-stations', verifyToken, async (req, res) => {
   }
 });
 
+// Delete an event (requires authentication and authorization)
+app.delete('/api/events/:eventId', verifyToken, async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    const eventId = req.params.eventId;
+    const userId = req.user._id;
+
+    console.log('Delete event API: Deleting event:', eventId);
+    console.log('User ID from token:', userId);
+
+    // Find the event by its 'id' field (which is a string) or '_id' (ObjectId)
+    const event = await db.collection('events').findOne({
+      $or: [
+        { id: eventId },
+        { _id: new ObjectId(eventId) }
+      ]
+    });
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    // Authorization check: Only the organizer can delete the event
+    const userIdStr = userId.toString();
+    const organizerId = event.organizer instanceof ObjectId ? event.organizer.toString() : event.organizer;
+    const organizerIdStr = organizerId.toString();
+
+    console.log('Delete event authorization check:');
+    console.log('userIdStr:', userIdStr);
+    console.log('organizerIdStr:', organizerIdStr);
+    console.log('IDs match:', userIdStr === organizerIdStr);
+
+    if (userIdStr !== organizerIdStr) {
+      return res.status(403).json({ error: 'Unauthorized: Only the event organizer can delete this event' });
+    }
+
+    // Delete associated skill stations
+    if (event.skillStations && event.skillStations.length > 0) {
+      const skillStationIds = event.skillStations.map(id => {
+        if (typeof id === 'string') {
+          return new ObjectId(id);
+        }
+        return id; // Already an ObjectId
+      });
+      
+      await db.collection('skillstations').deleteMany({
+        _id: { $in: skillStationIds }
+      });
+      console.log('Deleted skill stations:', skillStationIds.length);
+    }
+
+    // Delete associated participants
+    await db.collection('participants').deleteMany({
+      eventId: event._id
+    });
+    console.log('Deleted participants for event');
+
+    // Delete the event
+    const result = await db.collection('events').deleteOne({ _id: event._id });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Event not found or already deleted' });
+    }
+
+    console.log('Event deleted successfully');
+    res.json({ message: 'Event deleted successfully' });
+
+  } catch (error) {
+    console.error('Delete event API error:', error);
+    res.status(500).json({ error: 'Failed to delete event' });
+  }
+});
+
 // Leave an event
 app.post('/api/events/:eventId/leave', verifyToken, async (req, res) => {
   try {

@@ -54,13 +54,13 @@ export const GRADIENTS = {
   PRIMARY_SECONDARY: 'bg-gradient-to-r from-primary-600 to-secondary-600',
   PRIMARY_SECONDARY_TEXT: 'bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent',
   BUTTON_HOVER: 'hover:from-primary-700 hover:to-secondary-700',
-  BACKGROUND: 'bg-gradient-to-br from-primary-50 to-secondary-50',
-  BUTTON_BACKGROUND: 'bg-gradient-to-r from-primary-100 to-secondary-100',
-  BUTTON_BACKGROUND_HOVER: 'hover:from-primary-200 hover:to-secondary-200',
-  CARD_OVERLAY: 'bg-gradient-to-t from-white/30 via-transparent to-transparent',
+  BACKGROUND: 'bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-900 dark:to-gray-800',
+  BUTTON_BACKGROUND: 'bg-gradient-to-r from-primary-100 to-secondary-100 dark:from-primary-900 dark:to-secondary-900',
+  BUTTON_BACKGROUND_HOVER: 'hover:from-primary-200 hover:to-secondary-200 dark:hover:from-primary-800 dark:hover:to-secondary-800',
+  CARD_OVERLAY: 'bg-gradient-to-t from-white/30 via-transparent to-transparent dark:from-gray-900/30',
   INDICATOR_ACTIVE: 'bg-gradient-to-r from-primary-600 to-secondary-600',
-  INDICATOR_INACTIVE: 'bg-gradient-to-r from-primary-200 to-secondary-200',
-  INDICATOR_CONTAINER: 'bg-gradient-to-r from-primary-100/90 to-secondary-100/90',
+  INDICATOR_INACTIVE: 'bg-gradient-to-r from-primary-200 to-secondary-200 dark:from-primary-800 dark:to-secondary-800',
+  INDICATOR_CONTAINER: 'bg-gradient-to-r from-primary-100/90 to-secondary-100/90 dark:from-primary-900/90 dark:to-secondary-900/90',
 } as const;
 
 // Color Constants

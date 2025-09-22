@@ -92,14 +92,14 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 w-full max-w-2xl max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className={`${typography.h2} text-gray-900`}>
+            <h2 className={`${typography.h2} text-gray-900 dark:text-white dark:text-white`}>
               Manage Participants
             </h2>
-            <p className={`${typography.bodySmall} text-gray-600 mt-1`}>
+            <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300 mt-1`}>
               {eventName}
             </p>
           </div>
@@ -114,7 +114,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg transition-colors"
               title="Close"
             >
               <Icon name="close" size="sm" />
@@ -156,8 +156,8 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`${typography.caption} text-gray-600`}>Last updated</p>
-                  <p className={`${typography.small} text-gray-500`}>
+                  <p className={`${typography.caption} text-gray-600 dark:text-gray-300`}>Last updated</p>
+                  <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>
                     {new Date().toLocaleTimeString()}
                   </p>
                 </div>
@@ -165,7 +165,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 
               {/* Participants List */}
               <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className={`${typography.h4} text-gray-900 mb-4`}>Participants</h3>
+                <h3 className={`${typography.h4} text-gray-900 dark:text-white mb-4`}>Participants</h3>
                 <ParticipantsList
                   participants={participants}
                   onEdit={handleEditParticipant}
@@ -181,13 +181,13 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
 
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-          <p className={`${typography.caption} text-gray-500`}>
+          <p className={`${typography.caption} text-gray-500 dark:text-gray-400`}>
             {participants.length} participant{participants.length !== 1 ? 's' : ''} registered
           </p>
           <div className="flex space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               Close
             </button>

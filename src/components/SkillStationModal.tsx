@@ -329,14 +329,14 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className={`${typography.h2} text-gray-900`}>Manage Skill Stations</h2>
+            <h2 className={`${typography.h2} text-gray-900 dark:text-white dark:text-white`}>Manage Skill Stations</h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Icon name="close" size="md" />
             </button>
@@ -363,8 +363,8 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                         <Icon name="settings" size="md" className="text-primary-600" />
                       </div>
                       <div className="flex-1">
-                        <h3 className={`${typography.h4} text-gray-900`}>{station.name}</h3>
-                        <p className={`${typography.small} text-gray-600`}>{station.location}</p>
+                        <h3 className={`${typography.h4} text-gray-900 dark:text-white`}>{station.name}</h3>
+                        <p className={`${typography.small} text-gray-600 dark:text-gray-300`}>{station.location}</p>
                       </div>
                     </div>
                     
@@ -380,7 +380,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                           </span>
                         </div>
                       ) : (
-                        <span className={`${typography.small} text-gray-500`}>No leader assigned</span>
+                        <span className={`${typography.small} text-gray-500 dark:text-gray-400`}>No leader assigned</span>
                       )}
                       
                       {/* Status Badge */}
@@ -573,7 +573,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                             <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
                               Description
                             </label>
-                            <p className={`${typography.bodySmall} text-gray-600`}>{station.description}</p>
+                            <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300`}>{station.description}</p>
                           </div>
                           
                           <div>
@@ -597,13 +597,13 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
                                 Capacity
                               </label>
-                              <p className={`${typography.bodySmall} text-gray-600`}>{station.capacity} people</p>
+                              <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300`}>{station.capacity} people</p>
                             </div>
                             <div>
                               <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
                                 Duration
                               </label>
-                              <p className={`${typography.bodySmall} text-gray-600`}>{station.duration} min</p>
+                              <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300`}>{station.duration} min</p>
                             </div>
                             <div>
                               <label className={`${typography.small} font-medium text-gray-700 block mb-1`}>
@@ -696,7 +696,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
             <Button
               onClick={handleCreateNew}
               variant="outline"
-              className="w-full border-dashed border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 text-gray-600 hover:text-primary-600"
+              className="w-full border-dashed border-2 border-gray-300 hover:border-primary-400 hover:bg-primary-50 text-gray-600 dark:text-gray-300 hover:text-primary-600"
             >
               <Icon name="plus" size="sm" className="mr-2" />
               Add New Skill Station
@@ -706,7 +706,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
           {/* New Station Creation Form */}
           {isCreatingNew && (
             <div className="mb-6 p-4 border border-primary-200 rounded-lg bg-primary-50">
-              <h3 className={`${typography.h4} text-gray-900 mb-4`}>Create New Skill Station</h3>
+              <h3 className={`${typography.h4} text-gray-900 dark:text-white mb-4`}>Create New Skill Station</h3>
               
               <div className="space-y-4">
                 {/* Basic Information */}
@@ -891,16 +891,16 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       {/* Delete Confirmation Dialog */}
       {deleteConfirmStation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700/20 max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                     <Icon name="alertCircle" size="md" className="text-red-600" />
+                <div className="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mr-3">
+                     <Icon name="alertCircle" size="md" className="text-red-600 dark:text-red-400" />
                 </div>
-                <h3 className={`${typography.h3} text-gray-900`}>Delete Skill Station</h3>
+                <h3 className={`${typography.h3} text-gray-900 dark:text-white`}>Delete Skill Station</h3>
               </div>
               
-              <p className={`${typography.body} text-gray-600 mb-6`}>
+              <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-6`}>
                 Are you sure you want to delete <strong>"{deleteConfirmStation.name}"</strong>? 
                 This action cannot be undone and will remove the station from this event.
               </p>

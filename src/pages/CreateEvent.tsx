@@ -327,19 +327,19 @@ const CreateEvent: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.HEADER_PADDING}`}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <button
               onClick={goBack}
-              className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
+              className="flex items-center space-x-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />
               <span className={typography.body}>Back</span>
             </button>
-            <h1 className={typography.h1}>Host an Event</h1>
+            <h1 className={`${typography.h1} text-gray-900 dark:text-white dark:text-white`}>Host an Event</h1>
           </div>
         </div>
       </div>
@@ -349,7 +349,7 @@ const CreateEvent: React.FC = () => {
         
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
+          <div className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded-lg flex items-center">
             <Icon name="check" className="w-5 h-5 mr-2" />
             <span className={typography.bodySmall}>{successMessage}</span>
           </div>
@@ -357,40 +357,40 @@ const CreateEvent: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
+          <div className="mb-6 p-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg flex items-center">
             <Icon name="alertCircle" className="w-5 h-5 mr-2" />
             <span className={typography.bodySmall}>{error}</span>
           </div>
         )}
 
         {/* Event Creation Form */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 overflow-hidden">
           <form onSubmit={handleSubmit} className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Event Name and Address */}
               <div>
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Event Name *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Enter event name"
                   required
                 />
               </div>
 
               <div>
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Address *
                 </label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Enter event address"
                   required
                 />
@@ -398,13 +398,13 @@ const CreateEvent: React.FC = () => {
 
               {/* Description */}
               <div className="md:col-span-2">
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Description *
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   rows={4}
                   placeholder="Describe your event"
                   required
@@ -413,14 +413,14 @@ const CreateEvent: React.FC = () => {
 
               {/* Date */}
               <div className="md:col-span-2">
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Date *
                 </label>
                 <input
                   type="date"
                   value={formData.date}
                   onChange={(e) => handleInputChange('date', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
@@ -428,7 +428,7 @@ const CreateEvent: React.FC = () => {
               {/* Start and End Time */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     Start Time *
                   </label>
                   <input
@@ -445,7 +445,7 @@ const CreateEvent: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     End Time *
                   </label>
                   <input
@@ -466,13 +466,13 @@ const CreateEvent: React.FC = () => {
               {/* Event Type and Price */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     Event Type *
                   </label>
                   <select
                     value={formData.eventType}
                     onChange={(e) => handleInputChange('eventType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   >
                     <option value="">Select type</option>
@@ -484,14 +484,14 @@ const CreateEvent: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     Price *
                   </label>
                   <input
                     type="text"
                     value={formData.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="e.g., Free, $25, $50"
                     required
                   />
@@ -501,26 +501,26 @@ const CreateEvent: React.FC = () => {
               {/* Capacity and Age Restriction */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     Capacity *
                   </label>
                   <input
                     type="number"
                     value={formData.capacity}
                     onChange={(e) => handleInputChange('capacity', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder="50"
                     required
                   />
                 </div>
                 <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                     Age Restriction *
                   </label>
                   <select
                     value={formData.ageRestriction}
                     onChange={(e) => handleInputChange('ageRestriction', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   >
                     <option value="All ages welcome">All ages welcome</option>
@@ -533,27 +533,27 @@ const CreateEvent: React.FC = () => {
 
               {/* Thumbnail */}
               <div>
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Thumbnail URL
                 </label>
                 <input
                   type="url"
                   value={formData.thumbnail}
                   onChange={(e) => handleInputChange('thumbnail', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
 
               {/* How It Works */}
               <div className="md:col-span-2">
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   How It Works
                 </label>
                 <textarea
                   value={formData.howItWorks}
                   onChange={(e) => handleInputChange('howItWorks', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   rows={4}
                   placeholder="Describe how the event works"
                 />
@@ -561,7 +561,7 @@ const CreateEvent: React.FC = () => {
 
               {/* Agenda */}
               <div className="md:col-span-2">
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Event Agenda
                 </label>
                 <div className="space-y-2">
@@ -571,7 +571,7 @@ const CreateEvent: React.FC = () => {
                         type="text"
                         value={item}
                         onChange={(e) => handleAgendaChange(index, e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                         placeholder={`Agenda item ${index + 1}`}
                       />
                       {formData.agenda.length > 1 && (
@@ -597,51 +597,51 @@ const CreateEvent: React.FC = () => {
 
               {/* Skill Stations */}
               <div className="md:col-span-2">
-                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-2`}>
                   Skill Stations (Optional)
                 </label>
                 <div className="space-y-4">
                   {formData.skillStations?.map((station, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Station Name
                           </label>
                           <input
                             type="text"
                             value={station.name || ''}
                             onChange={(e) => handleSkillStationChange(index, 'name', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             placeholder="e.g., Web Development"
                           />
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Location
                           </label>
                           <input
                             type="text"
                             value={station.location || ''}
                             onChange={(e) => handleSkillStationChange(index, 'location', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             placeholder="e.g., Room A, Lab 1"
                           />
                         </div>
                         <div className="md:col-span-2">
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Description
                           </label>
                           <textarea
                             value={station.description || ''}
                             onChange={(e) => handleSkillStationChange(index, 'description', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             rows={2}
                             placeholder="Describe what participants will learn or do"
                           />
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Skills (comma-separated)
                           </label>
                           <input
@@ -652,44 +652,44 @@ const CreateEvent: React.FC = () => {
                               handleSkillStationChange(index, 'skillsRaw', value);
                               handleSkillStationChange(index, 'skills', value.split(',').map(s => s.trim()).filter(s => s.length > 0));
                             }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             placeholder="e.g., JavaScript, React, Node.js"
                           />
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Capacity
                           </label>
                           <input
                             type="number"
                             value={station.capacity || ''}
                             onChange={(e) => handleSkillStationChange(index, 'capacity', parseInt(e.target.value) || 0)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="1"
                             placeholder="10"
                           />
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Duration (minutes)
                           </label>
                           <input
                             type="number"
                             value={station.duration || ''}
                             onChange={(e) => handleSkillStationChange(index, 'duration', parseInt(e.target.value) || 0)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             min="1"
                             placeholder="60"
                           />
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Difficulty
                           </label>
                           <select
                             value={station.difficulty || 'All Levels'}
                             onChange={(e) => handleSkillStationChange(index, 'difficulty', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           >
                             <option value="All Levels">All Levels</option>
                             <option value="Beginner">Beginner</option>
@@ -698,7 +698,7 @@ const CreateEvent: React.FC = () => {
                           </select>
                         </div>
                         <div>
-                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 dark:text-gray-300 mb-1`}>
                             Station Leader Email (Optional)
                           </label>
                           <input
@@ -712,7 +712,7 @@ const CreateEvent: React.FC = () => {
                                 handleLeaderEmailLookup(index, value);
                               }, 500);
                             }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             placeholder="Enter leader's email address"
                           />
                           {station.leaderId && (
@@ -742,7 +742,7 @@ const CreateEvent: React.FC = () => {
                   <button
                     type="button"
                     onClick={addSkillStation}
-                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary-500 hover:text-primary-600 transition-colors"
+                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-600 transition-colors bg-white dark:bg-gray-700"
                   >
                     <Icon name="plus" className="w-5 h-5 inline mr-2" />
                     Add Skill Station
@@ -752,7 +752,7 @@ const CreateEvent: React.FC = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="flex justify-end space-x-4">
                 <Button
                   type="button"

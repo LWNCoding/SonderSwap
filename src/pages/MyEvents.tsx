@@ -150,7 +150,7 @@ const MyEvents: React.FC = () => {
   }
 
   const renderEventCard = (event: EventDetailData, isOrganizing: boolean = false) => (
-    <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div key={event.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden">
         <img
@@ -168,7 +168,7 @@ const MyEvents: React.FC = () => {
       </div>
 
       {/* Event Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-grow">
         <div className="mb-4">
           <h3 className={`${typography.h3} text-gray-900 mb-2 line-clamp-2`}>{event.name}</h3>
           <p className={`${typography.bodySmall} text-gray-600 line-clamp-2`}>{event.description}</p>
@@ -200,8 +200,11 @@ const MyEvents: React.FC = () => {
           </span>
         </div>
 
+        {/* Spacer to push buttons to bottom */}
+        <div className="flex-grow"></div>
+
         {/* Action Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-4">
           <Button
             variant="outline"
             size="sm"

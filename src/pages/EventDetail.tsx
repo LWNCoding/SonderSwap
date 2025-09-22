@@ -75,6 +75,10 @@ const EventDetail: React.FC = () => {
   // Debug participant count
   console.log('EventDetail: Current participantCount:', participantCount);
   
+  // Debug skill stations
+  console.log('EventDetail: Skill stations data:', event?.skillStations);
+  console.log('EventDetail: Skill stations length:', event?.skillStations?.length);
+  
   // Get participation status (auth required)
   const { 
     isParticipating, 
@@ -756,26 +760,27 @@ const EventDetail: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
             
-            <div className="relative group">
-              {renderNavigationButton(
-                'left',
-                handlePreviousPage,
-                currentPage === 0,
-                'left-0 top-1/2 -translate-y-1/2'
-              )}
+            {event.skillStations && event.skillStations.length > 0 ? (
+              <div className="relative group">
+                {renderNavigationButton(
+                  'left',
+                  handlePreviousPage,
+                  currentPage === 0,
+                  'left-0 top-1/2 -translate-y-1/2'
+                )}
 
-              {renderNavigationButton(
-                'right',
-                () => handleNextPage(event.skillStations.length),
-                currentPage >= getTotalPages(event.skillStations.length) - 1,
-                'right-0 top-1/2 -translate-y-1/2'
-              )}
+                {renderNavigationButton(
+                  'right',
+                  () => handleNextPage(event.skillStations.length),
+                  currentPage >= getTotalPages(event.skillStations.length) - 1,
+                  'right-0 top-1/2 -translate-y-1/2'
+                )}
 
-              <div
-                ref={containerRef}
-                className="flex overflow-x-auto pb-4 scroll-smooth w-full"
-              >
-                {event.skillStations.map((station, index) => {
+                <div
+                  ref={containerRef}
+                  className="flex overflow-x-auto pb-4 scroll-smooth w-full"
+                >
+                  {event.skillStations.map((station, index) => {
                   // Handle both populated objects and string IDs
                   const stationData = typeof station === 'string' ? null : station as SkillStation;
                   const stationName = stationData?.name || 'Skill Station';
@@ -872,8 +877,13 @@ const EventDetail: React.FC = () => {
                 })}
               </div>
               
-              {renderPageIndicator(event.skillStations.length)}
-            </div>
+                {renderPageIndicator(event.skillStations.length)}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className={`${typography.body} text-gray-500`}>No skill stations available for this event.</p>
+              </div>
+            )}
           </div>
 
           {/* Agenda */}

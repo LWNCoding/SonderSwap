@@ -459,29 +459,6 @@ const EventDetail: React.FC = () => {
               {event.name}
             </h1>
             
-            {/* Event image */}
-            <img
-              src={event.thumbnail}
-              alt={event.name}
-              className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
-            />
-            
-            {/* Venue card - right below image on mobile */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
-              <div className="space-y-3">
-                <div>
-                  <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
-                  <button
-                    onClick={() => setIsMapOpen(true)}
-                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
-                  >
-                    {event.address}
-                  </button>
-                </div>
-              </div>
-            </div>
-            
             {/* Event details */}
             <div className="space-y-4">
               {[
@@ -533,61 +510,32 @@ const EventDetail: React.FC = () => {
               )}
             </div>
             
-            {/* Action buttons */}
-            <div className="space-y-4">
-              {isOrganizer() ? (
-                // Show dashboard button for organizers
-                <button 
-                  onClick={() => navigate(`/event/${event.id}/dashboard`)}
-                  className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-                >
-                  <div className="flex items-center justify-center">
-                    <Icon name="settings" size="md" className="mr-2" />
-                    Event View Dashboard
-                  </div>
-                </button>
-              ) : (
-                // Show join/leave button for participants
-                <button 
-                  onClick={handleJoinEvent}
-                  disabled={isJoining}
-                  className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                    isParticipating 
-                      ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : isAuthenticated 
-                        ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                        : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isJoining ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      {isParticipating ? 'Leaving...' : 'Joining...'}
-                    </div>
-                  ) : isParticipating ? (
-                    <div className="flex items-center justify-center">
-                      <Icon name="close" size="md" className="mr-2" />
-                      Leave Event
-                    </div>
-                  ) : isAuthenticated ? (
-                    'Join Skill-Sharing Event'
-                  ) : (
-                    'Login to Join Event'
-                  )}
-                </button>
-              )}
-              
-              <button 
-                onClick={() => setIsMapOpen(true)}
-                className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
-              >
-                View Interactive Venue Map
-              </button>
+            {/* Event image */}
+            <img
+              src={event.thumbnail}
+              alt={event.name}
+              className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
+            />
+            
+            {/* Venue card - right below image on mobile */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
+              <div className="space-y-3">
+                <div>
+                  <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
+                  <button
+                    onClick={() => setIsMapOpen(true)}
+                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
+                  >
+                    {event.address}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Desktop: Side by side layout with proper alignment */}
-          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-stretch">
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
             {/* Event image - left side */}
             <div className="flex flex-col">
               <img
@@ -598,8 +546,8 @@ const EventDetail: React.FC = () => {
             </div>
 
             {/* Event info - right side, aligned with image */}
-            <div className="flex flex-col justify-between">
-              <div>
+            <div className="flex flex-col h-full">
+              <div className="flex-grow">
                 <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                   {event.name}
                 </h1>
@@ -656,7 +604,7 @@ const EventDetail: React.FC = () => {
               </div>
 
               {/* Action buttons - aligned with image bottom */}
-              <div className="space-y-4">
+              <div className="space-y-4 mt-auto">
                 {isOrganizer() ? (
                   // Show dashboard button for organizers
                   <button 
@@ -714,7 +662,188 @@ const EventDetail: React.FC = () => {
 
       {/* Event Details */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.CONTENT_PADDING}`}>
-        <div className={`grid ${DETAIL_PAGE_LAYOUT.GRID_COLS_3} gap-8`}>
+        {/* Mobile: Single column with overview and skill stations */}
+        <div className="lg:hidden space-y-8">
+          {/* Overview */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`${typography.h2} text-gray-900`}>Skill-Sharing Event Overview</h2>
+              <button
+                onClick={() => setIsHowItWorksOpen(true)}
+                className={`w-6 h-6 ${GRADIENTS.PRIMARY_SECONDARY} hover:opacity-80 rounded-full flex items-center justify-center transition-all`}
+                title="How It Works"
+              >
+                <Icon name="info" size="sm" className="text-white" />
+              </button>
+            </div>
+            <p className={`${typography.body} text-gray-600 leading-relaxed`}>
+              {event.description}
+            </p>
+          </div>
+
+          {/* Skill Stations */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
+            {(() => {
+              const skillStations = event?.skillStations?.filter((station): station is SkillStation => typeof station === 'object') || [];
+              return skillStations.length > 0 ? (
+              <div className="relative">
+                {/* Carousel Container */}
+                <div 
+                  ref={containerRef}
+                  className="overflow-hidden rounded-lg"
+                  style={{ scrollBehavior: 'smooth' }}
+                >
+                  <div className="flex">
+                    {skillStations.map((station: SkillStation, index: number) => (
+                      <div
+                        key={station._id || index}
+                        className="w-full flex-shrink-0 px-2"
+                        style={{ minHeight: cardHeight }}
+                        ref={(el) => (cardRefs.current[index] = el)}
+                      >
+                        <div className="bg-gradient-to-br from-primary-50 to-secondary-50 rounded-lg p-6 h-full flex flex-col">
+                          <div className="flex-grow">
+                            <h3 className={`${typography.h3} text-gray-900 mb-2`}>
+                              {station.name}
+                            </h3>
+                            
+                            {/* Skills Tags */}
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {station.skills.map((skill: string, skillIndex: number) => (
+                                <span
+                                  key={skillIndex}
+                                  className="px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                            
+                            <div className="space-y-2 text-sm text-gray-600">
+                              <div className="flex justify-between">
+                                <span className="font-medium">Location:</span>
+                                <span>{station.location}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Capacity:</span>
+                                <span>{station.capacity} people</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Duration:</span>
+                                <span>{station.duration} min</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-medium">Difficulty:</span>
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  station.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
+                                  station.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800'
+                                }`}>
+                                  {station.difficulty}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Leader Information */}
+                          {station.leader && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                                  {`${station.leader.firstName?.charAt(0) || 'L'}${station.leader.lastName?.charAt(0) || 'L'}`}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {`${station.leader.firstName || 'Unknown'} ${station.leader.lastName || 'Leader'}`}
+                                  </p>
+                                  <p className="text-xs text-gray-500">Station Leader</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Navigation Buttons */}
+                {skillStations.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => scrollToPage(currentPage - 1)}
+                      disabled={currentPage === 0}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Icon name="chevronLeft" size="sm" />
+                    </button>
+                    <button
+                      onClick={() => scrollToPage(currentPage + 1)}
+                      disabled={currentPage >= getTotalPages(skillStations.length) - 1}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Icon name="chevronRight" size="sm" />
+                    </button>
+                  </>
+                )}
+
+                {/* Page Indicators */}
+                {skillStations.length > 1 && (
+                  <div className="flex justify-center mt-4 space-x-2">
+                    {Array.from({ length: getTotalPages(skillStations.length) }, (_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => scrollToPage(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                          currentPage === index 
+                            ? 'bg-primary-600' 
+                            : 'bg-gray-300 hover:bg-gray-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className={`${typography.body} text-gray-500 text-center py-8`}>
+                No skill stations available for this event.
+              </p>
+            );
+            })()}
+          </div>
+
+          {/* Agenda */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div>
+                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event Start</p>
+                  <p className={`${typography.bodySmall} text-gray-600`}>{event.time}</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-secondary-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div>
+                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Skill Stations Open</p>
+                  <p className={`${typography.bodySmall} text-gray-600`}>Various stations available throughout the event</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 flex-shrink-0"></div>
+                <div>
+                  <p className={`${typography.bodySmall} font-medium text-gray-900`}>Event End</p>
+                  <p className={`${typography.bodySmall} text-gray-600`}>Wrap up and networking</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: Grid layout */}
+        <div className={`hidden lg:grid ${DETAIL_PAGE_LAYOUT.GRID_COLS_3} gap-8`}>
           {renderMainContent()}
           {renderSidebar()}
         </div>

@@ -458,7 +458,7 @@ const EventDashboard: React.FC = () => {
             <div className="p-6">
               <div className="flex items-center mb-4">
                 <div className="flex-shrink-0">
-                  <Icon name="alertTriangle" size="lg" className="text-red-600" />
+                  <Icon name="alertCircle" size="lg" className="text-red-600" />
                 </div>
                 <div className="ml-3">
                   <h3 className={`${typography.h3} text-gray-900`}>

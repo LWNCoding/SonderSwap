@@ -1599,12 +1599,15 @@ app.delete('/api/events/:eventId', verifyToken, async (req, res) => {
     console.log('User ID from token:', userId);
 
     // Find the event by its 'id' field (which is a string) or '_id' (ObjectId)
-    const event = await db.collection('events').findOne({
-      $or: [
-        { id: eventId },
-        { _id: new ObjectId(eventId) }
-      ]
-    });
+    // First try to find by string id, then by ObjectId if it's a valid ObjectId
+    let event = await db.collection('events').findOne({ id: eventId });
+    
+    if (!event) {
+      // Only try ObjectId conversion if the eventId looks like a valid ObjectId
+      if (eventId.match(/^[0-9a-fA-F]{24}$/)) {
+        event = await db.collection('events').findOne({ _id: new ObjectId(eventId) });
+      }
+    }
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });

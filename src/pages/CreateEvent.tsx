@@ -28,7 +28,6 @@ const CreateEvent: React.FC = () => {
     price: '',
     capacity: '',
     ageRestriction: 'All ages welcome',
-    venue: '',
     agenda: [''],
     howItWorks: 'Explore different stations and sessions throughout the event. Share what you know, discover new techniques, and practice alongside others in a supportive environment. Each space focuses on a unique aspect of learning and creation, giving you the chance to participate, teach, or simply enjoy the experience.'
   });
@@ -259,142 +258,140 @@ const CreateEvent: React.FC = () => {
         {/* Event Creation Form */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <form onSubmit={handleSubmit} className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column */}
-              <div className="space-y-6">
-                {/* Event Name */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Event Name and Address */}
+              <div>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Event Name *
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Enter event name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Address *
+                </label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Enter event address"
+                  required
+                />
+              </div>
+
+              {/* Description */}
+              <div className="md:col-span-2">
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Description *
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  rows={4}
+                  placeholder="Describe your event"
+                  required
+                />
+              </div>
+
+              {/* Date */}
+              <div className="md:col-span-2">
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Start and End Time */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Event Name *
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.startTime}
+                    onChange={(e) => handleInputChange('startTime', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      timeErrors.startTime ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    required
+                  />
+                  {timeErrors.startTime && (
+                    <p className="text-red-500 text-xs mt-1">{timeErrors.startTime}</p>
+                  )}
+                </div>
+                <div>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                    End Time *
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.endTime}
+                    onChange={(e) => handleInputChange('endTime', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                      timeErrors.endTime ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    required
+                  />
+                  {timeErrors.endTime && (
+                    <p className="text-red-500 text-xs mt-1">{timeErrors.endTime}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Event Type and Price */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                    Event Type *
+                  </label>
+                  <select
+                    value={formData.eventType}
+                    onChange={(e) => handleInputChange('eventType', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select type</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="meetup">Meetup</option>
+                    <option value="conference">Conference</option>
+                    <option value="social">Social</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                    Price *
                   </label>
                   <input
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    value={formData.price}
+                    onChange={(e) => handleInputChange('price', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter event name"
+                    placeholder="e.g., Free, $25, $50"
                     required
                   />
                 </div>
+              </div>
 
-                {/* Description */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Description *
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows={4}
-                    placeholder="Describe your event"
-                    required
-                  />
-                </div>
-
-                {/* Address */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Address *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter event address"
-                    required
-                  />
-                </div>
-
-                {/* Date */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Date *
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => handleInputChange('date', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                {/* Start and End Time */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Start Time *
-                    </label>
-                    <input
-                      type="time"
-                      value={formData.startTime}
-                      onChange={(e) => handleInputChange('startTime', e.target.value)}
-                      className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        timeErrors.startTime ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      required
-                    />
-                    {timeErrors.startTime && (
-                      <p className="text-red-500 text-xs mt-1">{timeErrors.startTime}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      End Time *
-                    </label>
-                    <input
-                      type="time"
-                      value={formData.endTime}
-                      onChange={(e) => handleInputChange('endTime', e.target.value)}
-                      className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        timeErrors.endTime ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      required
-                    />
-                    {timeErrors.endTime && (
-                      <p className="text-red-500 text-xs mt-1">{timeErrors.endTime}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Event Type and Price */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Event Type *
-                    </label>
-                    <select
-                      value={formData.eventType}
-                      onChange={(e) => handleInputChange('eventType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      required
-                    >
-                      <option value="">Select type</option>
-                      <option value="workshop">Workshop</option>
-                      <option value="meetup">Meetup</option>
-                      <option value="conference">Conference</option>
-                      <option value="social">Social</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                      Price *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.price}
-                      onChange={(e) => handleInputChange('price', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="e.g., Free, $25, $50"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Capacity */}
+              {/* Capacity and Age Restriction */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
                     Capacity *
@@ -408,8 +405,6 @@ const CreateEvent: React.FC = () => {
                     required
                   />
                 </div>
-
-                {/* Age Restriction */}
                 <div>
                   <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
                     Age Restriction *
@@ -428,85 +423,67 @@ const CreateEvent: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Column */}
-              <div className="space-y-6">
-                {/* Thumbnail */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Thumbnail URL
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.thumbnail}
-                    onChange={(e) => handleInputChange('thumbnail', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
+              {/* Thumbnail */}
+              <div>
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Thumbnail URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.thumbnail}
+                  onChange={(e) => handleInputChange('thumbnail', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
 
-                {/* Venue */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Venue Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.venue}
-                    onChange={(e) => handleInputChange('venue', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="e.g., Community Center, Library"
-                  />
-                </div>
+              {/* How It Works */}
+              <div className="md:col-span-2">
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  How It Works
+                </label>
+                <textarea
+                  value={formData.howItWorks}
+                  onChange={(e) => handleInputChange('howItWorks', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  rows={4}
+                  placeholder="Describe how the event works"
+                />
+              </div>
 
-
-                {/* How It Works */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    How It Works
-                  </label>
-                  <textarea
-                    value={formData.howItWorks}
-                    onChange={(e) => handleInputChange('howItWorks', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    rows={4}
-                    placeholder="Describe how the event works"
-                  />
-                </div>
-
-                {/* Agenda */}
-                <div>
-                  <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
-                    Event Agenda
-                  </label>
-                  <div className="space-y-2">
-                    {formData.agenda.map((item, index) => (
-                      <div key={index} className="flex space-x-2">
-                        <input
-                          type="text"
-                          value={item}
-                          onChange={(e) => handleAgendaChange(index, e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder={`Agenda item ${index + 1}`}
-                        />
-                        {formData.agenda.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeAgendaItem(index)}
-                            className="px-3 py-2 text-red-600 hover:text-red-800"
-                          >
-                            <Icon name="trash" className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addAgendaItem}
-                      className="text-primary-600 hover:text-primary-800 text-sm font-medium"
-                    >
-                      + Add agenda item
-                    </button>
-                  </div>
+              {/* Agenda */}
+              <div className="md:col-span-2">
+                <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-2`}>
+                  Event Agenda
+                </label>
+                <div className="space-y-2">
+                  {formData.agenda.map((item, index) => (
+                    <div key={index} className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleAgendaChange(index, e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder={`Agenda item ${index + 1}`}
+                      />
+                      {formData.agenda.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeAgendaItem(index)}
+                          className="px-3 py-2 text-red-600 hover:text-red-800"
+                        >
+                          <Icon name="trash" className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addAgendaItem}
+                    className="text-primary-600 hover:text-primary-800 text-sm font-medium"
+                  >
+                    + Add agenda item
+                  </button>
                 </div>
               </div>
             </div>

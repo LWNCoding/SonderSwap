@@ -1244,7 +1244,7 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     
     
     // Validate required fields (removed duration since it's calculated from start/end times)
-    const requiredFields = ['name', 'description', 'date', 'time', 'venue', 'address', 'price', 'capacity', 'eventType', 'ageRestriction', 'howItWorks'];
+    const requiredFields = ['name', 'description', 'date', 'time', 'address', 'price', 'capacity', 'eventType', 'ageRestriction', 'howItWorks'];
     for (const field of requiredFields) {
       if (!updateData[field]) {
         return res.status(400).json({ error: `${field} is required` });

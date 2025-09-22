@@ -1289,9 +1289,11 @@ app.put('/api/events/:id', verifyToken, async (req, res) => {
     });
     
     // Get speakers details
-    const speakers = await db.collection('users').find({
-      _id: { $in: updatedEvent.speakers.map(id => new ObjectId(id)) }
-    }).toArray();
+    const speakers = updatedEvent.speakers && updatedEvent.speakers.length > 0 
+      ? await db.collection('users').find({
+          _id: { $in: updatedEvent.speakers.map(id => new ObjectId(id)) }
+        }).toArray()
+      : [];
     
     // Get participant count for this event
     const participantCount = await db.collection('participants').countDocuments({

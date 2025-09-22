@@ -280,16 +280,6 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
     setLeaderLookupError(null);
   };
 
-  const handleLeaderChange = (stationId: string, leaderId: string) => {
-    const leader = availableUsers.find(user => user._id === leaderId);
-    setStations(prev => 
-      prev.map(station => 
-        station._id === stationId 
-          ? { ...station, leader, leaderId: leaderId || undefined }
-          : station
-      )
-    );
-  };
 
   const handleSaveAll = async () => {
     setLoading(true);
@@ -511,21 +501,16 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
                           <div className="space-y-4">
                             <div>
-                              <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                                Station Leader
+                              <label className={`${typography.small} font-medium text-gray-700 dark:text-gray-300 block mb-2`}>
+                                Station Leader (Email)
                               </label>
-                              <select
-                                value={editFormData.leaderId || ''}
-                                onChange={(e) => handleEditFormChange('leaderId', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              >
-                                <option value="">Select a leader</option>
-                                {availableUsers.map((user) => (
-                                  <option key={user._id} value={user._id}>
-                                    {user.firstName} {user.lastName}
-                                  </option>
-                                ))}
-                              </select>
+                              <input
+                                type="email"
+                                value={editFormData.leaderEmail || ''}
+                                onChange={(e) => handleEditFormChange('leaderEmail', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                placeholder="Enter leader's email address"
+                              />
                             </div>
 
                             <div>
@@ -623,21 +608,24 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
                         <div className="space-y-4">
                           <div>
-                            <label className={`${typography.small} font-medium text-gray-700 block mb-2`}>
-                              Station Leader
+                            <label className={`${typography.small} font-medium text-gray-700 dark:text-gray-300 block mb-2`}>
+                              Station Leader (Email)
                             </label>
-                            <select
-                              value={station.leaderId || ''}
-                              onChange={(e) => handleLeaderChange(station._id, e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                            >
-                              <option value="">Select a leader</option>
-                              {availableUsers.map((user) => (
-                                <option key={user._id} value={user._id}>
-                                  {user.firstName} {user.lastName}
-                                </option>
-                              ))}
-                            </select>
+                            <input
+                              type="email"
+                              value={station.leaderEmail || ''}
+                              onChange={(e) => {
+                                setStations(prev => 
+                                  prev.map(s => 
+                                    s._id === station._id 
+                                      ? { ...s, leaderEmail: e.target.value }
+                                      : s
+                                  )
+                                );
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              placeholder="Enter leader's email address"
+                            />
                           </div>
 
                           <div>

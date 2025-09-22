@@ -826,17 +826,17 @@ const EventDetail: React.FC = () => {
                     height: cardHeight
                   }}
                 >
-                  <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
+                  <div className="relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all hover:shadow-xl dark:hover:shadow-gray-700/30 shadow-lg dark:shadow-gray-700/20 border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500 w-full h-full">
                     <div className="p-6 h-full flex flex-col">
                       {/* Header with title and difficulty */}
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
+                        <h3 className={`${typography.h3} text-gray-900 dark:text-white flex-1`}>{stationName}</h3>
                         {stationDifficulty && (
                           <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
-                            stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                            stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                            stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
+                            stationDifficulty === 'Beginner' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
+                            stationDifficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                            stationDifficulty === 'Advanced' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                            'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-300'
                           }`}>
                             {stationDifficulty}
                           </span>
@@ -866,7 +866,7 @@ const EventDetail: React.FC = () => {
                       </div>
 
                       {/* Leader Information - always at bottom */}
-                      <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                         {stationData?.leader ? (
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
@@ -886,12 +886,12 @@ const EventDetail: React.FC = () => {
                           </div>
                         ) : (
                           <div className="flex items-center">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
                               ?
                             </div>
                             <div className="flex-1">
                               <p className={`${typography.small} text-gray-500 dark:text-gray-400`}>Station Leader</p>
-                              <p className={`${typography.bodySmall} text-gray-400`}>No leader assigned</p>
+                              <p className={`${typography.bodySmall} text-gray-400 dark:text-gray-500`}>No leader assigned</p>
                             </div>
                           </div>
                         )}

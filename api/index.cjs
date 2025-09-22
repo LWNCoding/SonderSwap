@@ -689,6 +689,68 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
+// Create a new event (requires authentication)
+app.post('/api/events', verifyToken, async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const ObjectId = require('mongodb').ObjectId;
+    const userId = new ObjectId(req.user._id);
+    
+    console.log('Create event API: Creating new event for user:', userId);
+    console.log('Event data:', req.body);
+    
+    const eventData = {
+      ...req.body,
+      organizer: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      // Generate a simple numeric ID for compatibility
+      id: Date.now().toString()
+    };
+    
+    // Insert the event
+    const result = await db.collection('events').insertOne(eventData);
+    
+    if (result.insertedId) {
+      // Fetch the created event with populated data
+      const createdEvent = await db.collection('events').findOne({ _id: result.insertedId });
+      
+      console.log('Event created successfully:', createdEvent);
+      
+      res.status(201).json({
+        message: 'Event created successfully',
+        event: {
+          _id: createdEvent._id,
+          id: createdEvent.id,
+          name: createdEvent.name,
+          description: createdEvent.description,
+          address: createdEvent.address,
+          date: createdEvent.date,
+          time: createdEvent.time,
+          thumbnail: createdEvent.thumbnail,
+          eventType: createdEvent.eventType,
+          price: createdEvent.price,
+          duration: createdEvent.duration,
+          capacity: createdEvent.capacity,
+          expectedParticipants: createdEvent.expectedParticipants,
+          ageRestriction: createdEvent.ageRestriction,
+          organizer: createdEvent.organizer,
+          venue: createdEvent.venue,
+          agenda: createdEvent.agenda,
+          howItWorks: createdEvent.howItWorks,
+          speakers: createdEvent.speakers || [],
+          skillStations: createdEvent.skillStations || []
+        }
+      });
+    } else {
+      throw new Error('Failed to create event');
+    }
+  } catch (error) {
+    console.error('Create event API error:', error);
+    res.status(500).json({ error: 'Failed to create event' });
+  }
+});
+
 // Get user's participating events
 app.get('/api/events/participating', verifyToken, async (req, res) => {
   try {

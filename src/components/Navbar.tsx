@@ -73,6 +73,20 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
               );
             })}
             
+            {/* Host Event Button */}
+            <button
+              onClick={() => {
+                if (isAuthenticated) {
+                  navigate('/create-event');
+                } else {
+                  openAuthModal();
+                }
+              }}
+              className={`px-4 py-2 rounded-md font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
+            >
+              Host an Event
+            </button>
+            
             {/* Auth Section */}
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
@@ -157,6 +171,21 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                 </Link>
               );
             })}
+            
+            {/* Mobile Host Event Button */}
+            <button
+              onClick={() => {
+                if (isAuthenticated) {
+                  navigate('/create-event');
+                  setIsOpen(false);
+                } else {
+                  openAuthModal();
+                }
+              }}
+              className={`w-full px-4 py-3 rounded-md font-medium transition-all duration-300 ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white hover:shadow-lg`}
+            >
+              Host an Event
+            </button>
             
             {/* Mobile Auth Section */}
             {isAuthenticated ? (

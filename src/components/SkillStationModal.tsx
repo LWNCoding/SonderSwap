@@ -8,6 +8,7 @@ interface SkillStationWithLeader extends SkillStation {
   leader?: User;
   leaderId?: string;
   leaderEmail?: string;
+  skillsRaw?: string;
 }
 
 interface SkillStationModalProps {
@@ -36,6 +37,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
     name: '',
     description: '',
     skills: [],
+    skillsRaw: '',
     location: '',
     capacity: 10,
     duration: 60,
@@ -113,6 +115,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       duration: station.duration,
       difficulty: station.difficulty,
       skills: [...station.skills],
+      skillsRaw: station.skills.join(', '),
       equipment: [...(station.equipment || [])],
       requirements: [...(station.requirements || [])],
       isActive: station.isActive,
@@ -177,6 +180,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       name: '',
       description: '',
       skills: [],
+      skillsRaw: '',
       location: '',
       capacity: 10,
       duration: 60,
@@ -193,6 +197,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       name: '',
       description: '',
       skills: [],
+      skillsRaw: '',
       location: '',
       capacity: 10,
       duration: 60,
@@ -264,6 +269,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       name: '',
       description: '',
       skills: [],
+      skillsRaw: '',
       location: '',
       capacity: 10,
       duration: 60,
@@ -446,8 +452,15 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               </label>
                               <input
                                 type="text"
-                                value={editFormData.skills?.join(', ') || ''}
-                                onChange={(e) => handleEditFormChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
+                                value={editFormData.skillsRaw || ''}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setEditFormData(prev => ({
+                                    ...prev,
+                                    skillsRaw: value,
+                                    skills: value.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                                  }));
+                                }}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                 placeholder="e.g., JavaScript, React, Node.js"
                               />
@@ -744,8 +757,15 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                   </label>
                   <input
                     type="text"
-                    value={newStationData.skills?.join(', ') || ''}
-                    onChange={(e) => handleNewStationChange('skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
+                    value={newStationData.skillsRaw || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNewStationData(prev => ({
+                        ...prev,
+                        skillsRaw: value,
+                        skills: value.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                      }));
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="e.g., JavaScript, React, Node.js"
                   />

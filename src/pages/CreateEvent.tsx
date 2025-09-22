@@ -7,6 +7,7 @@ import { useBackNavigation } from '../hooks/useBackNavigation';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Button from '../components/Button';
 import Icon from '../components/Icon';
+import { User } from '../types';
 
 const CreateEvent: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -15,6 +16,7 @@ const CreateEvent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -35,9 +37,12 @@ const CreateEvent: React.FC = () => {
       description: string;
       location: string;
       skills: string[];
+      skillsRaw: string;
       capacity: number;
       duration: number;
       difficulty: string;
+      leaderId?: string;
+      leaderEmail?: string;
     }>
   });
 
@@ -92,10 +97,33 @@ const CreateEvent: React.FC = () => {
     setTimeErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
+  // Load available users for skill station leaders
+  const loadAvailableUsers = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableUsers(data.users || []);
+      }
+    } catch (err) {
+      console.error('Error loading users:', err);
+    }
+  };
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/');
+    } else {
+      loadAvailableUsers();
     }
   }, [isAuthenticated, navigate]);
 
@@ -140,9 +168,12 @@ const CreateEvent: React.FC = () => {
         description: '',
         location: '',
         skills: [],
+        skillsRaw: '',
         capacity: 10,
         duration: 60,
-        difficulty: 'All Levels'
+        difficulty: 'All Levels',
+        leaderId: '',
+        leaderEmail: ''
       }]
     }));
   };
@@ -578,8 +609,12 @@ const CreateEvent: React.FC = () => {
                           </label>
                           <input
                             type="text"
-                            value={station.skills?.join(', ') || ''}
-                            onChange={(e) => handleSkillStationChange(index, 'skills', e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
+                            value={station.skillsRaw || ''}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              handleSkillStationChange(index, 'skillsRaw', value);
+                              handleSkillStationChange(index, 'skills', value.split(',').map(s => s.trim()).filter(s => s.length > 0));
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             placeholder="e.g., JavaScript, React, Node.js"
                           />
@@ -623,6 +658,23 @@ const CreateEvent: React.FC = () => {
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
                             <option value="Advanced">Advanced</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className={`block ${typography.bodySmall} font-medium text-gray-700 mb-1`}>
+                            Station Leader (Optional)
+                          </label>
+                          <select
+                            value={station.leaderId || ''}
+                            onChange={(e) => handleSkillStationChange(index, 'leaderId', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          >
+                            <option value="">Select a leader</option>
+                            {availableUsers.map((user) => (
+                              <option key={user._id} value={user._id}>
+                                {user.firstName} {user.lastName}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="md:col-span-2 flex justify-end">

@@ -78,6 +78,8 @@ const EventDetail: React.FC = () => {
   // Debug skill stations
   console.log('EventDetail: Skill stations data:', event?.skillStations);
   console.log('EventDetail: Skill stations length:', event?.skillStations?.length);
+  console.log('EventDetail: First skill station:', event?.skillStations?.[0]);
+  console.log('EventDetail: Skill stations type check:', event?.skillStations?.map(s => typeof s));
   
   // Get participation status (auth required)
   const { 
@@ -789,6 +791,15 @@ const EventDetail: React.FC = () => {
                   const stationCapacity = stationData?.capacity;
                   const stationDuration = stationData?.duration;
                   const stationDifficulty = stationData?.difficulty;
+                  
+                  // Debug each station
+                  console.log(`Station ${index}:`, {
+                    station,
+                    stationData,
+                    stationName,
+                    stationSkills,
+                    stationLocation
+                  });
 
                   return (
                     <div 

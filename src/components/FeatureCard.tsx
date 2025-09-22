@@ -31,8 +31,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       )}>
         <Icon name={icon} size="lg" className={iconColor} />
       </div>
-      <h3 className={`${typography.h3} text-gray-900 mb-2`}>{title}</h3>
-      <p className={`${typography.bodySmall} text-gray-600`}>{description}</p>
+      <h3 className={`${typography.h3} text-gray-900 dark:text-white mb-2`}>{title}</h3>
+      <p className={`${typography.bodySmall} text-gray-600 dark:text-gray-300`}>{description}</p>
     </div>
   );
 };

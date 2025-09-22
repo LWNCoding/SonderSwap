@@ -45,13 +45,13 @@ const Home: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
           <div className="text-center lg:text-left">
-          <h1 className={`${typography.h1} text-gray-900 mb-6`}>
+          <h1 className={`${typography.h1} text-gray-900 dark:text-white mb-6`}>
             Welcome to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
                 SonderSwap
               </span>
             </h1>
-            <p className={`${typography.bodyLarge} text-gray-600 mb-8 max-w-2xl`}>
+            <p className={`${typography.bodyLarge} text-gray-600 dark:text-gray-300 mb-8 max-w-2xl`}>
               Empowering communities to share skills, host workshops, and organize maker fairs all in one place.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -97,10 +97,10 @@ const Home: React.FC = () => {
       {/* Features Preview */}
       <Section background="white" padding="xl" id="features">
         <div className="text-center mb-16">
-          <h2 className={`${typography.h2} text-gray-900 mb-4`}>
+          <h2 className={`${typography.h2} text-gray-900 dark:text-white mb-4`}>
             Why Choose SonderSwap?
           </h2>
-          <p className={`${typography.body} text-gray-600 max-w-3xl mx-auto`}>
+          <p className={`${typography.body} text-gray-600 dark:text-gray-300 max-w-3xl mx-auto`}>
             Give your community the tools to connect, teach, and learn while you stay in control as the organizer.
           </p>
         </div>

@@ -231,7 +231,7 @@ const UserProfile: React.FC = () => {
         <div className="text-center py-12">
           <Icon name="alertCircle" className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className={`${typography.h2} mb-2`}>Error Loading Profile</h2>
-          <p className={`${typography.body} text-gray-600 mb-6`}>{error}</p>
+          <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-6`}>{error}</p>
           <Button onClick={fetchProfile}>Try Again</Button>
         </div>
       </div>
@@ -243,7 +243,7 @@ const UserProfile: React.FC = () => {
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.CONTENT_PADDING}`}>
         <div className="text-center py-12">
           <h2 className={`${typography.h2} mb-2`}>Profile Not Found</h2>
-          <p className={`${typography.body} text-gray-600 mb-6`}>Unable to load your profile information.</p>
+          <p className={`${typography.body} text-gray-600 dark:text-gray-300 mb-6`}>Unable to load your profile information.</p>
           <Button onClick={() => navigate('/')}>Go Home</Button>
         </div>
       </div>
@@ -251,7 +251,7 @@ const UserProfile: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING} ${LAYOUT.HEADER_PADDING}`}>
         <div className="flex items-center justify-between mb-6">
@@ -267,12 +267,12 @@ const UserProfile: React.FC = () => {
                   goBack();
                 }
               }}
-              className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
+              className="flex items-center space-x-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
             >
               <Icon name="arrowLeft" className="w-5 h-5" />
               <span className={typography.body}>Back</span>
             </button>
-            <h1 className={typography.h1}>Profile</h1>
+            <h1 className={`${typography.h1} text-gray-900 dark:text-white`}>Profile</h1>
           </div>
           <Button
             onClick={() => setIsEditing(!isEditing)}
@@ -288,7 +288,7 @@ const UserProfile: React.FC = () => {
         
         {/* Success Message */}
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
+          <div className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded-lg flex items-center">
             <Icon name="checkCircle" className="w-5 h-5 mr-2" />
             <span className={typography.bodySmall}>{successMessage}</span>
           </div>
@@ -296,14 +296,14 @@ const UserProfile: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
+          <div className="mb-6 p-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg flex items-center">
             <Icon name="alertCircle" className="w-5 h-5 mr-2" />
             <span className={typography.bodySmall}>{error}</span>
           </div>
         )}
 
         {/* Profile Content */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 overflow-hidden">
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-12">
             <div className="flex items-center space-x-6">
@@ -336,14 +336,14 @@ const UserProfile: React.FC = () => {
                         type="text"
                         value={editForm.firstName}
                         onChange={(e) => handleInputChange('firstName', e.target.value)}
-                        className="px-3 py-2 rounded-md text-gray-900 placeholder-gray-500"
+                        className="px-3 py-2 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
                         placeholder="First Name"
                       />
                       <input
                         type="text"
                         value={editForm.lastName}
                         onChange={(e) => handleInputChange('lastName', e.target.value)}
-                        className="px-3 py-2 rounded-md text-gray-900 placeholder-gray-500"
+                        className="px-3 py-2 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
                         placeholder="Last Name"
                       />
                     </div>
@@ -351,7 +351,7 @@ const UserProfile: React.FC = () => {
                       type="email"
                       value={profile.email}
                       disabled
-                      className="px-3 py-2 rounded-md text-gray-500 bg-gray-100 cursor-not-allowed"
+                      className="px-3 py-2 rounded-md text-gray-500 dark:text-gray-400 bg-gray-100 cursor-not-allowed"
                     />
                   </div>
                 ) : (
@@ -394,17 +394,17 @@ const UserProfile: React.FC = () => {
               <div className="space-y-6">
                 {/* Bio */}
                 <div>
-                  <h3 className={`${typography.h3} mb-3`}>About</h3>
+                  <h3 className={`${typography.h3} mb-3 text-gray-900 dark:text-white`}>About</h3>
                   {isEditing ? (
                     <textarea
                       value={editForm.profile.bio}
                       onChange={(e) => handleInputChange('profile.bio', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       rows={4}
                       placeholder="Tell us about yourself..."
                     />
                   ) : (
-                    <p className={`${typography.body} text-gray-600`}>
+                    <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                       {profile.profile.bio || 'No bio provided.'}
                     </p>
                   )}
@@ -417,12 +417,12 @@ const UserProfile: React.FC = () => {
                     <textarea
                       value={editForm.profile.description}
                       onChange={(e) => handleInputChange('profile.description', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       rows={3}
                       placeholder="Brief description of your skills and interests..."
                     />
                   ) : (
-                    <p className={`${typography.body} text-gray-600`}>
+                    <p className={`${typography.body} text-gray-600 dark:text-gray-300`}>
                       {profile.profile.description || 'No description provided.'}
                     </p>
                   )}
@@ -436,7 +436,7 @@ const UserProfile: React.FC = () => {
                       type="text"
                       value={editForm.profile.interests.join(', ')}
                       onChange={(e) => handleInterestsChange(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Enter interests separated by commas..."
                     />
                   ) : (
@@ -446,7 +446,7 @@ const UserProfile: React.FC = () => {
                           <Badge key={index} label={interest} variant="secondary" />
                         ))
                       ) : (
-                        <p className={`${typography.body} text-gray-500`}>No interests specified.</p>
+                        <p className={`${typography.body} text-gray-500 dark:text-gray-400`}>No interests specified.</p>
                       )}
                     </div>
                   )}
@@ -471,7 +471,7 @@ const UserProfile: React.FC = () => {
                           placeholder="Location"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.location || 'Not specified'}
                         </span>
                       )}
@@ -489,7 +489,7 @@ const UserProfile: React.FC = () => {
                           placeholder="Phone number"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.phone || 'Not specified'}
                         </span>
                       )}
@@ -507,7 +507,7 @@ const UserProfile: React.FC = () => {
                           placeholder="Website URL"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.website ? (
                             <a
                               href={profile.profile.website}
@@ -542,7 +542,7 @@ const UserProfile: React.FC = () => {
                           placeholder="LinkedIn URL"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.socialMedia?.linkedin ? (
                             <a
                               href={profile.profile.socialMedia.linkedin}
@@ -571,7 +571,7 @@ const UserProfile: React.FC = () => {
                           placeholder="Twitter URL"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.socialMedia?.twitter ? (
                             <a
                               href={profile.profile.socialMedia.twitter}
@@ -600,7 +600,7 @@ const UserProfile: React.FC = () => {
                           placeholder="GitHub URL"
                         />
                       ) : (
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300">
                           {profile.profile.socialMedia?.github ? (
                             <a
                               href={profile.profile.socialMedia.github}

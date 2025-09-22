@@ -12,9 +12,9 @@ interface SectionProps {
 }
 
 const BACKGROUND_CLASSES = {
-  white: 'bg-white',
-  gray: 'bg-gray-50',
-  gradient: 'bg-gradient-to-br from-primary-50 to-secondary-50',
+  white: 'bg-white dark:bg-gray-900',
+  gray: 'bg-gray-50 dark:bg-gray-800',
+  gradient: 'bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-900 dark:to-gray-800',
   transparent: 'bg-transparent',
 } as const;
 

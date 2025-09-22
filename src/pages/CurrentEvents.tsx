@@ -88,7 +88,7 @@ const CurrentEvents: React.FC = () => {
     return (
       <div key={event.id} className={`flex-shrink-0 ${SIZES.CARD_WIDTH} cursor-pointer relative`}>
         <Link to={`/event/${event.id}`} className="block">
-          <div className={`relative bg-white rounded-lg overflow-hidden transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl shadow-lg`} style={{margin: '0 8px'}}>
+          <div className={`relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all ${ANIMATION.TRANSITION_DURATION} hover:shadow-xl shadow-lg dark:shadow-gray-700/20`} style={{margin: '0 8px'}}>
             {/* Thumbnail */}
             <div className={`${SIZES.ASPECT_SQUARE} relative`}>
               <img
@@ -100,17 +100,17 @@ const CurrentEvents: React.FC = () => {
             </div>
 
             {/* Event Info */}
-            <div className={`${SPACING.CARD_PADDING} bg-white`}>
-              <h3 className={`${typography.h4} text-gray-900 mb-1 line-clamp-1`}>
+            <div className={`${SPACING.CARD_PADDING} bg-white dark:bg-gray-800`}>
+              <h3 className={`${typography.h4} text-gray-900 dark:text-white mb-1 line-clamp-1`}>
                 {event.name}
               </h3>
-              <p className={`${typography.small} text-gray-600 line-clamp-1 font-semibold`}>
+              <p className={`${typography.small} text-gray-600 dark:text-gray-300 line-clamp-1 font-semibold`}>
                 {event.address}
               </p>
               <p className={`${typography.caption} ${GRADIENTS.PRIMARY_SECONDARY_TEXT} mt-1 font-bold`}>
                 {event.date}
               </p>
-              <p className={`${typography.caption} text-gray-500 mt-1`}>
+              <p className={`${typography.caption} text-gray-500 dark:text-gray-400 mt-1`}>
                 {event.time}
               </p>
             </div>
@@ -144,7 +144,7 @@ const CurrentEvents: React.FC = () => {
     
     return (
       <div key={categoryIndex} className={LAYOUT.SECTION_SPACING}>
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           {category.title}
         </h2>
       
@@ -178,7 +178,7 @@ const CurrentEvents: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
+    <div className={`min-h-screen ${GRADIENTS.BACKGROUND} dark:bg-gray-900`}>
       {/* Header */}
       <div className={LAYOUT.HEADER_PADDING}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
@@ -187,7 +187,7 @@ const CurrentEvents: React.FC = () => {
               Current Events
             </span>
           </h1>
-          <p className={`${typography.body} text-gray-600 max-w-3xl`}>
+          <p className={`${typography.body} text-gray-600 dark:text-gray-300 max-w-3xl`}>
             Discover amazing events happening around you
           </p>
         </div>

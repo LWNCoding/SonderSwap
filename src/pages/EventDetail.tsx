@@ -756,27 +756,9 @@ const EventDetail: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
             
-            <div className="relative group">
-              {renderNavigationButton(
-                'left',
-                handlePreviousPage,
-                currentPage === 0,
-                'left-0 top-1/2 -translate-y-1/2'
-              )}
-
-              {renderNavigationButton(
-                'right',
-                () => handleNextPage(event.skillStations.length),
-                currentPage >= getTotalPages(event.skillStations.length) - 1,
-                'right-0 top-1/2 -translate-y-1/2'
-              )}
-
-              <div
-                ref={containerRef}
-                className="flex overflow-x-auto pb-4 scroll-smooth w-full"
-              >
+            {event.skillStations && event.skillStations.length > 0 ? (
+              <div className="space-y-4">
                 {event.skillStations.map((station, index) => {
-                  // Skill stations are already populated objects from the API
                   const stationData = station as SkillStation;
                   const stationName = stationData?.name || 'Skill Station';
                   const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
@@ -786,94 +768,69 @@ const EventDetail: React.FC = () => {
                   const stationDifficulty = stationData?.difficulty;
 
                   return (
-                    <div 
-                      key={index} 
-                      ref={(el) => { cardRefs.current[index] = el; }}
-                      className="flex-shrink-0 w-80 cursor-pointer relative" 
-                      style={{
-                        margin: '0 8px',
-                        height: cardHeight
-                      }}
-                    >
-                      <div className="relative bg-white rounded-lg overflow-hidden transition-all hover:shadow-xl shadow-lg border border-gray-200 hover:border-primary-300 w-full h-full">
-                        <div className="p-6 h-full flex flex-col">
-                          {/* Header with title and difficulty */}
-                          <div className="flex items-start justify-between mb-4">
-                            <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
-                            {stationDifficulty && (
-                              <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
-                                stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
-                                stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                                stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
-                                'bg-gray-100 text-gray-800'
-                              }`}>
-                                {stationDifficulty}
-                              </span>
-                            )}
-                          </div>
+                    <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className={`${typography.h3} text-gray-900 flex-1`}>{stationName}</h3>
+                        {stationDifficulty && (
+                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ml-2 ${
+                            stationDifficulty === 'Beginner' ? 'bg-blue-100 text-blue-800' :
+                            stationDifficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                            stationDifficulty === 'Advanced' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {stationDifficulty}
+                          </span>
+                        )}
+                      </div>
 
-                          {/* Main content area - takes up available space */}
-                          <div className="space-y-3 flex-1">
-                            <p className={`${typography.body} text-gray-600`}>
-                              <strong>Skills:</strong> {stationSkills}
-                            </p>
-                            <p className={`${typography.body} text-gray-600`}>
-                              <strong>Location:</strong> {stationLocation}
-                            </p>
-                            <div className="space-y-2">
-                              {stationCapacity && (
-                                <p className={`${typography.body} text-gray-600`}>
-                                  <strong>Capacity:</strong> {stationCapacity} people
-                                </p>
-                              )}
-                              {stationDuration && (
-                                <p className={`${typography.body} text-gray-600`}>
-                                  <strong>Duration:</strong> {stationDuration} min
-                                </p>
-                              )}
+                      <div className="space-y-2">
+                        <p className={`${typography.body} text-gray-600`}>
+                          <strong>Skills:</strong> {stationSkills}
+                        </p>
+                        <p className={`${typography.body} text-gray-600`}>
+                          <strong>Location:</strong> {stationLocation}
+                        </p>
+                        {stationCapacity && (
+                          <p className={`${typography.body} text-gray-600`}>
+                            <strong>Capacity:</strong> {stationCapacity} people
+                          </p>
+                        )}
+                        {stationDuration && (
+                          <p className={`${typography.body} text-gray-600`}>
+                            <strong>Duration:</strong> {stationDuration} min
+                          </p>
+                        )}
+                      </div>
+
+                      {stationData?.leader && (
+                        <div className="mt-4 pt-3 border-t border-gray-200">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                              {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
+                            </div>
+                            <div>
+                              <p className={`${typography.small} text-gray-500`}>Station Leader</p>
+                              <button
+                                onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
+                                  state: { returnTo: `/event/${eventId}` } 
+                                })}
+                                className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                              >
+                                {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
+                              </button>
                             </div>
                           </div>
-
-                          {/* Leader Information - always at bottom */}
-                          <div className="mt-4 pt-4 border-t border-gray-200">
-                            {stationData?.leader ? (
-                              <div className="flex items-center">
-                                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                                  {stationData.leader?.firstName?.charAt(0) || 'U'}{stationData.leader?.lastName?.charAt(0) || 'U'}
-                                </div>
-                                <div className="flex-1">
-                                  <p className={`${typography.small} text-gray-500`}>Station Leader</p>
-                                  <button
-                                    onClick={() => navigate(`/user/${stationData.leader?._id}`, { 
-                                      state: { returnTo: `/event/${eventId}` } 
-                                    })}
-                                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
-                                  >
-                                    {stationData.leader?.firstName || 'Unknown'} {stationData.leader?.lastName || 'User'}
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center">
-                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                                  ?
-                                </div>
-                                <div className="flex-1">
-                                  <p className={`${typography.small} text-gray-500`}>Station Leader</p>
-                                  <p className={`${typography.bodySmall} text-gray-400`}>No leader assigned</p>
-                                </div>
-                              </div>
-                            )}
-                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-              
-              {renderPageIndicator(event.skillStations.length)}
-            </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className={`${typography.body} text-gray-500`}>No skill stations available for this event.</p>
+              </div>
+            )}
           </div>
 
           {/* Agenda */}

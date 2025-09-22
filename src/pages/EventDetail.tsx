@@ -561,7 +561,7 @@ const EventDetail: React.FC = () => {
   return (
     <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
       {/* Header */}
-      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
+      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 pt-4 sm:pt-8 lg:pt-16 pb-6`}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
           {/* Back button and tags row */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

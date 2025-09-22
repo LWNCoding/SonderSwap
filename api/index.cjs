@@ -1346,7 +1346,7 @@ app.get('/api/users', verifyToken, async (req, res) => {
     console.log('Fetching users for skill station leader selection');
     console.log('User ID from token:', req.user._id);
     const { db } = await connectToDatabase();
-    const users = await db.collection('users').find({}).project({ password: 0, email: 0 }).limit(100).toArray();
+    const users = await db.collection('users').find({}).project({ password: 0 }).limit(100).toArray();
     console.log('Found users:', users.length);
     res.json({ users });
   } catch (error) {

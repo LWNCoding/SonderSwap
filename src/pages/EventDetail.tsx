@@ -615,7 +615,8 @@ const EventDetail: React.FC = () => {
 
             {/* Event info - right side, aligned with image */}
             <div className="flex flex-col h-full">
-              <div className="flex-grow">
+              {/* Top section - title and content */}
+              <div>
                 <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                   {event.name}
                 </h1>
@@ -716,8 +717,11 @@ const EventDetail: React.FC = () => {
                 </div>
               </div>
 
+              {/* Spacer to push venue map button to bottom */}
+              <div className="flex-grow"></div>
+
               {/* View Interactive Venue Map button - bottom aligned with image */}
-              <div className="mt-auto">
+              <div>
                 <button 
                   onClick={() => setIsMapOpen(true)}
                   className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}

@@ -351,10 +351,10 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
           {/* Stations List */}
           <div className="space-y-4 mb-6">
             {stations.map((station) => (
-              <div key={station._id} className="border border-gray-200 rounded-lg">
+              <div key={station._id} className="border border-gray-200 dark:border-gray-600 rounded-lg">
                 {/* Station Header */}
                 <div 
-                  className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   onClick={() => handleStationClick(station._id)}
                 >
                   <div className="flex items-center justify-between">
@@ -386,8 +386,8 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                       {/* Status Badge */}
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         station.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
+                          : 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-300'
                       }`}>
                         {station.isActive ? 'Active' : 'Inactive'}
                       </span>
@@ -404,7 +404,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
 
                 {/* Station Details (Collapsible) */}
                 {expandedStation === station._id && (
-                  <div className="border-t border-gray-200 p-4 bg-gray-50">
+                  <div className="border-t border-gray-200 dark:border-gray-600 p-4 bg-gray-50 dark:bg-gray-700">
                     {editingStation && editingStation._id === station._id ? (
                       /* Editing Form */
                       <div className="space-y-6">
@@ -584,7 +584,7 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
                               {station.skills.map((skill, index) => (
                                 <span
                                   key={index}
-                                  className="px-2 py-1 bg-primary-100 text-primary-800 text-xs rounded-full"
+                                  className="px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 text-xs rounded-full"
                                 >
                                   {skill}
                                 </span>

@@ -232,7 +232,7 @@ const EventDashboard: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6">
               <h3 className={`${typography.h3} text-gray-900 dark:text-white dark:text-white mb-4`}>Event Overview</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-primary-50 rounded-lg">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900 rounded-lg">
                   <div className="flex items-center">
                     <Icon name="calendar" size="md" className="text-primary-600 mr-3" />
                     <div>
@@ -243,7 +243,7 @@ const EventDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 bg-primary-50 rounded-lg">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900 rounded-lg">
                   <div className="flex items-center">
                     <Icon name="location" size="md" className="text-primary-600 mr-3" />
                     <div>
@@ -254,7 +254,7 @@ const EventDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 bg-primary-50 rounded-lg">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900 rounded-lg">
                   <div className="flex items-center">
                     <Icon name="users" size="md" className="text-primary-600 mr-3" />
                     <div>
@@ -265,7 +265,7 @@ const EventDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 bg-primary-50 rounded-lg">
+                <div className="p-4 bg-primary-50 dark:bg-primary-900 rounded-lg">
                   <div className="flex items-center">
                     <Icon name="dollar" size="md" className="text-primary-600 mr-3" />
                     <div>
@@ -329,7 +329,7 @@ const EventDashboard: React.FC = () => {
               <div className="space-y-3">
                 <button 
                   onClick={() => setIsEditEventOpen(true)}
-                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                  className="w-full text-left p-3 bg-primary-50 dark:bg-primary-900 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <Icon name="edit" size="md" className="text-primary-600 mr-3" />
@@ -338,7 +338,7 @@ const EventDashboard: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setIsManageParticipantsOpen(true)}
-                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                  className="w-full text-left p-3 bg-primary-50 dark:bg-primary-900 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <Icon name="users" size="md" className="text-primary-600 mr-3" />
@@ -347,20 +347,20 @@ const EventDashboard: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setIsSkillStationModalOpen(true)}
-                  className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+                  className="w-full text-left p-3 bg-primary-50 dark:bg-primary-900 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-lg transition-colors"
                 >
                   <div className="flex items-center">
                     <Icon name="settings" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Edit Event Stations</span>
                   </div>
                 </button>
-                <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
+                <button className="w-full text-left p-3 bg-primary-50 dark:bg-primary-900 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-lg transition-colors">
                   <div className="flex items-center">
                     <Icon name="message" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>Send Announcements</span>
                   </div>
                 </button>
-                <button className="w-full text-left p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors">
+                <button className="w-full text-left p-3 bg-primary-50 dark:bg-primary-900 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-lg transition-colors">
                   <div className="flex items-center">
                     <Icon name="chart" size="md" className="text-primary-600 mr-3" />
                     <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>View Reports</span>

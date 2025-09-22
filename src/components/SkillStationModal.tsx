@@ -119,7 +119,8 @@ const SkillStationModal: React.FC<SkillStationModalProps> = ({
       equipment: [...(station.equipment || [])],
       requirements: [...(station.requirements || [])],
       isActive: station.isActive,
-      leaderId: station.leaderId
+      leaderId: station.leaderId,
+      leaderEmail: station.leaderEmail || station.leader?.email || ''
     });
   };
 

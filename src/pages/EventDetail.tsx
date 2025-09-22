@@ -700,8 +700,8 @@ const EventDetail: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-700/20 p-6 mb-8">
+        <h2 className={`${typography.h2} text-gray-900 dark:text-white mb-4`}>Skill Stations</h2>
         
         {/* Mobile: Simple vertical list */}
         <div className="lg:hidden space-y-4">
@@ -862,8 +862,8 @@ const EventDetail: React.FC = () => {
                               <strong>Duration:</strong> {stationDuration} min
                             </p>
                           )}
-                        </div>
-                      </div>
+        </div>
+      </div>
 
                       {/* Leader Information - always at bottom */}
                       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
@@ -898,10 +898,10 @@ const EventDetail: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+              </div>
               );
             })}
-          </div>
+            </div>
           
           {renderPageIndicator(event.skillStations.length)}
         </div>
@@ -917,13 +917,13 @@ const EventDetail: React.FC = () => {
         <div className="space-y-3">
           <div>
             <span className={`${typography.bodySmall} font-medium text-gray-500 dark:text-gray-400`}>Location:</span>
-            <button
+              <button
               onClick={() => setIsMapOpen(true)}
               className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
-            >
+              >
               {event.address}
-            </button>
-          </div>
+              </button>
+            </div>
         </div>
       </div>
 
@@ -936,7 +936,7 @@ const EventDetail: React.FC = () => {
                 {index + 1}
               </div>
               <span className={`${typography.bodySmall} text-gray-700 dark:text-gray-300`}>{item}</span>
-            </div>
+        </div>
           ))}
         </div>
       </div>

@@ -699,14 +699,45 @@ app.post('/api/events', verifyToken, async (req, res) => {
     console.log('Create event API: Creating new event for user:', userId);
     console.log('Event data:', req.body);
     
+    // Handle skill stations separately
+    let skillStationIds = [];
+    if (req.body.skillStations && req.body.skillStations.length > 0) {
+      // Create skill station documents
+      const skillStationPromises = req.body.skillStations.map(async (station) => {
+        const skillStationData = {
+          name: station.name,
+          description: station.description,
+          location: station.location,
+          skills: station.skills || [],
+          capacity: station.capacity || 10,
+          duration: station.duration || 60,
+          difficulty: station.difficulty || 'All Levels',
+          leader: station.leaderId ? new ObjectId(station.leaderId) : null,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        const result = await db.collection('skillstations').insertOne(skillStationData);
+        return result.insertedId;
+      });
+      
+      skillStationIds = await Promise.all(skillStationPromises);
+    }
+    
     const eventData = {
       ...req.body,
       organizer: userId,
+      skillStations: skillStationIds, // Store skill station IDs instead of full objects
       createdAt: new Date(),
       updatedAt: new Date(),
       // Generate a simple numeric ID for compatibility
       id: Date.now().toString()
     };
+    
+    // Remove skillStations from the main event data since we're storing IDs
+    delete eventData.skillStations;
+    eventData.skillStations = skillStationIds;
     
     // Insert the event
     const result = await db.collection('events').insertOne(eventData);
@@ -714,6 +745,31 @@ app.post('/api/events', verifyToken, async (req, res) => {
     if (result.insertedId) {
       // Fetch the created event with populated data
       const createdEvent = await db.collection('events').findOne({ _id: result.insertedId });
+      
+      // Populate skill stations data
+      let populatedSkillStations = [];
+      if (createdEvent.skillStations && createdEvent.skillStations.length > 0) {
+        const skillStations = await db.collection('skillstations').find({
+          _id: { $in: createdEvent.skillStations }
+        }).toArray();
+        
+        // Populate leader data for each skill station
+        for (let station of skillStations) {
+          if (station.leader) {
+            const leader = await db.collection('users').findOne({ _id: station.leader });
+            if (leader) {
+              station.leader = {
+                _id: leader._id,
+                firstName: leader.firstName,
+                lastName: leader.lastName,
+                email: leader.email
+              };
+            }
+          }
+        }
+        
+        populatedSkillStations = skillStations;
+      }
       
       console.log('Event created successfully:', createdEvent);
       
@@ -739,7 +795,7 @@ app.post('/api/events', verifyToken, async (req, res) => {
           agenda: createdEvent.agenda,
           howItWorks: createdEvent.howItWorks,
           speakers: createdEvent.speakers || [],
-          skillStations: createdEvent.skillStations || []
+          skillStations: populatedSkillStations
         }
       });
     } else {

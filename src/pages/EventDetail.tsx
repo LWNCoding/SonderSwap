@@ -433,7 +433,7 @@ const EventDetail: React.FC = () => {
 
   const renderEventInfo = (): JSX.Element => (
     <div className="order-1 lg:order-2">
-      <h1 className={`${typography.h1} text-gray-900 mb-4`}>
+      <h1 className={`${typography.h1} text-gray-900 dark:text-white mb-4`}>
         {event.name}
       </h1>
       

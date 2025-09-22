@@ -614,8 +614,7 @@ const EventDetail: React.FC = () => {
             </div>
 
             {/* Event info - right side, aligned with image */}
-            <div className="flex flex-col h-full">
-              {/* Top section - title and content */}
+            <div className="flex flex-col justify-between h-full">
               <div>
                 <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                   {event.name}
@@ -671,7 +670,7 @@ const EventDetail: React.FC = () => {
                   )}
                 </div>
 
-                {/* Join/Leave button - in the content area */}
+                {/* Join/Leave button */}
                 <div className="mb-6">
                   {isOrganizer() ? (
                     // Show dashboard button for organizers
@@ -716,9 +715,6 @@ const EventDetail: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              {/* Spacer to push venue map button to bottom */}
-              <div className="flex-grow"></div>
 
               {/* View Interactive Venue Map button - bottom aligned with image */}
               <div>

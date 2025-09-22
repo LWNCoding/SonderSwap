@@ -75,12 +75,6 @@ const EventDetail: React.FC = () => {
   // Debug participant count
   console.log('EventDetail: Current participantCount:', participantCount);
   
-  // Debug skill stations
-  console.log('EventDetail: Skill stations data:', event?.skillStations);
-  console.log('EventDetail: Skill stations length:', event?.skillStations?.length);
-  console.log('EventDetail: First skill station:', event?.skillStations?.[0]);
-  console.log('EventDetail: Skill stations type check:', event?.skillStations?.map(s => typeof s));
-  
   // Get participation status (auth required)
   const { 
     isParticipating, 
@@ -319,8 +313,8 @@ const EventDetail: React.FC = () => {
             className="flex overflow-x-auto pb-4 scroll-smooth w-full"
           >
             {event.skillStations.map((station, index) => {
-              // Handle both populated objects and string IDs
-              const stationData = typeof station === 'string' ? null : station as SkillStation;
+              // Skill stations are already populated objects from the API
+              const stationData = station as SkillStation;
               const stationName = stationData?.name || 'Skill Station';
               const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
               const stationLocation = stationData?.location || 'TBD';
@@ -762,44 +756,34 @@ const EventDetail: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
             
-            {event.skillStations && event.skillStations.length > 0 ? (
-              <div className="relative group">
-                {renderNavigationButton(
-                  'left',
-                  handlePreviousPage,
-                  currentPage === 0,
-                  'left-0 top-1/2 -translate-y-1/2'
-                )}
+            <div className="relative group">
+              {renderNavigationButton(
+                'left',
+                handlePreviousPage,
+                currentPage === 0,
+                'left-0 top-1/2 -translate-y-1/2'
+              )}
 
-                {renderNavigationButton(
-                  'right',
-                  () => handleNextPage(event.skillStations.length),
-                  currentPage >= getTotalPages(event.skillStations.length) - 1,
-                  'right-0 top-1/2 -translate-y-1/2'
-                )}
+              {renderNavigationButton(
+                'right',
+                () => handleNextPage(event.skillStations.length),
+                currentPage >= getTotalPages(event.skillStations.length) - 1,
+                'right-0 top-1/2 -translate-y-1/2'
+              )}
 
-                <div
-                  ref={containerRef}
-                  className="flex overflow-x-auto pb-4 scroll-smooth w-full"
-                >
-                  {event.skillStations.map((station, index) => {
-                  // Handle both populated objects and string IDs
-                  const stationData = typeof station === 'string' ? null : station as SkillStation;
+              <div
+                ref={containerRef}
+                className="flex overflow-x-auto pb-4 scroll-smooth w-full"
+              >
+                {event.skillStations.map((station, index) => {
+                  // Skill stations are already populated objects from the API
+                  const stationData = station as SkillStation;
                   const stationName = stationData?.name || 'Skill Station';
                   const stationSkills = stationData?.skills?.join(', ') || 'Various Skills';
                   const stationLocation = stationData?.location || 'TBD';
                   const stationCapacity = stationData?.capacity;
                   const stationDuration = stationData?.duration;
                   const stationDifficulty = stationData?.difficulty;
-                  
-                  // Debug each station
-                  console.log(`Station ${index}:`, {
-                    station,
-                    stationData,
-                    stationName,
-                    stationSkills,
-                    stationLocation
-                  });
 
                   return (
                     <div 
@@ -888,13 +872,8 @@ const EventDetail: React.FC = () => {
                 })}
               </div>
               
-                {renderPageIndicator(event.skillStations.length)}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className={`${typography.body} text-gray-500`}>No skill stations available for this event.</p>
-              </div>
-            )}
+              {renderPageIndicator(event.skillStations.length)}
+            </div>
           </div>
 
           {/* Agenda */}

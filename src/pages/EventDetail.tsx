@@ -604,130 +604,122 @@ const EventDetail: React.FC = () => {
 
           {/* Desktop: Side by side layout */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8 lg:items-stretch">
-            {/* Event image - left side */}
-            <div className="flex flex-col">
+            {/* Left - Image */}
+            <div className="flex">
               <img
                 src={event.thumbnail}
                 alt={event.name}
-                className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
+                className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg w-full`}
               />
             </div>
 
-            {/* Event info - right side */}
-            <div className="flex flex-col h-full">
-              {/* Stretch container to match image */}
-              <div className="flex flex-col flex-1">
-                {/* Title at top */}
-                <h1 className={`${typography.h1} text-gray-900 mb-6`}>
-                  {event.name}
-                </h1>
+            {/* Right - Info */}
+            <div className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-6">
+              {/* Title at top */}
+              <h1 className={`${typography.h1} text-gray-900`}>
+                {event.name}
+              </h1>
 
-                {/* Details spaced evenly in remaining space */}
-                <div className="flex flex-col justify-evenly flex-1 mb-6">
-                  {[
-                    { icon: "calendar", text: event.date },
-                    { icon: "clock", text: event.time },
-                    { icon: "location", text: event.address },
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center text-gray-600">
-                      <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
-                      <span className={`${typography.body} text-gray-600`}>{item.text}</span>
-                    </div>
-                  ))}
-
-                  {/* Age Restriction */}
-                  <div className="flex items-center text-gray-600">
-                    <Icon name="user" size="md" className="mr-4 text-primary-600" />
-                    <span className={`${typography.body} text-gray-600`}>{event.ageRestriction}</span>
+              {/* Middle details spaced evenly */}
+              <div className="flex flex-col justify-evenly flex-1 my-6">
+                {[
+                  { icon: "calendar", text: event.date },
+                  { icon: "clock", text: event.time },
+                  { icon: "location", text: event.address },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center text-gray-600">
+                    <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
+                    <span className={`${typography.body} text-gray-600`}>{item.text}</span>
                   </div>
+                ))}
 
-                  {/* Organizer Information */}
-                  {event.organizer && (
-                    <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
-                      <Icon name="user" size="md" className="mr-4 text-primary-600" />
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                          {typeof event.organizer === 'string' 
-                            ? event.organizer.charAt(0).toUpperCase()
-                            : `${(event.organizer as User).firstName?.charAt(0) || 'U'}${(event.organizer as User).lastName?.charAt(0) || 'U'}`
-                          }
-                        </div>
-                        <div>
-                          {typeof event.organizer === 'string' ? (
-                            <span className={`${typography.body} text-gray-600`}>
-                              {event.organizer}
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
-                                state: { returnTo: `/event/${eventId}` } 
-                              })}
-                              className={`${typography.body} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
-                            >
-                              {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
-                            </button>
-                          )}
-                        </div>
+                <div className="flex items-center text-gray-600">
+                  <Icon name="user" size="md" className="mr-4 text-primary-600" />
+                  <span className={`${typography.body} text-gray-600`}>
+                    {event.ageRestriction}
+                  </span>
+                </div>
+
+                {/* Organizer Information */}
+                {event.organizer && (
+                  <div className="flex items-center text-gray-600 pt-4 border-t border-gray-200">
+                    <Icon name="user" size="md" className="mr-4 text-primary-600" />
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                        {typeof event.organizer === 'string' 
+                          ? event.organizer.charAt(0).toUpperCase()
+                          : `${(event.organizer as User).firstName?.charAt(0) || 'U'}${(event.organizer as User).lastName?.charAt(0) || 'U'}`
+                        }
+                      </div>
+                      <div>
+                        {typeof event.organizer === 'string' ? (
+                          <span className={`${typography.body} text-gray-600`}>
+                            {event.organizer}
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
+                              state: { returnTo: `/event/${eventId}` } 
+                            })}
+                            className={`${typography.body} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                          >
+                            {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
+                          </button>
+                        )}
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
-              {/* Buttons at bottom */}
-              <div className="mt-auto space-y-4">
-                {/* Join/Leave button */}
-                <div>
-                  {isOrganizer() ? (
-                    <button
-                      onClick={() => navigate(`/event/${event.id}/dashboard`)}
-                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
-                    >
-                      <div className="flex items-center justify-center">
-                        <Icon name="settings" size="md" className="mr-2" />
-                        Event View Dashboard
-                      </div>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleJoinEvent}
-                      disabled={isJoining}
-                      className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
-                        isParticipating
-                          ? "bg-red-600 hover:bg-red-700 text-white"
-                          : isAuthenticated 
-                            ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                            : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      {isJoining ? (
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                          {isParticipating ? 'Leaving...' : 'Joining...'}
-                        </div>
-                      ) : isParticipating ? (
-                        <div className="flex items-center justify-center">
-                          <Icon name="close" size="md" className="mr-2" />
-                          Leave Event
-                        </div>
-                      ) : isAuthenticated ? (
-                        'Join Skill-Sharing Event'
-                      ) : (
-                        'Login to Join Event'
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                {/* Interactive Venue Map button aligned at bottom */}
-                <div>
+              {/* Buttons pinned to bottom */}
+              <div className="space-y-4">
+                {isOrganizer() ? (
                   <button
-                    onClick={() => setIsMapOpen(true)}
-                    className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
+                    onClick={() => navigate(`/event/${event.id}/dashboard`)}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`}
                   >
-                    View Interactive Venue Map
+                    <div className="flex items-center justify-center">
+                      <Icon name="settings" size="md" className="mr-2" />
+                      Event View Dashboard
+                    </div>
                   </button>
-                </div>
+                ) : (
+                  <button
+                    onClick={handleJoinEvent}
+                    disabled={isJoining}
+                    className={`w-full px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all ${ANIMATION.TRANSITION_DURATION} ${
+                      isParticipating
+                        ? "bg-red-600 hover:bg-red-700 text-white"
+                        : isAuthenticated 
+                          ? `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                          : `${GRADIENTS.PRIMARY_SECONDARY} ${GRADIENTS.BUTTON_HOVER} text-white ${ANIMATION.HOVER_SCALE}`
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isJoining ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        {isParticipating ? 'Leaving...' : 'Joining...'}
+                      </div>
+                    ) : isParticipating ? (
+                      <div className="flex items-center justify-center">
+                        <Icon name="close" size="md" className="mr-2" />
+                        Leave Event
+                      </div>
+                    ) : isAuthenticated ? (
+                      'Join Skill-Sharing Event'
+                    ) : (
+                      'Login to Join Event'
+                    )}
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setIsMapOpen(true)}
+                  className={`w-full border-2 border-primary-600 text-primary-600 hover:bg-primary-50 px-6 py-3 rounded-lg font-semibold ${typography.button} transition-all duration-300`}
+                >
+                  View Interactive Venue Map
+                </button>
               </div>
             </div>
           </div>

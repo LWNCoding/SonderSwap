@@ -158,15 +158,6 @@ const EventDetail: React.FC = () => {
     </button>
   );
 
-  const renderEventImage = (): JSX.Element => (
-    <div className="order-3 lg:order-1">
-      <img
-        src={event.thumbnail}
-        alt={event.name}
-        className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
-      />
-    </div>
-  );
 
   const renderEventTags = (): JSX.Element => {
     const capitalizeFirstLetter = (str: string) => {
@@ -182,57 +173,6 @@ const EventDetail: React.FC = () => {
     );
   };
 
-  const renderEventInfo = (): JSX.Element => (
-    <div className="order-1 lg:order-2">
-      <h1 className={`${typography.h1} text-gray-900 mb-4`}>
-        {event.name}
-      </h1>
-      
-      <div className="space-y-3 mb-6">
-        {[
-          { icon: "calendar", text: event.date },
-          { icon: "clock", text: event.time },
-          { icon: "user", text: event.ageRestriction },
-        ].map((item, index) => (
-          <div key={index} className="flex items-center text-gray-600">
-            <Icon name={item.icon} size="md" className="mr-3 text-primary-600" />
-            <span className={`${typography.bodySmall} text-gray-600`}>{item.text}</span>
-          </div>
-        ))}
-        
-        {/* Organizer Information */}
-        {event.organizer && (
-          <div className="flex items-center text-gray-600 pt-2 border-t border-gray-200">
-            <Icon name="user" size="md" className="mr-3 text-primary-600" />
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
-                {typeof event.organizer === 'string' 
-                  ? event.organizer.charAt(0).toUpperCase()
-                  : `${(event.organizer as User).firstName?.charAt(0) || 'U'}${(event.organizer as User).lastName?.charAt(0) || 'U'}`
-                }
-              </div>
-              <div>
-                {typeof event.organizer === 'string' ? (
-                  <span className={`${typography.bodySmall} text-gray-600`}>
-                    {event.organizer}
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
-                      state: { returnTo: `/event/${eventId}` } 
-                    })}
-                    className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
-                  >
-                    {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   const renderActionButtons = (): JSX.Element => (
     <div className="space-y-4 mb-6">
@@ -394,6 +334,21 @@ const EventDetail: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
+        <div className="space-y-3">
+          <div>
+            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
+            <button
+              onClick={() => setIsMapOpen(true)}
+              className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
+            >
+              {event.address}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
         
         <div className="relative group">
@@ -527,21 +482,6 @@ const EventDetail: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
-        <div className="space-y-3">
-          <div>
-            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
-            <button
-              onClick={() => setIsMapOpen(true)}
-              className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
-            >
-              {event.address}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
         <div className="space-y-3">
           {event.agenda.map((item, index) => (
@@ -561,17 +501,75 @@ const EventDetail: React.FC = () => {
   return (
     <div className={`min-h-screen ${GRADIENTS.BACKGROUND}`}>
       {/* Header */}
-      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 pt-4 sm:pt-8 lg:pt-16 pb-6`}>
+      <div className={`bg-gradient-to-r from-white via-primary-50 to-secondary-50 ${LAYOUT.HEADER_PADDING}`}>
         <div className={`${LAYOUT.MAX_WIDTH} mx-auto ${LAYOUT.CONTAINER_PADDING}`}>
-          {/* Back button and tags row */}
+          {/* Back button and tags row - always at top */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             {renderBackButton()}
             {renderEventTags()}
           </div>
           
-          <div className={`grid ${DETAIL_PAGE_LAYOUT.GRID_COLS} gap-8`}>
-            {renderEventInfo()}
-            {renderEventImage()}
+          {/* Event content - mobile: stacked, desktop: side by side */}
+          <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
+            {/* Event info - first on mobile, left on desktop */}
+            <div className="order-1 lg:order-2">
+              <h1 className={`${typography.h1} text-gray-900 mb-4`}>
+                {event.name}
+              </h1>
+              
+              <div className="space-y-3 mb-6">
+                {[
+                  { icon: "calendar", text: event.date },
+                  { icon: "clock", text: event.time },
+                  { icon: "user", text: event.ageRestriction },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center text-gray-600">
+                    <Icon name={item.icon} size="md" className="mr-3 text-primary-600" />
+                    <span className={`${typography.bodySmall} text-gray-600`}>{item.text}</span>
+                  </div>
+                ))}
+                
+                {/* Organizer Information */}
+                {event.organizer && (
+                  <div className="flex items-center text-gray-600 pt-2 border-t border-gray-200">
+                    <Icon name="user" size="md" className="mr-3 text-primary-600" />
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                        {typeof event.organizer === 'string' 
+                          ? event.organizer.charAt(0).toUpperCase()
+                          : `${(event.organizer as User).firstName?.charAt(0) || 'U'}${(event.organizer as User).lastName?.charAt(0) || 'U'}`
+                        }
+                      </div>
+                      <div>
+                        {typeof event.organizer === 'string' ? (
+                          <span className={`${typography.bodySmall} text-gray-600`}>
+                            {event.organizer}
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => navigate(`/user/${(event.organizer as User)._id}`, { 
+                              state: { returnTo: `/event/${eventId}` } 
+                            })}
+                            className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors`}
+                          >
+                            {(event.organizer as User).firstName || 'Unknown'} {(event.organizer as User).lastName || 'User'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Event image - second on mobile, right on desktop */}
+            <div className="order-2 lg:order-1">
+              <img
+                src={event.thumbnail}
+                alt={event.name}
+                className={`${DETAIL_PAGE_LAYOUT.IMAGE_SIZE} object-cover rounded-lg shadow-lg`}
+              />
+            </div>
           </div>
           
           {/* Action buttons - mobile only */}

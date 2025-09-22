@@ -282,21 +282,6 @@ const EventDetail: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
-        <div className="space-y-3">
-          <div>
-            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
-            <button
-              onClick={() => setIsMapOpen(true)}
-              className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
-            >
-              {event.address}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Skill Stations</h2>
         
         <div className="relative group">
@@ -425,6 +410,21 @@ const EventDetail: React.FC = () => {
   const renderSidebar = (): JSX.Element => (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className={`${typography.h2} text-gray-900 mb-4`}>Venue</h2>
+        <div className="space-y-3">
+          <div>
+            <span className={`${typography.bodySmall} font-medium text-gray-500`}>Location:</span>
+            <button
+              onClick={() => setIsMapOpen(true)}
+              className={`${typography.bodySmall} text-primary-600 hover:text-primary-800 hover:underline transition-colors block mt-1`}
+            >
+              {event.address}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className={`${typography.h2} text-gray-900 mb-4`}>Event Schedule</h2>
         <div className="space-y-3">
           {event.agenda.map((item, index) => (
@@ -453,10 +453,10 @@ const EventDetail: React.FC = () => {
           </div>
           
           {/* Event content - mobile: stacked, desktop: side by side */}
-          <div className="flex flex-col space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-end">
+          <div className="flex flex-col space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
             {/* Event info - first on mobile, left on desktop */}
             <div className="order-1 lg:order-2">
-              <h1 className={`${typography.h1} text-gray-900 mb-4`}>
+              <h1 className={`${typography.h1} text-gray-900 mb-6`}>
                 {event.name}
               </h1>
               
@@ -465,7 +465,6 @@ const EventDetail: React.FC = () => {
                   { icon: "calendar", text: event.date },
                   { icon: "clock", text: event.time },
                   { icon: "location", text: event.address },
-                  { icon: "dollarSign", text: event.price },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center text-gray-600">
                     <Icon name={item.icon} size="md" className="mr-4 text-primary-600" />
